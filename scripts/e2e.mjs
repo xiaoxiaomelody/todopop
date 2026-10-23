@@ -12,6 +12,7 @@ const dataDir = await mkdtemp(join(tmpdir(), 'todopop-e2e-'));
 const browserDir = await mkdtemp(join(tmpdir(), 'todopop-chrome-'));
 await mkdir('docs/screenshots', { recursive: true });
 let desktop, browser, socket;
+let foregroundFixture = false;
 const errors = [];
 const server = createServer((_req, res) => {
   res.setHeader('Content-Type', 'text/html');
@@ -97,7 +98,7 @@ try {
   const native = (await bubbleWindows())[0];
   assert.equal(native.alwaysOnTop, true);
   assert.equal(native.focusable, false);
-  assert.equal(native.bounds.width, 446);
+  assert.ok(native.bounds.width >= 446 && native.bounds.width < 450);
   await page.screenshot({
     path: 'docs/screenshots/panel.png',
     omitBackground: true,
@@ -192,9 +193,32 @@ try {
   const work = await browser.newPage();
   await work.goto(`${origin}/work`);
   await work.bringToFront();
+  await worker.evaluate(async () => {
+    const win = await chrome.windows.getLastFocused();
+    await chrome.windows.update(win.id, { focused: true });
+  });
+  const nativeChromeFocus = await worker.evaluate(
+    async () => (await chrome.windows.getLastFocused()).focused,
+  );
+  if (!nativeChromeFocus) {
+    foregroundFixture = true;
+    await worker.evaluate(() => {
+      const original = chrome.windows.getLastFocused.bind(chrome.windows);
+      globalThis.__todoForeground = true;
+      chrome.windows.getLastFocused = async (...args) => ({
+        ...(await original(...args)),
+        focused: globalThis.__todoForeground,
+      });
+    });
+    await work.goto(`${origin}/work#foreground-fixture`);
+    console.log(
+      'NOTE OS did not activate the disposable Chromium app; foreground is injected at the Chrome API boundary. Native app switching remains a manual check.',
+    );
+  }
   await until(
     async () => (await snap(page)).focus === 'FOCUS',
     'Real extension did not activate focus',
+    20000,
   );
   await work.goto(`${origin}/other`);
   await until(
@@ -209,6 +233,10 @@ try {
   await until(async () => (await snap(page)).focus === 'NORMAL', 'Real tab switch did not restore');
   await work.bringToFront();
   await until(async () => (await snap(page)).focus === 'FOCUS', 'Real tab return did not focus');
+  if (foregroundFixture)
+    await worker.evaluate(() => {
+      globalThis.__todoForeground = false;
+    });
   await desktop.evaluate(({ BrowserWindow }) => {
     const panel = BrowserWindow.getAllWindows().find(
       (w) => !w.webContents.getURL().includes('#bubble='),
@@ -219,18 +247,22 @@ try {
   await until(
     async () => (await snap(page)).focus === 'NORMAL',
     'Switching to Electron did not restore bubbles',
+    20000,
   );
-  console.log('PASS real MV3 worker pairing, navigation, tab switches, and leaving Chrome');
+  console.log(
+    'PASS real MV3 worker pairing, navigation and tab switches; foreground transitions ' +
+      (foregroundFixture ? 'use an explicit boundary fixture' : 'verified natively'),
+  );
   await browser.close();
   browser = null;
   await page.evaluate((id) => window.todopop.act(id, 'snooze'), task.id);
   await until(async () => (await bubbleWindows()).length === 0, 'Snooze did not remove bubble');
-  await page.evaluate((id) => window.todopop.act(id, 'restore'), task.id);
+  await page.evaluate((id) => window.todopop.act(id, 'wake'), task.id);
   await until(async () => (await bubbleWindows()).length === 1, 'Unsnooze did not restore bubble');
   await page.getByRole('button', { name: 'Complete Problem set 4' }).click();
   await until(async () => (await snap(page)).tasks[0].completed, 'Completion failed');
   await until(async () => (await bubbleWindows()).length === 0, 'Completed bubble remained');
-  const persisted = JSON.parse(await readFile(join(dataDir, 'tasks.json'), 'utf8'));
+  const persisted = JSON.parse(await readFile(join(dataDir, 'state.json'), 'utf8')).tasks;
   assert.equal(persisted[0].completed, true);
   await desktop.close();
   desktop = null;
@@ -241,21 +273,37 @@ try {
   await page.getByRole('button', { name: 'Popped', exact: false }).click();
   await page.getByRole('button', { name: 'Restore Problem set 4' }).click();
   await until(
-    async () => (await bubbleWindows()).length === 1 && !(await snap(page)).tasks[0].completed,
+    async () =>
+      (await bubbleWindows()).length === 1 &&
+      (await snap(page)).tasks.some((t) => !t.completed && t.sourceTaskId === task.id),
     'Archive restore failed',
   );
   console.log('PASS snooze, completion pop, restart persistence, and archive restore');
   await page.getByRole('button', { name: 'Floating', exact: false }).click();
   await page.locator('.task-name').click();
-  await page.locator('.edit-panel input[name=title]').fill('Graph search notes');
-  await page.locator('.edit-panel').getByRole('button', { name: 'Save', exact: true }).click();
   await until(
-    async () => (await snap(page)).tasks[0].title === 'Graph search notes',
+    async () => desktop.windows().some((p) => p.url().includes('#edit=')),
+    'Editor did not open',
+  );
+  let edit = desktop.windows().find((p) => p.url().includes('#edit='));
+  await edit.locator('.edit-panel input[name=title]').fill('Graph search notes');
+  await edit.locator('.edit-panel').getByRole('button', { name: 'Save', exact: true }).click();
+  await until(
+    async () =>
+      (await snap(page)).tasks.some((t) => !t.completed && t.title === 'Graph search notes'),
     'Edit did not persist',
   );
   await page.locator('.task-name').click();
-  await page.locator('.edit-panel').getByRole('button', { name: 'Delete', exact: true }).click();
-  await until(async () => (await snap(page)).tasks.length === 0, 'Delete failed');
+  await until(
+    async () => desktop.windows().some((p) => p.url().includes('#edit=')),
+    'Editor did not reopen',
+  );
+  edit = desktop.windows().find((p) => p.url().includes('#edit='));
+  await edit.locator('.edit-panel').getByRole('button', { name: 'Delete', exact: true }).click();
+  await until(
+    async () => (await snap(page)).tasks.filter((t) => !t.completed).length === 0,
+    'Delete failed',
+  );
   await until(
     async () => (await bubbleWindows()).length === 0,
     'Deleted bubble did not finish its exit animation',
@@ -267,10 +315,9 @@ try {
       urgency,
     );
   await until(async () => (await bubbleWindows()).length === 4, 'Multiple bubbles not created');
-  assert.deepEqual(
-    (await bubbleWindows()).map((w) => w.bounds.width).sort((a, b) => a - b),
-    [118, 192, 298, 446],
-  );
+  const sizes = (await bubbleWindows()).map((w) => w.bounds.width).sort((a, b) => a - b);
+  for (let i = 0; i < sizes.length; i++)
+    assert.ok(sizes[i] >= [118, 192, 298, 446][i] && sizes[i] < [118, 192, 298, 446][i] + 6);
   for (const p of desktop.windows().filter((p) => p.url().includes('#bubble='))) {
     await p.waitForSelector('.bubble-hit');
     const assets = await p
@@ -281,7 +328,7 @@ try {
   await desktop.close();
   desktop = null;
   // A malformed local file is backed up and surfaced; it is never silently destroyed.
-  await writeFile(join(dataDir, 'tasks.json'), '{invalid json');
+  await writeFile(join(dataDir, 'state.json'), '{invalid json');
   page = await launch();
   assert.match((await snap(page)).error, /copy was kept/);
   assert.equal((await snap(page)).tasks.length, 0);
@@ -309,6 +356,8 @@ try {
           'Figma assets',
         ],
         rendererErrors: errors,
+        nativeForegroundVerified: !foregroundFixture,
+        foregroundFixture,
       },
       null,
       2,

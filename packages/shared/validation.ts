@@ -23,7 +23,14 @@ export function validateTaskInput(value: unknown): TaskInput {
       throw new Error('Enter a full http:// or https:// URL.');
     }
   }
+  if (
+    v.groupId !== undefined &&
+    v.groupId !== null &&
+    (typeof v.groupId !== 'string' || v.groupId.length > 100)
+  )
+    throw new Error('Invalid group');
   return {
+    ...(v.groupId !== undefined ? { groupId: v.groupId as string | null } : {}),
     title: v.title.trim(),
     url: url || undefined,
     urgency: v.urgency as TaskInput['urgency'],

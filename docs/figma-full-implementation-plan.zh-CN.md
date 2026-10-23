@@ -1,5 +1,7 @@
 # TODOPOP：Figma 完整实现差距与开发步骤
 
+> 后续规则已更新：以 [当前产品规则](product-decisions.zh-CN.md) 为准。Step 与 Focus 计时条已移出范围，保留自动 URL Focus；点击按有无链接区分。本文其余审查内容保留为原设计与代码基线的对照。
+
 > 审查日期：2026-10-23（America/New_York）  
 > 代码基线：`c9804cf`，沿用现有 Electron + React + TypeScript + Chrome Extension 实现。  
 > 设计来源：[TODOPOP prototype · 11:2](https://www.figma.com/design/51bGy6oFsJV6YJa9jvBKIT/TODOPOP?node-id=11-2)。  

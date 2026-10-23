@@ -39,3 +39,37 @@ export function StatusDot({
 export function FieldLabel({ children }: { children: ReactNode }) {
   return <span className="eyebrow tp-field-label">{children}</span>;
 }
+
+export function applyTheme(tint: string) {
+  if (!/^#[a-fA-F0-9]{6}$/.test(tint)) return;
+  const channels = [1, 3, 5].map((i) => parseInt(tint.slice(i, i + 2), 16) / 255),
+    max = Math.max(...channels),
+    min = Math.min(...channels),
+    d = max - min,
+    light = (max + min) / 2;
+  const hue = d
+    ? ((max === channels[0]
+        ? (channels[1] - channels[2]) / d
+        : max === channels[1]
+          ? (channels[2] - channels[0]) / d + 2
+          : (channels[0] - channels[1]) / d + 4) *
+        60 +
+        360) %
+      360
+    : 222.27;
+  const saturation = d ? d / (1 - Math.abs(2 * light - 1)) : 0;
+  document.documentElement.style.setProperty(
+    '--tp-asset-filter',
+    `hue-rotate(${hue - 222.27}deg) saturate(${saturation / 0.7174})`,
+  );
+  document.documentElement.style.setProperty('--ink', tint);
+  document.documentElement.style.setProperty('--rule', tint + '38');
+  const rgb = [1, 3, 5]
+    .map((i) =>
+      Math.round(parseInt(tint.slice(i, i + 2), 16) * 0.55 + 255 * 0.45)
+        .toString(16)
+        .padStart(2, '0'),
+    )
+    .join('');
+  document.documentElement.style.setProperty('--soft', '#' + rgb);
+}

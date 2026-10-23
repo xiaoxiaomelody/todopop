@@ -1,14 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, TextInput } from '@todopop/ui';
-import { GROUP_COLOR, type Group, type Task, type Urgency } from '@todopop/shared';
+import { groupColor, type Task, type Urgency } from '@todopop/shared';
 import { UrgencyPicker } from './UrgencyPicker';
 import { useTaskStore } from '../store/taskStore';
 export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
-  const [title, setTitle] = useState(task?.title || '');
-  const [url, setUrl] = useState(task?.url || '');
-  const [urgency, setUrgency] = useState<Urgency>(task?.urgency || 1);
-  const [group, setGroup] = useState<Group>(task?.group || 'None');
+  const draft = useTaskStore.getState().draft;
+  const [title, setTitle] = useState(task?.title ?? draft.title);
+  const [url, setUrl] = useState(task ? task.url || '' : draft.url || '');
+  const [urgency, setUrgency] = useState<Urgency>(task?.urgency ?? draft.urgency);
+  const [groupId, setGroupId] = useState<string | null>(
+    task?.groupId ||
+      (task?.group && task.group !== 'None' ? task.group : task ? null : draft.groupId || null),
+  );
+  const groups = useTaskStore((s) => s.groups);
+  useEffect(() => {
+    if (groupId && !groups.some((g) => g.id === groupId)) setGroupId(null);
+  }, [groups, groupId]);
+  const tint = useTaskStore((s) => s.settings.tint);
   const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    if (!task) useTaskStore.setState({ draft: { title, url, urgency, groupId } });
+  }, [task, title, url, urgency, groupId]);
   const run = useTaskStore((s) => s.run);
   return (
     <form
@@ -17,12 +29,16 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
         e.preventDefault();
         if (busy) return;
         setBusy(true);
-        const input = { title, url, urgency, group };
+        const input = { title, url, urgency, groupId };
         const ok = await run(() =>
           task ? window.todopop.update(task.id, input) : window.todopop.create(input),
         );
         setBusy(false);
-        if (ok) onDone();
+        if (ok) {
+          if (!task)
+            useTaskStore.setState({ draft: { title: '', url: '', urgency: 1, groupId: null } });
+          onDone();
+        }
       }}
     >
       <label>
@@ -54,29 +70,49 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
       <fieldset className="group-picker">
         <legend className="eyebrow">Group</legend>
         <div className="chips">
-          {(['None', 'School', 'Work', 'Life'] as Group[]).map((g) => (
+          <button
+            type="button"
+            aria-pressed={!groupId}
+            className={!groupId ? 'selected' : ''}
+            onClick={() => setGroupId(null)}
+          >
+            <i />
+            No group
+          </button>
+          {groups.map((g) => (
             <button
               type="button"
-              key={g}
-              aria-pressed={group === g}
-              className={group === g ? 'selected' : ''}
-              onClick={() => setGroup(g)}
+              key={g.id}
+              aria-pressed={groupId === g.id}
+              className={groupId === g.id ? 'selected' : ''}
+              onClick={() => setGroupId(g.id)}
             >
-              <i style={{ background: GROUP_COLOR[g] }} />
-              {g === 'None' ? 'No group' : g}
+              <i style={{ background: groupColor(g.color, tint) }} />
+              {g.name}
             </button>
           ))}
+          <button
+            hidden={Boolean(task)}
+            type="button"
+            className="new-group"
+            onClick={() => window.dispatchEvent(new CustomEvent('manage-groups'))}
+          >
+            + New
+          </button>
         </div>
       </fieldset>
-      {task?.url && (
+      {task && (
         <button
           type="button"
           className="pill"
           onClick={() => {
-            void run(() => window.todopop.open(task.id));
+            void run(async () => {
+              await window.todopop.open(task.id);
+              if (!task.url) onDone();
+            });
           }}
         >
-          ◯ &nbsp; Get in the bubble
+          {task.url ? '◯  Open work page' : '✓  Pop bubble'}
         </button>
       )}
       <div className="form-actions">

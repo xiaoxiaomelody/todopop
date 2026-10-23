@@ -1,12 +1,19 @@
 import { create } from 'zustand';
-import type { Snapshot } from '@todopop/shared';
+import { initialState, type Snapshot, type TaskInput } from '@todopop/shared';
 type State = Snapshot & {
+  draft: TaskInput;
   loading: boolean;
   problem: string | null;
   apply(s: Snapshot): void;
   run(action: () => Promise<void>): Promise<boolean>;
 };
 export const useTaskStore = create<State>((set) => ({
+  ...initialState(),
+  draft: { title: '', url: '', urgency: 1, groupId: null },
+  paused: false,
+  full: false,
+  growthMode: 'real',
+  toast: null,
   tasks: [],
   focus: 'NORMAL',
   connected: false,

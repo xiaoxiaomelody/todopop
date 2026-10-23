@@ -1,0 +1,20 @@
+
+> todopop@0.1.0 typecheck
+> npm run typecheck --workspaces --if-present
+
+
+> @todopop/chrome-extension@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @todopop/desktop@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @todopop/shared@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @todopop/ui@0.1.0 typecheck
+> tsc --noEmit
+

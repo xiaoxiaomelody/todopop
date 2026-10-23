@@ -70,8 +70,7 @@
   opacity: 0.4;
   cursor: default;
 }
-.tp-button:focus-visible,
-.tp-input:focus-visible {
+.tp-button:focus-visible {
   outline: 2px solid #3668e8;
   outline-offset: 3px;
 }
@@ -127,4 +126,14 @@
   .tp-status-dot {
     animation: none;
   }
+}
+
+.logo img {
+  filter: var(--tp-asset-filter, none);
+}
+
+.tp-input:focus,
+.tp-input:focus-visible {
+  outline: none;
+  box-shadow: none;
 }

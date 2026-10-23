@@ -1,0 +1,8 @@
+PASS stale/unregistered window events are rejected without uncaught exceptions
+PASS task creation, native transparent bubble, Figma UI assets
+PASS drag bounds and persisted position
+PASS bridge rejects website origins and invalid pairing tokens
+PASS authenticated focus/normal transitions, non-foreground context, disconnect fallback
+PASS real MV3 worker pairing, navigation and tab switches; foreground transitions verified natively
+PASS snooze, completion pop, restart persistence, and archive restore
+PASS editing, deletion, all four sizes, local assets, corrupt-file recovery, and zero renderer exceptions

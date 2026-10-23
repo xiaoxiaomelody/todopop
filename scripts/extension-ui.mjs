@@ -38,6 +38,14 @@ try {
     /DM Sans/,
   );
   assert.ok(
+    await popup.evaluate(() =>
+      Array.from(document.fonts).some(
+        (font) => font.family.includes('DM Sans') && font.status === 'loaded',
+      ),
+    ),
+  );
+
+  assert.ok(
     await popup
       .locator('.logo img')
       .evaluateAll(
@@ -48,6 +56,12 @@ try {
   await popup.screenshot({ path: 'docs/screenshots/extension-unpaired.png', fullPage: true });
   await popup.getByRole('button', { name: 'Where’s my code?' }).click();
   assert.equal(await popup.locator('.help-steps li').count(), 3);
+  await popup.locator('#token').focus();
+  assert.equal(
+    await popup.locator('#token').evaluate((el) => getComputedStyle(el).outlineStyle),
+    'none',
+  );
+  await popup.screenshot({ path: 'docs/screenshots/extension-input-focus.png', fullPage: true });
   await popup.locator('#token').fill('incomplete');
   await popup.getByRole('button', { name: 'Connect to TODOPOP', exact: true }).click();
   await popup.getByRole('alert').filter({ hasText: 'complete pairing code' }).waitFor();
@@ -60,6 +74,11 @@ try {
   assert.equal(await popup.locator('#token').count(), 0);
   await popup.getByRole('button', { name: 'Where’s my code?' }).click();
   await popup.screenshot({ path: 'docs/screenshots/extension-connected.png', fullPage: true });
+  for (const client of server.clients)
+    client.send(JSON.stringify({ type: 'APPEARANCE', tint: '#078b86' }));
+  await popup.waitForFunction(
+    () => getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() === '#078b86',
+  );
   await popup.getByRole('button', { name: 'Change pairing code' }).click();
   assert.equal(await popup.locator('#token').inputValue(), '');
   assert.equal(await popup.locator('#token').getAttribute('type'), 'password');

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "date": "2026-10-23T15:18:30.467Z",
+  "checks": [
+    "legacy tasks migrate with backup and historical completion",
+    "formal growth advances; global pause stops growth while keeping bubbles visible",
+    "60x Demo is an isolated preview and does not overwrite formal growth",
+    "keyboard task reordering persists manual rank",
+    "unlinked bubble click pops and records completion",
+    "linked bubble click opens URL without completing it",
+    "single-task snooze and Show now are distinct from global pause",
+    "Rebubble creates a fresh round and retains historical wins",
+    "delete toast Undo restores the same task",
+    "custom groups rename, color and side persist; custom color survives Tint",
+    "right-click opens an independent, bounded edit popover; Save persists",
+    "archive week/month views and date navigation use real completion records",
+    "minimized Launcher reopens the panel",
+    "restart retains settings, groups, order, pause and history; Demo defaults to real",
+    "unsaved new-task draft survives opening group management"
+  ],
+  "rendererErrors": []
+}

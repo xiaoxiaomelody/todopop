@@ -1,7 +1,17 @@
 export type FocusState = 'NORMAL' | 'FOCUS';
 export type Urgency = 1 | 2 | 3 | 4;
 export type Group = 'None' | 'School' | 'Work' | 'Life';
-export type TaskInput = { title: string; url?: string; urgency: Urgency; group?: Group };
+export type Side = 'any' | 'left' | 'top' | 'bottom' | 'right';
+export type PauseChoice = '30m' | '1h' | 'tomorrow' | 'manual' | 'resume';
+export type ColorSource = { kind: 'palette'; slot: number } | { kind: 'custom'; hex: string };
+export type TaskGroup = { id: string; name: string; color: ColorSource; side: Side };
+export type TaskInput = {
+  title: string;
+  url?: string;
+  urgency: Urgency;
+  group?: Group;
+  groupId?: string | null;
+};
 export type Task = TaskInput & {
   id: string;
   completed: boolean;
@@ -9,6 +19,37 @@ export type Task = TaskInput & {
   completedAt?: number;
   position?: { x: number; y: number };
   snoozedUntil?: number;
+  deletedAt?: number;
+  growthMs?: number;
+  focusMs?: number;
+  rank?: number;
+  sourceTaskId?: string;
+  size?: number;
+};
+export type HistoryEvent = {
+  id: string;
+  taskId: string;
+  kind: 'completed' | 'deleted' | 'focus';
+  at: number;
+  title: string;
+  urgency: Urgency;
+  groupId?: string | null;
+  durationMs?: number;
+};
+export type Settings = {
+  tint: string;
+  pauseUntil: number | null;
+  pauseIndefinite: boolean;
+  layoutSide: Side;
+  panelPosition?: { x: number; y: number };
+  launcherPosition?: { x: number; y: number };
+};
+export type AppState = {
+  schemaVersion: 2;
+  tasks: Task[];
+  groups: TaskGroup[];
+  history: HistoryEvent[];
+  settings: Settings;
 };
 export type BrowserContext = {
   type: 'CONTEXT_CHANGED';
@@ -18,12 +59,20 @@ export type BrowserContext = {
 };
 export type Snapshot = {
   tasks: Task[];
+  groups: TaskGroup[];
+  history: HistoryEvent[];
+  settings: Settings;
   focus: FocusState;
   connected: boolean;
   error: string | null;
   matchedTask: string | null;
+  paused: boolean;
+  full: boolean;
+  growthMode: 'real' | 'demo';
+  toast: { message: string; undoId?: string } | null;
 };
-export type TaskAction = 'complete' | 'restore' | 'delete' | 'snooze';
+export type TaskAction = 'complete' | 'restore' | 'delete' | 'snooze' | 'wake';
+export type GroupChange = { id?: string; name?: string; side?: Side; color?: ColorSource };
 export type DesktopApi = {
   snapshot(): Promise<Snapshot>;
   subscribe(callback: (snapshot: Snapshot) => void): () => void;
@@ -34,6 +83,13 @@ export type DesktopApi = {
   edit(id: string): Promise<void>;
   onEdit(callback: (id: string) => void): () => void;
   pairing(): Promise<{ token: string; port: number }>;
+  setSettings(input: Partial<Settings>): Promise<void>;
+  pause(choice: PauseChoice): Promise<void>;
+  growthMode(mode: 'real' | 'demo'): Promise<void>;
+  groups(action: 'create' | 'update' | 'delete', input: GroupChange): Promise<void>;
+  arrange(side: Side | 'shuffle'): Promise<void>;
+  reorder(ids: string[]): Promise<void>;
+  undo(id: string): Promise<void>;
   hide(): void;
   resize(height: number): void;
   drag(phase: 'start' | 'move' | 'end', x: number, y: number): void;

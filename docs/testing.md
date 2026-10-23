@@ -1,5 +1,7 @@
 # Validation
 
+See the current [detailed test report](testing-details.zh-CN.md) and [manual review list](manual-review.zh-CN.md).
+
 Run `npm run typecheck`, `npm test`, and `npm run build` for static and shared-logic checks.
 Run `npx playwright install chromium` once, then `npm run test:e2e` on a graphical
 macOS desktop. The test starts its own local fixture server, temporary application

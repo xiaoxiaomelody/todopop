@@ -18,7 +18,11 @@
     "start": "npm run build && npm run start --workspace @todopop/desktop",
     "test:e2e": "npm run build && node scripts/e2e.mjs",
     "format": "prettier --write apps packages scripts *.json *.md docs/*.md",
-    "format:check": "prettier --check apps packages scripts *.json *.md docs/*.md"
+    "format:check": "prettier --check apps packages scripts *.json *.md docs/*.md",
+    "package:mac": "npm run build && npm run package:mac --workspace @todopop/desktop",
+    "test:extension": "node scripts/extension-ui.mjs",
+    "test:desktop": "npm run build && node scripts/desktop-acceptance.mjs",
+    "verify": "node scripts/verify.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -6,7 +6,9 @@ export function getFocusState(
   tasks: readonly Task[],
 ): FocusState {
   if (!chromeFocused || !activeUrl) return 'NORMAL';
-  return tasks.some((task) => !task.completed && task.url && urlsMatch(activeUrl, task.url))
+  return tasks.some(
+    (task) => !task.completed && !task.deletedAt && task.url && urlsMatch(activeUrl, task.url),
+  )
     ? 'FOCUS'
     : 'NORMAL';
 }

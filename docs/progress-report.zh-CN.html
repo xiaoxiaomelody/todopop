@@ -1,0 +1,370 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TODOPOP · 开发进度 / 测试 / 人工复核</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:#f3f5fa;color:#263248;font:15px/1.85 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}a{color:#2459b8;text-decoration:none}a:hover{text-decoration:underline}.layout{display:grid;grid-template-columns:245px minmax(0,1150px);gap:36px;max-width:1495px;margin:auto;padding:38px 28px}aside{position:sticky;top:28px;height:calc(100vh - 56px);overflow:auto;padding:4px 12px 20px 0}aside strong{display:block;color:#183e92;font-size:20px;margin-bottom:18px}aside a{display:block;font-size:12px;line-height:1.6;color:#506079;padding:7px 10px;border-left:2px solid #dde4f1}aside a:hover{background:#e6edfb;color:#1a419e}main{min-width:0;background:white;border:1px solid #e1e6f0;border-radius:18px;padding:40px 45px;box-shadow:0 12px 40px #1a419e08}h1{font-size:28px;line-height:1.5;color:#193f94;letter-spacing:-.4px}h2{font-size:22px;line-height:1.5;margin:44px 0 16px;padding-bottom:10px;border-bottom:2px solid #e5ebf8;color:#193f94}h3{font-size:17px;color:#254c98;margin:30px 0 12px}blockquote{margin:20px 0;padding:12px 18px;background:#f1f5ff;border-left:4px solid #5376bd;border-radius:0 8px 8px 0;color:#52627b;font-size:13px}blockquote p{margin:4px 0}p{margin:12px 0}strong{color:#1e3966}ul,ol{padding-left:23px}li{margin:7px 0}.table-scroll{overflow:auto;margin:18px 0 24px;border:1px solid #dce4f2;border-radius:8px}table{border-collapse:collapse;font-size:12px;width:100%;min-width:720px;line-height:1.8}th{text-align:left;background:#edf2fc;color:#224b9a;padding:12px;vertical-align:top}td{padding:12px;vertical-align:top;border-top:1px solid #e5eaf3;overflow-wrap:anywhere}tbody tr:nth-child(even){background:#fafbfd}td:first-child{min-width:64px}code{background:#edf1f8;border-radius:4px;padding:2px 4px;font:11.5px/1.8 ui-monospace,monospace;overflow-wrap:anywhere}img{display:block;max-width:100%;height:auto;border:1px solid #e2e6ef;border-radius:8px;margin:20px auto}header{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7385a2}.scope{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px}.scope span{background:#eef4ff;border-radius:16px;padding:4px 12px;font-size:12px;color:#27539e}footer{border-top:1px solid #e4e9f1;margin-top:35px;padding-top:16px;color:#728099;font-size:12px}@media(max-width:1000px){.layout{display:block;padding:16px}aside{position:static;height:auto;max-height:210px;margin:0 0 16px}main{padding:22px}h1{font-size:24px}}@media print{body{background:white;font-size:10pt}.layout{display:block;padding:0}aside,header,.scope{display:none}main{border:0;box-shadow:none;padding:0}h2{break-after:avoid;page-break-after:avoid}h3{break-after:avoid}table{min-width:0;font-size:8pt}.table-scroll{overflow:visible;border:0}tr{break-inside:avoid}img{max-height:240mm;object-fit:contain}a{color:#222}}input[type=checkbox]{width:16px;height:16px;margin-right:8px;vertical-align:middle;accent-color:#1a419e;cursor:pointer}li:has(input[type=checkbox]){list-style:none}.nav-level-1{font-weight:700;color:#1a419e;margin-top:13px}.review-note{background:#edf5ff;border:1px solid #dce6fa;padding:12px 16px;border-radius:10px;color:#53709a;font-size:12px}main>h1:not(:first-of-type){margin-top:60px;border-top:3px solid #dce6fa;padding-top:30px}main>p>img{max-height:700px;object-fit:contain}header{margin-bottom:15px}</style></head><body><div class="layout"><aside><strong>TODOPOP</strong><a class="nav-level-1" href="#section-1">TODOPOP 开发进度报告</a><a class="nav-level-2" href="#section-2">现在可以用到什么</a><a class="nav-level-2" href="#section-3">增长与 Demo 的具体规则</a><a class="nav-level-2" href="#section-4">本轮解决的稳定性问题</a><a class="nav-level-2" href="#section-5">跳过或尚未完全还原的部分</a><a class="nav-level-2" href="#section-6">现在怎么试</a><a class="nav-level-2" href="#section-7">你回来后先看这三份</a><a class="nav-level-1" href="#section-8">TODOPOP 测试详情</a><a class="nav-level-2" href="#section-9">已执行的检查</a><a class="nav-level-2" href="#section-10">20 项逻辑测试覆盖</a><a class="nav-level-2" href="#section-11">15 组桌面场景覆盖</a><a class="nav-level-2" href="#section-12">扩展 UI 专项</a><a class="nav-level-2" href="#section-13">必须如实说明的测试边界</a><a class="nav-level-2" href="#section-14">运行方式</a><a class="nav-level-1" href="#section-15">TODOPOP 人工复核清单</a><a class="nav-level-2" href="#section-16">A. 先做这 6 项（约 5–10 分钟）</a><a class="nav-level-2" href="#section-17">B. 增长、Demo 与暂停</a><a class="nav-level-2" href="#section-18">C. 编辑、归档和历史</a><a class="nav-level-2" href="#section-19">D. 排列、颜色与桌面行为</a><a class="nav-level-2" href="#section-20">E. 预览安装包与发布条件</a><a class="nav-level-2" href="#section-21">反馈格式</a></aside><main><header>DESKTOP PROGRESS · 2026-10-23</header><div class="scope"><span>扩展 UI 已统一</span><span>20 项逻辑测试</span><span>15 组桌面验收</span><span>arm64 预览安装包</span></div><p class="review-note">报告中的人工复核清单可以直接勾选，状态仅保存在当前浏览器本地。未勾选的条目不代表自动化已验证。手机、Step、计时条和音效不在本轮范围。</p><h1 id="section-1">TODOPOP 开发进度报告</h1>
+<p>日期：2026-10-23。范围以你最新确认的规则为准：手机、Step、Focus 计时条与音效不做；保留自动 URL Focus。</p>
+<h2 id="section-2">现在可以用到什么</h2>
+<p>本轮从扩展 UI 开始，继续完成了桌面主要功能闭环。<strong>可以试用，但还不是正式公开发布版，也没有把 Figma 的软体挤压效果完整复现。</strong></p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>模块</th>
+<th>已完成内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Chrome Extension UI</td>
+<td>与面板共享 Logo、DM Sans、蓝色方案、按钮、输入框和状态组件；有未配对、连接中、连接成功、断开、错误与帮助状态</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>输入框样式</td>
+<td>取消你截图里的蓝色矩形 focus 框，只保留下划线与输入光标；桌面输入框同步</td>
+<td>完成并专项测试</td>
+</tr>
+<tr>
+<td>本地数据</td>
+<td>版本化 <code>state.json</code>；旧 <code>tasks.json</code> 自动迁移并先备份；存任务、分组、设置、完成历史与自动专注历史</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>点击规则</td>
+<td>气泡有链接就打开 URL，无链接就 Pop；编辑浮层主按钮同样区分</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>增长</td>
+<td>四级基础大小、有效等待时长、正式速度和独立 Demo 预览</td>
+<td>完成基础逻辑</td>
+</tr>
+<tr>
+<td>全局暂停</td>
+<td>30 min、1 hour、Till tomorrow、Until I resume、Resume；保持气泡可见，停止增长并显示暂停样式</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>单任务 Snooze</td>
+<td>隐藏单个任务 10 分钟；列表可点 Show now 提前恢复</td>
+<td>完成，与全局 Pause 分开</td>
+</tr>
+<tr>
+<td>布局</td>
+<td>圆形避让、面板保护区、四边排列、Shuffle、组的 preferred side；达到容量阈值暂停增长</td>
+<td>已实现可用近似</td>
+</tr>
+<tr>
+<td>自动 Focus</td>
+<td>Chrome 前台匹配工作 URL 就隐藏普通气泡和面板；离开/断开就恢复；保留既有本地认证与重连</td>
+<td>完成逻辑；真实系统切换请人工复核</td>
+</tr>
+<tr>
+<td>分组/主题</td>
+<td>新增、改名、删除组；六个预设色、占用色交换、自定义颜色保持；组侧边位置；四种 Tint 与自定义色</td>
+<td>功能完成；部分视觉采用简化控件</td>
+</tr>
+<tr>
+<td>手动排序</td>
+<td>grip 拖动、方向键排序，rank 保存到本地</td>
+<td>完成，键盘路径已自动验证</td>
+</tr>
+<tr>
+<td>归档</td>
+<td>Week / Month、日期切换、完成数、最佳日、自动专注历史时长、每日完成列表</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>Rebubble</td>
+<td>新 ID、新一轮、等待与增长重置；原完成任务及历史保留</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>编辑与 Undo</td>
+<td>靠近目标气泡的独立编辑窗口，Save/Cancel/Delete；删除 toast 可撤销</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>最小化</td>
+<td>右下角 Launcher、Dock/菜单恢复、注册 ⌘⇧Space；保存主面板位置</td>
+<td>完成；快捷键冲突需人工确认</td>
+</tr>
+<tr>
+<td>未保存草稿</td>
+<td>创建任务时切去管理分组，再回来保留当前草稿</td>
+<td>完成</td>
+</tr>
+<tr>
+<td>本机安装产物</td>
+<td>Apple Silicon <code>.app</code> / <code>.dmg</code>，打包 App 的启动、创建任务、完成、退出冒烟测试</td>
+<td>完成预览包；不等于正式签名发布</td>
+</tr>
+</tbody></table></div>
+<h2 id="section-3">增长与 Demo 的具体规则</h2>
+<ul>
+<li>默认是 <strong>Real speed</strong>，使用正常计时。</li>
+<li><strong>Now!</strong> 以每 2 分钟增加约 1 个“逻辑厘米”为基准，1 个逻辑厘米按约 37.8 px 处理；不是拿实体尺子在所有显示器上都能测到相同的厘米。</li>
+<li>Soon 为该速度的 1/4，Today 为 1/2，Remind 保持小尺寸。</li>
+<li><strong>Demo · 60×</strong> 使用独立临时增长时钟，便于快速检查增长与满屏状态；不覆盖正式累计增长。</li>
+<li>退出 Demo 会恢复正式尺寸。重启也默认回到 Real speed。</li>
+<li>全局 Pause、自动 Focus、Screen full 停止增长；Snooze 停止对应任务增长。</li>
+<li>程序退出或系统休眠期间不补算增长，避免回来后突然长满屏幕。增长定期保存，正常退出前会刷新；异常强退时最多可能损失最近一个保存周期的增长进度。</li>
+</ul>
+<h2 id="section-4">本轮解决的稳定性问题</h2>
+<ol>
+<li>对过期/已销毁窗口的 IPC 继续保持防护，不把迟到鼠标事件变成主进程异常。</li>
+<li>完成、删除、编辑关闭和 Snooze 后的原生窗口生命周期分别处理。</li>
+<li>启动过程中立即退出，不再把已取消的异步窗口加载当成启动失败弹窗。</li>
+<li>正常退出先刷新状态，再结束进程，避免保存与关闭竞争。</li>
+<li>数据损坏保留恢复副本；不能读取的未来 schema 版本不会被当成当前版本直接覆盖。</li>
+<li>面板、Launcher、编辑浮层处于普通气泡之上的窗口层级，避免巨大气泡遮挡主要控制入口。</li>
+</ol>
+<h2 id="section-5">跳过或尚未完全还原的部分</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>现在的处理</th>
+<th>为什么不把它算作完整完成</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Figma 的软体挤压、非圆形贴边、精确绕行</td>
+<td>当前为圆形碰撞/避让近似</td>
+<td>没有实时软体轮廓求解器，不能宣称逐像素复现 Fill-up</td>
+</tr>
+<tr>
+<td>Screen full 精确占屏率</td>
+<td>基于圆形面积与可用区域的容量近似</td>
+<td>不是完整计算屏幕裁切后形状并集，也不是 Figma 百分比的精确测量</td>
+</tr>
+<tr>
+<td>自定义 Hue ring / Saturation 设计控件</td>
+<td>使用系统原生颜色选择器完成颜色功能</td>
+<td>没有照搬 Figma 环形控件；主题中的 SVG 着色亦需最终视觉复核</td>
+</tr>
+<tr>
+<td>真实 Mac 前台应用切换</td>
+<td>自动化验证了算法与消息链路，测试 Chromium 的系统激活存在限制</td>
+<td>测试明确记录 foreground fixture，真实用户 Chrome / 应用切换必须手动核对</td>
+</tr>
+<tr>
+<td>多屏、Spaces、性能和异常强退</td>
+<td>有基础边界处理、容量限制和恢复保护</td>
+<td>未覆盖所有硬件、macOS 配置以及长时间运行</td>
+</tr>
+<tr>
+<td>正式 Apple 签名、公证、商店审核</td>
+<td>已做本机 ad-hoc 预览包</td>
+<td>缺正式发布凭据，不擅自上传或提交审核</td>
+</tr>
+<tr>
+<td>Intel / Windows / 其他浏览器</td>
+<td>本轮不交付相应产物</td>
+<td>目前只验证本机 Apple Silicon 路线</td>
+</tr>
+<tr>
+<td>品牌 App 图标、自动更新</td>
+<td>仍使用默认 Electron 应用图标；手动安装更新</td>
+<td>不算正式发布体验</td>
+</tr>
+</tbody></table></div>
+<p>手机、Step、Focus 计时条、音效是你明确排除的项目，不计为本轮未完成。</p>
+<h2 id="section-6">现在怎么试</h2>
+<h3>推荐：本机预览包</h3>
+<ol>
+<li>打开 <a href="../release/TODOPOP-0.1.0-arm64-preview.dmg">TODOPOP Apple Silicon 预览 DMG</a>，按安装窗口操作。</li>
+<li>或直接运行 <a href="../release/mac-arm64/TODOPOP.app">已打包的 TODOPOP.app</a>。这是本机构建的预览产物，尚非 Developer ID 签名并公证的公开分发版。</li>
+<li>若用扩展：在 <code>chrome://extensions</code> 给已加载的 TODOPOP 点一次刷新。首次安装则 Load unpacked 选择 <code>apps/chrome-extension/dist</code>。</li>
+<li>扩展压缩包也在 <a href="../release/TODOPOP-chrome-extension-preview.zip">release/TODOPOP-chrome-extension-preview.zip</a>，解压后可作为本地扩展目录加载。</li>
+<li>Panel 底部 Connect → 复制配对码 → 扩展弹窗粘贴连接。全程无需用户云账号。</li>
+</ol>
+<p>安装包限 Apple Silicon。若系统拒绝陌生来源的预览包，不要关闭系统安全保护；可继续使用当前开发目录，正式分发需补签名/公证。</p>
+<h3>继续使用源码</h3>
+<pre><code class="language-sh">npm ci
+npm run dev
+</code></pre>
+<p>完整检查先退出正在运行的 TODOPOP，避免占用本地 17846 端口，再执行：</p>
+<pre><code class="language-sh">npm run verify
+</code></pre>
+<h2 id="section-7">你回来后先看这三份</h2>
+<ul>
+<li><a href="manual-review.zh-CN.md">人工复核清单</a>：建议先做前 6 项，再看增长与布局细节。</li>
+<li><a href="testing-details.zh-CN.md">测试详情与证据</a>：区分逻辑测试、真实窗口/扩展测试、模拟边界及未验证项。</li>
+<li><a href="product-decisions.zh-CN.md">当前产品规则</a>：替代旧审查文档中尚未确认的行为。</li>
+</ul>
+<p><img src="screenshots/extension-unpaired.png" alt="扩展未连接状态"></p>
+<p><img src="screenshots/extension-input-focus.png" alt="输入框聚焦时已移除矩形边框"></p>
+<hr>
+<h1 id="section-8">TODOPOP 测试详情</h1>
+<p>日期：2026-10-23。自动化使用隔离的临时 App 数据目录和 Chromium profile，不把测试任务写入日常任务库。</p>
+<h2 id="section-9">已执行的检查</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>检查</th>
+<th>命令/证据</th>
+<th>结果与边界</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TypeScript</td>
+<td><code>npm run typecheck</code></td>
+<td>桌面、扩展、shared、ui 四个 workspace 通过</td>
+</tr>
+<tr>
+<td>逻辑测试</td>
+<td><code>npm test</code>；<a href="test-results/unit.log">unit.log</a></td>
+<td>20 项通过、0 失败</td>
+</tr>
+<tr>
+<td>格式</td>
+<td><code>npm run format:check</code></td>
+<td>应用、共享包、测试脚本及文档按统一格式检查</td>
+</tr>
+<tr>
+<td>构建</td>
+<td><code>npm run build</code>；<a href="test-results/build.log">build.log</a></td>
+<td>Electron main/preload/renderer 和扩展产物生成成功</td>
+</tr>
+<tr>
+<td>扩展 UI</td>
+<td><code>node scripts/extension-ui.mjs</code>；<a href="extension-ui-test.json">结果 JSON</a></td>
+<td>真正加载 Manifest V3 扩展，使用受控本机 WebSocket 服务验证配对流程与 UI</td>
+</tr>
+<tr>
+<td>桌面验收</td>
+<td><code>node scripts/desktop-acceptance.mjs</code>；<a href="desktop-acceptance-result.json">结果 JSON</a></td>
+<td>15 组真实 Electron 场景通过，rendererErrors 为空</td>
+</tr>
+<tr>
+<td>Chrome 集成</td>
+<td><code>node scripts/e2e.mjs</code>；<a href="e2e-result.json">结果 JSON</a></td>
+<td>真实 MV3 worker、URL、导航和标签链路通过；前台状态使用已标注 fixture，见下节</td>
+</tr>
+<tr>
+<td>打包 App</td>
+<td><code>node scripts/package-smoke.mjs</code>；<a href="package-smoke-result.json">结果 JSON</a></td>
+<td>Apple Silicon App 从 app.asar 启动，能创建/完成任务，正常退出刷新数据</td>
+</tr>
+</tbody></table></div>
+<p>完整流水线入口为 <code>npm run verify</code>，原始汇总保存在 <a href="test-results/summary.json">summary.json</a>。输入框去矩形 focus 框和最后的草稿保留改动还分别做了专项复跑。测试结果文件中的时间是各次执行时间，不是人工复核签字时间。</p>
+<h2 id="section-10">20 项逻辑测试覆盖</h2>
+<ol>
+<li>旧任务迁移、保留 ID、一次性生成旧完成记录。</li>
+<li>分组、设置、增长、历史和已删除记录的序列化往返；拒绝未来 schema。</li>
+<li>Rebubble 新建一轮，保留旧完成历史、清零新增长和专注累计。</li>
+<li>重复完成幂等；删除与 Undo 不破坏历史。</li>
+<li>四档全局暂停、明天日界线、手动恢复和到期判断。</li>
+<li>正式增长速度、低级别速率、暂停/Snooze 不增长、长时间间隔限幅。</li>
+<li>预设组色交换；自定义色换 Tint 后保持；删除组不删除任务。</li>
+<li>排序全量校验、重复/缺失 ID 拒绝、rank 保存。</li>
+<li>圆形布局边界、中心面板避让和容量满判断。</li>
+<li>归档完成数与跨统计周期的 Focus 时长分摊。
+11–20. 原有 URL 标准化、不同路径/域名/query 不误匹配、Google Docs ID、无效协议、前后台判定、同 URL 多任务完成、任务输入与浏览器消息校验等。</li>
+</ol>
+<h2 id="section-11">15 组桌面场景覆盖</h2>
+<ul>
+<li>旧 <code>tasks.json</code> 迁移到 <code>state.json</code>，且保留备份与完成历史。</li>
+<li>正式增长推进；全局 Pause 不隐藏气泡且停止增长。</li>
+<li>60× Demo 与正式增长隔离，退出 Demo 恢复正式尺寸。</li>
+<li>grip 的方向键排序保存 rank。</li>
+<li>无链接气泡点击 Pop 并记录完成。</li>
+<li>有链接气泡点击打开 URL，不自动完成。</li>
+<li>Snooze 与 Show now 保持同任务 ID，区别于全局暂停。</li>
+<li>Rebubble 创建新 ID，保留旧完成任务与历史。</li>
+<li>删除后点 toast Undo，恢复同一个任务。</li>
+<li>新建/改名/侧边/自定义组色，换 Tint 不丢自定义颜色。</li>
+<li>真正右键打开独立编辑窗口，窗口在可用屏幕内，Save 保存。</li>
+<li>周/月归档、月历 42 格、前后日期操作读取真实记录。</li>
+<li>Launcher 能恢复隐藏的主面板。</li>
+<li>重启后保存主题、组、排序、暂停和历史，Demo 回到 Real。</li>
+<li>尚未保存的新任务草稿，切去管理分组后不丢。</li>
+</ul>
+<p>链接打开的桌面点击测试会拦截 Electron 的 <code>shell.openExternal</code> 并检查目标 URL，避免在正常 Chrome profile 中打开测试页面。真正的扩展导航测试另用隔离 Chromium 和本机 HTTP 测试页。</p>
+<h2 id="section-12">扩展 UI 专项</h2>
+<p>测试了共享本地字体实际加载、三枚 Logo 素材加载、帮助展开、输入验证、错误配对码、真实认证成功、已保存代码不回显、Show/Hide、Change pairing code、重连、断开和 popup 宽度。</p>
+<p>额外检查：</p>
+<ul>
+<li>聚焦配对输入框后，computed <code>outlineStyle</code> 为 <code>none</code>，保留下划线。</li>
+<li>收到桌面 APPEARANCE 消息后，扩展的共享主题变量更新。</li>
+<li>rendererErrors 为空。</li>
+</ul>
+<p><a href="screenshots/extension-input-focus.png">无外框的聚焦截图</a>、<a href="screenshots/extension-unpaired.png">未连接截图</a>、<a href="screenshots/extension-connected.png">已连接截图</a>。</p>
+<h2 id="section-13">必须如实说明的测试边界</h2>
+<p><strong>macOS 原生前台切换没有在本轮自动化中完整验证。</strong> 测试 Chromium 的窗口未能稳定成为系统前台，即使其标签已被激活，Chrome API 返回的 focused 仍为 false。</p>
+<p>因此集成脚本在检测到该环境条件后，会明确开启一个只用于测试的 Chrome API 边界 fixture；真实 service worker、URL 查询、导航、标签事件、WebSocket 和 Electron 显隐逻辑仍参与测试。<code>e2e-result.json</code> 的 <code>foregroundFixture: true</code> 与 <code>nativeForegroundVerified: false</code> 保留了这个区别，原始 integration.log 也写有 NOTE。</p>
+<p>这项结果只能证明链路在指定前台输入下工作，不能据此声称“你的正常 Chrome 与其它 macOS 应用之间的真实切换已通过”。请按人工清单 A6 复核。</p>
+<p>其它未完成的验证：外屏拔插、所有 Spaces/全屏组合、长时间 CPU/显存、真实物理厘米、所有系统色彩控件、干净陌生机器的 Gatekeeper、Apple 公证与商店审核。</p>
+<h2 id="section-14">运行方式</h2>
+<p>先退出正在运行的 TODOPOP，避免本地 17846 端口冲突：</p>
+<pre><code class="language-sh">npm run verify
+</code></pre>
+<p>单项可使用：</p>
+<pre><code class="language-sh">npm test
+npm run test:extension
+npm run test:desktop
+npm run test:e2e
+node scripts/package-smoke.mjs
+</code></pre>
+<p>最后一项需要先存在本地 arm64 打包 App；它不会替你完成 Apple 的正式签名、公证或分发审核。</p>
+<hr>
+<h1 id="section-15">TODOPOP 人工复核清单</h1>
+<p>日期：2026-10-23。以下复核结果尚未替你勾选；自动化测试通过不代表这些系统层与主观体验已经确认。</p>
+<h2 id="section-16">A. 先做这 6 项（约 5–10 分钟）</h2>
+<ul>
+<li><input  type="checkbox"> <strong>启动与旧任务</strong>：打开预览 App 或 <code>npm run dev</code>。面板能打开，原有任务仍在，没有主进程异常弹窗。</li>
+<li><input  type="checkbox"> <strong>扩展新 UI</strong>：在 <code>chrome://extensions</code> 刷新 TODOPOP。弹窗的字体、Logo、蓝色、按钮与面板一致；配对输入框聚焦时没有蓝色矩形外框。</li>
+<li><input  type="checkbox"> <strong>重新配对</strong>：面板 Connect 中复制代码，扩展粘贴后显示 Connected；关闭并重开弹窗仍为已连接。代码默认隐藏，没有在页面上永久显示已保存的完整代码。</li>
+<li><input  type="checkbox"> <strong>无链接点击 Pop</strong>：建一个无 URL 的测试任务。单击气泡后消失、Popped 增加；不打开浏览器，不出现音效。</li>
+<li><input  type="checkbox"> <strong>有链接点击打开</strong>：建一个 URL 为 <code>https://example.com</code> 的测试任务。点击打开网页，任务不应自动完成。右键编辑后主按钮也应显示打开页面。</li>
+<li><input  type="checkbox"> <strong>真实自动 Focus（重点）</strong>：让 Chrome 真正在前台并打开匹配页。普通气泡和面板应隐藏；换无关标签或切到其它应用应恢复；返回匹配页再次隐藏。核对恢复不抢走当前应用的键盘焦点。</li>
+</ul>
+<p>最后一项特别需要你操作：本轮自动化环境未能稳定把测试 Chromium 设为 macOS 前台，所以用了明确标注的前台边界 fixture 验证链路，没有把它算作真实系统切换已通过。</p>
+<h2 id="section-17">B. 增长、Demo 与暂停</h2>
+<ul>
+<li><input  type="checkbox"> <strong>正式速度</strong>：建 Now! 任务，保持 Real speed，等待约 2 分钟。可见直径应增加约 1 个逻辑厘米（约 37.8 px），不是物理厘米；Remind 应基本保持小。</li>
+<li><input  type="checkbox"> <strong>Demo 隔离</strong>：切 Demo · 60×，观察快速增长；再切回 Real speed，尺寸回到正式累计值，Demo 的额外增长不应被永久保存。</li>
+<li><input  type="checkbox"> <strong>满屏停止与腾空间</strong>：建几个高 urgency 测试任务，开启 Demo。进入 Screen full 后停止继续增长；完成一个任务后应腾出空间。检查面板和控制按钮仍能操作。</li>
+<li><input  type="checkbox"> <strong>全局暂停</strong>：选 30 min / 1 hour / Until I resume。气泡仍可见、变为暂停样式、不继续长；Resume 后继续增长，不瞬间补长。</li>
+<li><input  type="checkbox"> <strong>Till tomorrow</strong>：显示的恢复日期/时间符合你的本地日界线。跨午夜恢复若不便当场测试，保留此项以后核对。</li>
+<li><input  type="checkbox"> <strong>Snooze 单任务</strong>：悬停选择 Snooze，只有该任务隐藏；Floating 中 Show now 能提前找回，其它任务不受影响。</li>
+<li><input  type="checkbox"> <strong>睡眠/重启</strong>：退出再开、合盖睡眠再开，不应把离线/睡眠时段补算成突然增长。Demo 重启后应回到 Real speed。</li>
+</ul>
+<h2 id="section-18">C. 编辑、归档和历史</h2>
+<ul>
+<li><input  type="checkbox"> <strong>独立编辑浮层</strong>：真实鼠标右键气泡后，浮层靠近气泡、能输入、没有被气泡盖住；靠近屏幕右边/下边时也没有跑出屏幕。</li>
+<li><input  type="checkbox"> <strong>保存/取消</strong>：改标题、URL、urgency、group，Save 生效；Cancel 或 × 不保存这次未提交的改动。</li>
+<li><input  type="checkbox"> <strong>无链接编辑主操作</strong>：无 URL 任务编辑层显示 Pop；有 URL 显示打开页面。</li>
+<li><input  type="checkbox"> <strong>删除撤销</strong>：Delete 后任务消失，toast 的 Undo 立即恢复同一个任务；不是新建一个同名任务。</li>
+<li><input  type="checkbox"> <strong>Rebubble</strong>：完成后在 Popped 点 + Again。新任务应重新开始，旧完成记录与统计仍存在。</li>
+<li><input  type="checkbox"> <strong>周/月归档</strong>：WEEK / MONTH、前后日期、当天列表和数量合理；没有混入 Figma 的样例历史。</li>
+<li><input  type="checkbox"> <strong>跨日专注统计</strong>：自动 Focus 的时长归档合理。跨午夜与周/月边界若暂无场景，留待长时间使用复核。</li>
+<li><input  type="checkbox"> <strong>创建草稿</strong>：输入新任务标题后点 + New 管理分组，再回 Blow a bubble，尚未提交的标题不要丢失。</li>
+</ul>
+<h2 id="section-19">D. 排列、颜色与桌面行为</h2>
+<ul>
+<li><input  type="checkbox"> <strong>排序</strong>：拖 grip 改顺序；选中 grip 后 ↑ / ↓ 同样可移动。重启后顺序不应自动回到 urgency 排序。</li>
+<li><input  type="checkbox"> <strong>Shuffle / Line up</strong>：各方向排列有明显变化；回 Any 使用各组位置。手动拖动和自动避让没有明显来回抖动。</li>
+<li><input  type="checkbox"> <strong>分组</strong>：新建、改名、移除。移除组后任务仍在，变成 No group。</li>
+<li><input  type="checkbox"> <strong>颜色</strong>：选择占用的预设组色时交换；自定义组色换 Tint 后保持；色彩与文字可辨认。</li>
+<li><input  type="checkbox"> <strong>主题</strong>：Blue / Berry / Teal / Graphite 和自定义色传播到面板、气泡与连接中的扩展。核对 Logo 和 SVG 图标的着色是否可接受；当前并非完全逐像素复刻所有 Tint 稿。</li>
+<li><input  type="checkbox"> <strong>最小化</strong>：× 关面板后右下 Launcher 能重新打开，Dock/菜单也能恢复。</li>
+<li><input  type="checkbox"> <strong>快捷键</strong>：⌘⇧Space 能打开面板；若被系统或其它软件占用，记录冲突，先用 Launcher/Dock。</li>
+<li><input  type="checkbox"> <strong>Spaces / 全屏</strong>：切换桌面空间与全屏 Chrome 后，气泡显隐和点击正常。</li>
+<li><input  type="checkbox"> <strong>多显示器/缩放</strong>：连接外屏、移动任务、拔掉外屏、改变缩放后，没有丢到找不到的位置。此项尚未在不同硬件上验证。</li>
+<li><input  type="checkbox"> <strong>可用性</strong>：没有链接的气泡直接 Pop 是否符合预期；按钮、输入字号与默认蓝色是否舒适。记录你想调的地方，不必为了“通过”勾选。</li>
+</ul>
+<h2 id="section-20">E. 预览安装包与发布条件</h2>
+<ul>
+<li><input  type="checkbox"> <strong>本机安装</strong>：预览 <code>.dmg</code> 能打开、复制 App、双击启动，不要求 Node.js 或打开终端。</li>
+<li><input  type="checkbox"> <strong>独立 App</strong>：退出开发版后再开打包版，不能两个版本同时抢同一本地端口。</li>
+<li><input  type="checkbox"> <strong>更新保留数据</strong>：替换预览 App 后，任务、组、主题和历史仍在。</li>
+<li><input  type="checkbox"> <strong>正式分发前补齐</strong>：应用专用图标、Developer ID 签名、公证、干净机器 Gatekeeper 验证、扩展商店审核、更新机制。</li>
+</ul>
+<p>当前包是 Apple Silicon 本机预览，未做 Developer ID 签名与 Apple 公证，不将“能在构建机器上启动”当作已经具备公开分发条件。</p>
+<h2 id="section-21">反馈格式</h2>
+<pre><code class="language-text">项目：例如 A6 自动 Focus
+操作：打开任务页 → 切到微信
+期望：气泡恢复，微信仍能输入
+实际：……
+环境：macOS / Chrome 版本、是否外屏或全屏
+截图或录屏：……
+</code></pre>
+<footer>测试使用隔离数据。真实前台应用切换与多显示器仍需人工复核；预览安装包不是已公证的正式公开分发版本。</footer></main></div><script>const boxes=[...document.querySelectorAll('input[type=checkbox]')];let saved={};try{saved=JSON.parse(localStorage.getItem('todopop-review-2026-10-23')||'{}')}catch{}boxes.forEach((box,index)=>{box.checked=!!saved[index];box.addEventListener('change',()=>{saved[index]=box.checked;try{localStorage.setItem('todopop-review-2026-10-23',JSON.stringify(saved))}catch{}})});</script></body></html>

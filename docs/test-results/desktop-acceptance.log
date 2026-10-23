@@ -1,0 +1,15 @@
+PASS legacy tasks migrate with backup and historical completion
+PASS formal growth advances; global pause stops growth while keeping bubbles visible
+PASS 60x Demo is an isolated preview and does not overwrite formal growth
+PASS keyboard task reordering persists manual rank
+PASS unlinked bubble click pops and records completion
+PASS linked bubble click opens URL without completing it
+PASS single-task snooze and Show now are distinct from global pause
+PASS Rebubble creates a fresh round and retains historical wins
+PASS delete toast Undo restores the same task
+PASS custom groups rename, color and side persist; custom color survives Tint
+PASS right-click opens an independent, bounded edit popover; Save persists
+PASS archive week/month views and date navigation use real completion records
+PASS minimized Launcher reopens the panel
+PASS restart retains settings, groups, order, pause and history; Demo defaults to real
+PASS unsaved new-task draft survives opening group management

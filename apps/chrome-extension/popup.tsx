@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrandLogo, Button, FieldLabel, StatusDot, TextInput } from '@todopop/ui';
+import { BrandLogo, Button, FieldLabel, StatusDot, TextInput, applyTheme } from '@todopop/ui';
 import '@todopop/ui/styles.css';
 import './popup.css';
 
@@ -20,8 +20,9 @@ function Popup() {
     async function refresh() {
       const current = ++revision;
       try {
-        const data = await chrome.storage.local.get(['token', 'status']);
+        const data = await chrome.storage.local.get(['token', 'status', 'tint']);
         if (!alive || current !== revision) return;
+        if (typeof data.tint === 'string') applyTheme(data.tint);
         const paired = typeof data.token === 'string' && /^[a-f0-9]{64}$/.test(data.token);
         setConnection(
           !paired
@@ -43,7 +44,7 @@ function Popup() {
       }
     }
     const changed = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
-      if (area === 'local' && (changes.token || changes.status)) void refresh();
+      if (area === 'local' && (changes.token || changes.status || changes.tint)) void refresh();
     };
     chrome.storage.onChanged.addListener(changed);
     void refresh();

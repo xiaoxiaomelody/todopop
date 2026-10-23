@@ -1,0 +1,26 @@
+{
+  "appId": "com.todopop.desktop",
+  "productName": "TODOPOP",
+  "asar": true,
+  "directories": {
+    "output": "../../release"
+  },
+  "files": ["dist/**/*", "dist-electron/**/*", "package.json"],
+  "mac": {
+    "category": "public.app-category.productivity",
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["arm64"]
+      }
+    ],
+    "identity": "-",
+    "hardenedRuntime": true,
+    "notarize": false
+  },
+  "dmg": {
+    "title": "TODOPOP \u00b7 Local Preview"
+  },
+  "artifactName": "TODOPOP-${version}-${arch}-preview.${ext}",
+  "electronDist": "../../node_modules/electron/dist"
+}

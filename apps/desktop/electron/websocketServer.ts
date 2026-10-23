@@ -9,6 +9,7 @@ export function startBrowserBridge(
   port = BRIDGE_PORT,
 ) {
   let active: WebSocket | null = null;
+  let tint = '#1a419e';
   let lastContext = 0;
   const server = new WebSocketServer({
     host: '127.0.0.1',
@@ -54,6 +55,7 @@ export function startBrowserBridge(
           lastContext = Date.now();
           onContext(null, true);
           socket.send(JSON.stringify({ type: 'AUTH_OK' }));
+          socket.send(JSON.stringify({ type: 'APPEARANCE', tint }));
           return;
         }
         if (socket !== active || !isBrowserContext(value)) {
@@ -76,6 +78,13 @@ export function startBrowserBridge(
   });
   return {
     server,
+    appearance(next: string) {
+      if (tint !== next) {
+        tint = next;
+        if (active?.readyState === WebSocket.OPEN)
+          active.send(JSON.stringify({ type: 'APPEARANCE', tint }));
+      }
+    },
     close() {
       clearInterval(staleTimer);
       for (const socket of server.clients) socket.terminate();

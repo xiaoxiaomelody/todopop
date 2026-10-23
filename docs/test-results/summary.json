@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-23T15:18:47.847Z",
+  "passed": true,
+  "results": [
+    {
+      "name": "typecheck",
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 4883
+    },
+    {
+      "name": "unit",
+      "command": "npm test",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 440
+    },
+    {
+      "name": "format",
+      "command": "npm run format:check",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 1158
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 1913
+    },
+    {
+      "name": "extension-ui",
+      "command": "node scripts/extension-ui.mjs",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 3855
+    },
+    {
+      "name": "desktop-acceptance",
+      "command": "node scripts/desktop-acceptance.mjs",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 9885
+    },
+    {
+      "name": "integration",
+      "command": "node scripts/e2e.mjs",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 17315
+    }
+  ]
+}

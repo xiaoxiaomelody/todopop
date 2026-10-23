@@ -2,6 +2,9 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { TaskForm } from '../components/TaskForm';
 import { TaskList } from '../components/TaskList';
+import { GrowthControls } from '../components/GrowthControls';
+import { Appearance } from '../components/Appearance';
+import { Archive } from '../components/Archive';
 import { useTaskStore } from '../store/taskStore';
 import { BrandLogo, Button, StatusDot } from '@todopop/ui';
 import closeIcon from '../assets/42a21.svg';
@@ -45,13 +48,16 @@ export function Landing() {
   const state = useTaskStore();
   const panel = useRef<HTMLDivElement>(null);
   const [sections, setSections] = useState<string[]>([]);
-  const [editing, setEditing] = useState<string | null>(null);
   const [info, setInfo] = useState(false);
   const [pairing, setPairing] = useState<{ token: string; port: number } | null>(null);
   const [copied, setCopied] = useState(false);
-  const floating = state.tasks.filter((t) => !t.completed),
+  const floating = state.tasks.filter((t) => !t.completed && !t.deletedAt),
     popped = state.tasks.filter((t) => t.completed);
-  const editTask = state.tasks.find((t) => t.id === editing);
+  useEffect(() => {
+    const open = () => setSections((current) => ['appearance']);
+    window.addEventListener('manage-groups', open);
+    return () => window.removeEventListener('manage-groups', open);
+  }, []);
   useEffect(() => {
     if (!panel.current || !window.todopop) return;
     const observer = new ResizeObserver(() =>
@@ -60,17 +66,22 @@ export function Landing() {
     observer.observe(panel.current);
     return () => observer.disconnect();
   }, []);
-  useEffect(() => window.todopop?.onEdit((id) => setEditing(id)), []);
-  const toggle = (id: string) =>
-    setSections((current) =>
-      current.includes(id) ? current.filter((s) => s !== id) : [...current, id],
-    );
+  const toggle = (id: string) => setSections((current) => (current.includes(id) ? [] : [id]));
   return (
     <div className="panel-shell" ref={panel}>
       <div className="panel" data-node-id="14:6">
         <header className="brand">
           <div className="grip" />
-          <BrandLogo />
+          <button
+            className="brand-tint"
+            aria-label="Open appearance"
+            title="Tint and groups"
+            onClick={() =>
+              setSections((current) => (current.includes('appearance') ? [] : ['appearance']))
+            }
+          >
+            <BrandLogo />
+          </button>
           <button
             className="icon-button close-panel"
             aria-label="Hide panel"
@@ -92,17 +103,15 @@ export function Landing() {
         </header>
         {info && (
           <div className="info-copy">
-            Drag a bubble to move it. Click to open its work page; right-click to edit. Use ✓ to pop
-            it. Bubbles disappear when you’re on a matching page in Chrome.
+            Drag to move. Linked bubbles open their work page; unlinked bubbles pop when clicked.
+            Right-click to edit. Work pages hide the bubbles automatically.
             <p>Close this panel to tuck it away. Click TODOPOP in the Dock to bring it back.</p>
           </div>
         )}
         <Section title="Blow a bubble" open={sections.includes('new')} toggle={() => toggle('new')}>
           <TaskForm
             key={sections.includes('new') ? 'new-open' : 'new-closed'}
-            onDone={() =>
-              setSections((current) => [...current.filter((s) => s !== 'new'), 'floating'])
-            }
+            onDone={() => setSections(['floating'])}
           />
         </Section>
         <Section
@@ -111,7 +120,13 @@ export function Landing() {
           open={sections.includes('floating')}
           toggle={() => toggle('floating')}
         >
-          <TaskList tasks={floating} onEdit={setEditing} />
+          <GrowthControls />
+          <TaskList
+            tasks={floating}
+            onEdit={(id) => {
+              void state.run(() => window.todopop.edit(id));
+            }}
+          />
         </Section>
         <Section
           title="Popped"
@@ -119,7 +134,14 @@ export function Landing() {
           open={sections.includes('popped')}
           toggle={() => toggle('popped')}
         >
-          <TaskList tasks={popped} archived onEdit={setEditing} />
+          <Archive />
+        </Section>
+        <Section
+          title="Tint & groups"
+          open={sections.includes('appearance')}
+          toggle={() => toggle('appearance')}
+        >
+          <Appearance />
         </Section>
         <div className={`connection-bar ${state.focus === 'FOCUS' ? 'focused' : ''}`}>
           <StatusDot state={state.connected ? 'connected' : 'idle'} />
@@ -189,19 +211,18 @@ export function Landing() {
         )}
         {state.loading && <p className="empty">Loading your bubbles…</p>}
       </div>
-      {editTask && (
-        <div className="edit-panel" role="dialog" aria-label="Edit bubble">
-          <div className="edit-header">
-            <h2 className="eyebrow">Edit bubble</h2>
+      {state.toast && (
+        <div className="toast" role="status">
+          <span>{state.toast.message}</span>
+          {state.toast.undoId && (
             <button
-              className="icon-button"
-              aria-label="Close edit"
-              onClick={() => setEditing(null)}
+              onClick={() => {
+                void state.run(() => window.todopop.undo(state.toast!.undoId!));
+              }}
             >
-              ×
+              Undo
             </button>
-          </div>
-          <TaskForm key={editTask.id} task={editTask} onDone={() => setEditing(null)} />
+          )}
         </div>
       )}
     </div>

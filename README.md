@@ -2,7 +2,7 @@
 
 **Your tasks disappear when you’re working on them, and reappear when you’re not.**
 
-A macOS-first desktop MVP built from the supplied technical plan and [Figma prototype](https://www.figma.com/design/51bGy6oFsJV6YJa9jvBKIT/TODOPOP).
+A macOS-first local desktop prototype built from the supplied technical plan and [Figma prototype](https://www.figma.com/design/51bGy6oFsJV6YJa9jvBKIT/TODOPOP).
 
 ## Run locally
 
@@ -19,12 +19,12 @@ To launch from a production build:
 npm start
 ```
 
-The floating TODOPOP panel has three sections: **Blow a bubble**, **Floating**, and **Popped**.
+The floating TODOPOP panel includes **Blow a bubble**, **Floating**, **Popped**, and **Tint & groups**.
 Create a task, choose an urgency, and optionally link its work URL. A transparent,
 always-on-top window appears for each active task. Drag the bubble to reposition
-it; click to open its work page; right-click to edit. Hover reveals snooze, edit,
-and explicit completion controls. Completed tasks can be restored from Popped.
-Closing the panel tucks it away; click the application in the Dock to reopen it,
+it; click a linked bubble to open its work page, or an unlinked bubble to pop it; right-click to edit. Hover reveals snooze, edit,
+and explicit completion controls. Popped tasks can be bubbled again as a fresh round without removing their history.
+Closing the panel shows a bottom-right Launcher; use it or click the application in the Dock to reopen it,
 or use the TODOPOP menu’s **Show TODOPOP** command.
 
 ## Connect Chrome
@@ -35,7 +35,7 @@ or use the TODOPOP menu’s **Show TODOPOP** command.
 4. In the desktop panel, click **Connect**, then **Copy pairing code**.
 5. Click the TODOPOP extension in Chrome, paste the code, and connect.
 
-A linked task page in the foreground activates Focus Mode and hides **all** bubbles.
+A linked task page in the foreground activates automatic Focus Mode and hides **all** normal bubbles and the panel.
 An unrelated page, switching away from Chrome, or losing the extension connection
 restores them without stealing focus. Pairing persists across restarts.
 
@@ -52,7 +52,8 @@ apps/
     src/            React components, Figma assets, Motion animations, Zustand state
   chrome-extension/ Manifest V3 worker, reconnect manager, pairing popup
 packages/
-  shared/           Task/context types, input validation, URL matching, focus engine
+  shared/           Task/context types, validation, growth, layout, history, domain commands
+  ui/               Shared Figma logo, DM Sans, theme tokens and React controls
 docs/
   technical-plan.md Original supplied plan
   design-reference.md Design decisions and source nodes
@@ -63,7 +64,8 @@ scripts/
 
 Electron main owns task data and validates every renderer mutation. Writes are
 serialized and saved through an atomic rename. On macOS, tasks and the pairing
-token live in `~/Library/Application Support/TODOPOP/`; no credentials belong in
+token live in `~/Library/Application Support/TODOPOP/`; the v2 `state.json` contains
+tasks, groups, settings and history, with automatic migration/backups of old `tasks.json`; no credentials belong in
 this repository. An unreadable task file is preserved in a dated recovery copy
 and a visible warning explains what happened. Bubble positions and snooze expiry
 are saved with the task.
@@ -87,17 +89,32 @@ npm run format:check
 The integration test opens disposable Electron and Chromium profiles and a local
 HTTP fixture. It never uses your normal Chrome profile. See [testing notes](docs/testing.md).
 
-## Scope
+## Growth and scope
 
-Implemented: task CRUD, urgency sizes, independent transparent bubbles, drag and
-position persistence, hover/pop animations, explicit completion and archive
-restore, local JSON persistence, authenticated Chrome pairing, automatic Focus
-Mode, reconnect, focus status, predefined groups, and 10-minute snooze.
+The default Real speed uses logical display units: Now! grows about 37.8 visible
+pixels every two minutes, Today half as fast, Soon a quarter, and Remind stays small.
+This is a logical centimetre reference, not a physical monitor calibration.
+Demo · 60× uses a separate temporary clock and returns to real sizes when disabled.
+Global pause keeps bubbles visible; single-task snooze hides only that task.
+Tasks do not catch up growth while the app is closed or the system sleeps.
 
-Figma’s browser backdrop is a stand-in for the user’s desktop; the app renders
-real floating windows instead. Time-based bubble growth, custom tint/group
-management, advanced physics, other browsers, signed installers, and App Store
-packaging are outside this MVP. Electron-builder is available for a later
-packaging milestone.
+Implemented: conditional click behavior, task CRUD, continuous growth, pause/resume,
+isolated Demo, basic collision/edge layout, Shuffle/Line up, manual rank, groups,
+Tint, independent edit popovers, Undo, new-round Rebubble, week/month history,
+Launcher, authenticated Chrome pairing and automatic URL Focus.
 
+Known limits: circular layout approximates the Figma soft-body fill-up; custom color
+uses a native picker rather than the exact hue-ring UI. Native foreground switching,
+Spaces, external displays and long-running performance need the manual review.
+Phone, Steps, Focus timer bar and sound are explicitly excluded.
+
+## Local preview distribution
+
+`npm run package:mac` builds an Apple Silicon preview in `release/` using the pinned
+Electron runtime. The preview is ad-hoc signed for local testing, not Developer ID
+signed or notarized. It is not a public production release, and currently uses the
+default Electron app icon. There is no automatic updater or store submission.
+
+See [progress report](docs/progress-report.zh-CN.md), [test details](docs/testing-details.zh-CN.md),
+[manual review](docs/manual-review.zh-CN.md) and [current decisions](docs/product-decisions.zh-CN.md).
 Git is local on `main`; no remote repository is configured.

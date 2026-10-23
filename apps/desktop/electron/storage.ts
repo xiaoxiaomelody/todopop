@@ -1,64 +1,68 @@
 import { mkdir, readFile, writeFile, rename, copyFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { randomBytes } from 'node:crypto';
-import { validateTaskInput, type Task } from '@todopop/shared';
+import { hydrate, initialState, type AppState, type Task } from '@todopop/shared';
 export class TaskRepository {
-  tasks: Task[] = [];
+  state: AppState = initialState();
   warning: string | null = null;
   private queue: Promise<unknown> = Promise.resolve();
   constructor(readonly directory: string) {}
+  get tasks() {
+    return this.state.tasks;
+  }
   async load() {
     await mkdir(this.directory, { recursive: true });
+    let source = join(this.directory, 'state.json');
     try {
-      const data: unknown = JSON.parse(await readFile(join(this.directory, 'tasks.json'), 'utf8'));
-      if (!Array.isArray(data) || data.length > 1000) throw new Error('Invalid task file');
-      const ids = new Set<string>();
-      this.tasks = data.map((t) => {
-        if (!t || typeof t.id !== 'string' || ids.has(t.id) || typeof t.completed !== 'boolean')
-          throw new Error('Invalid task');
-        ids.add(t.id);
-        return {
-          ...validateTaskInput(t),
-          id: t.id,
-          completed: t.completed,
-          createdAt: typeof t.createdAt === 'number' ? t.createdAt : Date.now(),
-          completedAt: typeof t.completedAt === 'number' ? t.completedAt : undefined,
-          snoozedUntil: typeof t.snoozedUntil === 'number' ? t.snoozedUntil : undefined,
-          position:
-            t.position && Number.isFinite(t.position.x) && Number.isFinite(t.position.y)
-              ? { x: t.position.x, y: t.position.y }
-              : undefined,
-        };
-      });
-    } catch (err) {
-      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
-        const backup = `tasks-recovery-${Date.now()}.json`;
-        await copyFile(join(this.directory, 'tasks.json'), join(this.directory, backup));
-        this.warning = `Your saved task file could not be read. A copy was kept as ${backup}.`;
+      let data: string;
+      try {
+        data = await readFile(source, 'utf8');
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e;
+        source = join(this.directory, 'tasks.json');
+        data = await readFile(source, 'utf8');
+      }
+      this.state = hydrate(JSON.parse(data));
+      if (source.endsWith('tasks.json')) {
+        await copyFile(source, join(this.directory, `tasks-before-v2-${Date.now()}.json`));
+        await this.mutateState((s) => s);
+      }
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
+        if (e instanceof Error && e.message.startsWith('Unsupported data version')) throw e;
+        const backup = `data-recovery-${Date.now()}.json`;
+        await copyFile(source, join(this.directory, backup));
+        this.warning = `Saved data could not be read. A copy was kept as ${backup}.`;
       }
     }
   }
-  mutate(transform: (tasks: Task[]) => Task[]) {
+  mutateState(transform: (state: AppState) => AppState) {
     const run = this.queue.then(async () => {
-      const next = transform(this.tasks);
-      const path = join(this.directory, 'tasks.json');
-      await writeFile(path + '.tmp', JSON.stringify(next, null, 2), { mode: 0o600 });
-      await rename(path + '.tmp', path);
-      this.tasks = next;
+      const next = transform(this.state);
+      const file = join(this.directory, 'state.json');
+      await writeFile(file + '.tmp', JSON.stringify(next, null, 2), { mode: 0o600 });
+      await rename(file + '.tmp', file);
+      this.state = next;
     });
     this.queue = run.catch(() => {});
     return run;
   }
+  mutate(transform: (tasks: Task[]) => Task[]) {
+    return this.mutateState((state) => ({ ...state, tasks: transform(state.tasks) }));
+  }
   async token() {
-    const path = join(this.directory, 'pairing-token');
+    const file = join(this.directory, 'pairing-token');
     try {
-      const token = (await readFile(path, 'utf8')).trim();
+      const token = (await readFile(file, 'utf8')).trim();
       if (/^[a-f0-9]{64}$/.test(token)) return token;
-    } catch (err) {
-      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e;
     }
     const token = randomBytes(32).toString('hex');
-    await writeFile(path, token, { mode: 0o600 });
+    await writeFile(file, token, { mode: 0o600 });
     return token;
+  }
+  flush() {
+    return this.queue;
   }
 }

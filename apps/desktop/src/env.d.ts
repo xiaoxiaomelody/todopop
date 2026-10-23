@@ -1,6 +1,12 @@
 import type { DesktopApi } from '@todopop/shared';
 declare global {
   interface Window {
-    todopop: DesktopApi & { hit(hit: boolean): void; onPop(callback: () => void): () => void };
+    todopop: DesktopApi & {
+      show(): void;
+      closeEdit(): void;
+      resizeEdit(height: number): void;
+      hit(hit: boolean): void;
+      onPop(callback: () => void): () => void;
+    };
   }
 }

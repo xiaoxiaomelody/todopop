@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "date": "2026-10-23T15:20:36.589Z",
+  "architecture": "arm64",
+  "packaged": true,
+  "isolatedUserData": true,
+  "checks": [
+    "launches from app.asar",
+    "creates task",
+    "records completion",
+    "closes after flushing state"
+  ],
+  "errors": []
+}

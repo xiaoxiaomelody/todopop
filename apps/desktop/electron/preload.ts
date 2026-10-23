@@ -1,6 +1,12 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type { DesktopApi, Snapshot } from '@todopop/shared';
-const api: DesktopApi & { hit(hit: boolean): void; onPop(callback: () => void): () => void } = {
+const api: DesktopApi & {
+  show(): void;
+  closeEdit(): void;
+  resizeEdit(height: number): void;
+  hit(hit: boolean): void;
+  onPop(callback: () => void): () => void;
+} = {
   snapshot: () => ipcRenderer.invoke('state:get'),
   subscribe: (callback) => {
     const listener = (_: unknown, state: Snapshot) => callback(state);
@@ -22,6 +28,16 @@ const api: DesktopApi & { hit(hit: boolean): void; onPop(callback: () => void): 
       ipcRenderer.removeListener('task:edit', listener);
     };
   },
+  setSettings: (input) => ipcRenderer.invoke('settings:set', input),
+  pause: (choice) => ipcRenderer.invoke('pause:set', choice),
+  growthMode: (mode) => ipcRenderer.invoke('growth:mode', mode),
+  groups: (action, input) => ipcRenderer.invoke('groups:change', action, input),
+  arrange: (side) => ipcRenderer.invoke('layout:arrange', side),
+  reorder: (ids) => ipcRenderer.invoke('tasks:reorder', ids),
+  undo: (id) => ipcRenderer.invoke('task:undo', id),
+  closeEdit: () => ipcRenderer.send('edit:close'),
+  resizeEdit: (height) => ipcRenderer.send('edit:resize', height),
+  show: () => ipcRenderer.send('panel:show'),
   hide: () => ipcRenderer.send('panel:hide'),
   resize: (height) => ipcRenderer.send('panel:resize', height),
   drag: (phase, x, y) => ipcRenderer.send('bubble:drag', phase, x, y),

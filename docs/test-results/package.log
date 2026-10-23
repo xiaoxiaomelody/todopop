@@ -1,0 +1,22 @@
+
+> @todopop/desktop@0.1.0 package:mac
+> electron-builder --config electron-builder.json --mac --arm64
+
+  • electron-builder  version=26.15.3 os=25.5.0
+  • loaded configuration  file=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/apps/desktop/electron-builder.json
+  • packageManager not detected by file, falling back to environment detection  resolvedPackageManager=npm detected=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/apps/desktop
+  • detected workspace root for project using lock file  pm=npm config=undefined resolved=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop projectDir=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/apps/desktop
+  • executing @electron/rebuild  electronVersion=42.11.18 arch=arm64 buildFromSource=false workspaceRoot=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop projectDir=./ appDir=./
+  • installing native dependencies  arch=arm64
+  • completed installing native dependencies
+  • packaging       platform=darwin arch=arm64 electron=42.11.18 appOutDir=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/mac-arm64
+  • using custom unpacked Electron distribution  electronDist=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/node_modules/electron/dist
+  • copying unpacked Electron  source=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/node_modules/electron/dist/Electron.app destination=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/mac-arm64/Electron.app
+  • searching for node modules  pm=npm searchDir=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/apps/desktop
+  • duplicate dependency references  dependencies=["react-dom@19.3.1","react-dom@19.3.1"]
+  • default Electron icon is used  reason=application icon is not set
+  • ad-hoc signing with hardenedRuntime enabled requires the com.apple.security.cs.disable-library-validation entitlement to prevent app launch failures due to library validation. See https://electron.build/code-signing for details.
+  • signing         file=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/mac-arm64/TODOPOP.app platform=darwin type=distribution identityName=- identityHash=none provisioningProfile=none
+  • skipped macOS notarization  reason=`notarize` options were set explicitly `false`
+  • building        target=DMG arch=arm64 file=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/TODOPOP-0.1.0-arm64-preview.dmg
+  • building block map  blockMapFile=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/TODOPOP-0.1.0-arm64-preview.dmg.blockmap

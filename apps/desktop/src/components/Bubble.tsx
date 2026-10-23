@@ -1,11 +1,11 @@
 import { useRef, useState, type PointerEvent, type CSSProperties } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { BUBBLE_SIZE, URGENCY_LABEL, type Task } from '@todopop/shared';
+import { BUBBLE_SIZE, URGENCY_LABEL, groupColor, hexHue, type Task } from '@todopop/shared';
 import { useTaskStore } from '../store/taskStore';
 import bodyS from '../assets/5a58f.svg';
-import bodyM from '../assets/50819.svg';
-import bodyL from '../assets/097da.svg';
-import bodyXL from '../assets/3c06c.svg';
+import bodyM from '../assets/3b683.svg';
+import bodyL from '../assets/50713.svg';
+import bodyXL from '../assets/84779.svg';
 import ringL from '../assets/18192.svg';
 import ringXL from '../assets/2169a.svg';
 import drop from '../assets/f1486.svg';
@@ -17,6 +17,11 @@ const geo = {
   4: { x: 88.66, y: 85.76, width: 272.065, height: 272.15, label: 23, labelWidth: 196 },
 };
 export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
+  const groups = useTaskStore((s) => s.groups);
+  const tint = useTaskStore((s) => s.settings.tint);
+  const paused = useTaskStore((s) => s.paused);
+  const group = groups.find((g) => g.id === task.groupId);
+  const ratio = (task.size || BUBBLE_SIZE[task.urgency]) / BUBBLE_SIZE[task.urgency];
   const reduced = useReducedMotion();
   const [hover, setHover] = useState(false);
   const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null);
@@ -43,137 +48,179 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
     if (!moved) void run(() => window.todopop.open(task.id));
   }
   return (
-    <div className="bubble-canvas" style={{ width: size, height: size } as CSSProperties}>
-      <motion.div
-        className="bubble-art"
-        animate={
-          popping
-            ? { scale: [1, 1.13, 0.2], opacity: [1, 1, 0] }
-            : reduced
-              ? { y: 0, opacity: 1, scale: 1 }
-              : { y: [0, -3, 0], opacity: 1, scale: 1 }
-        }
-        transition={
-          popping ? { duration: 0.32 } : { duration: 4.8, repeat: Infinity, ease: 'easeInOut' }
-        }
+    <div
+      className={`bubble-canvas ${paused ? 'is-paused' : ''}`}
+      style={{ width: size * ratio, height: size * ratio } as CSSProperties}
+    >
+      <div
+        className="bubble-scale"
+        style={{
+          width: size,
+          height: size,
+          transform: `scale(${ratio})`,
+          transformOrigin: 'top left',
+        }}
       >
         <motion.div
-          className="bubble-shape"
+          className="bubble-art"
           animate={
-            hover && !popping
-              ? { scaleX: 1.045, scaleY: 0.96, rotate: -1 }
-              : { scaleX: 1, scaleY: 1, rotate: 0 }
+            popping
+              ? { scale: [1, 1.13, 0.2], opacity: [1, 1, 0] }
+              : reduced
+                ? { y: 0, opacity: 1, scale: 1 }
+                : { y: [0, -3, 0], opacity: 1, scale: 1 }
           }
-          transition={{ type: 'spring', stiffness: 300, damping: 9 }}
+          transition={
+            popping ? { duration: 0.32 } : { duration: 4.8, repeat: Infinity, ease: 'easeInOut' }
+          }
         >
-          <img
-            src={bodies[task.urgency]}
-            alt=""
-            width={g.width}
-            height={g.height}
-            style={{ position: 'absolute', left: g.x, top: g.y }}
-          />
-          {task.urgency >= 3 && (
+          <motion.div
+            className="bubble-shape"
+            animate={
+              hover && !popping
+                ? { scaleX: 1.045, scaleY: 0.96, rotate: -1 }
+                : { scaleX: 1, scaleY: 1, rotate: 0 }
+            }
+            transition={{ type: 'spring', stiffness: 300, damping: 9 }}
+          >
             <img
-              src={task.urgency === 3 ? ringL : ringXL}
+              src={bodies[task.urgency]}
               alt=""
-              width={task.urgency === 3 ? 169.057 : 259.154}
-              height={task.urgency === 3 ? 169.118 : 259.235}
+              width={g.width}
+              height={g.height}
               style={{
                 position: 'absolute',
-                left: task.urgency === 3 ? 65.19 : 95.04,
-                top: task.urgency === 3 ? 63.68 : 92.23,
+                left: g.x,
+                top: g.y,
+                filter: `hue-rotate(${hexHue(tint) - hexHue('#1a419e')}deg)`,
+                opacity: paused ? 0.6 : 1,
               }}
             />
-          )}
-          <div className="bubble-label" style={{ width: g.labelWidth, fontSize: g.label }}>
-            <span>{task.title}</span>
-            {task.urgency > 1 && <small>{URGENCY_LABEL[task.urgency]}</small>}
-          </div>
+            {task.urgency >= 3 && (
+              <img
+                src={task.urgency === 3 ? ringL : ringXL}
+                alt=""
+                width={task.urgency === 3 ? 169.057 : 259.154}
+                height={task.urgency === 3 ? 169.118 : 259.235}
+                style={{
+                  position: 'absolute',
+                  left: task.urgency === 3 ? 65.19 : 95.04,
+                  top: task.urgency === 3 ? 63.68 : 92.23,
+                }}
+              />
+            )}
+            {group && (
+              <div
+                className="bubble-group-ring"
+                style={{
+                  position: 'absolute',
+                  left: g.x + 4,
+                  top: g.y + 4,
+                  width: g.width - 8,
+                  height: g.height - 8,
+                  borderColor: groupColor(group.color, tint),
+                  backgroundColor: groupColor(group.color, tint),
+                }}
+              />
+            )}
+            {paused && (
+              <div
+                className="paused-ring"
+                style={{ left: g.x, top: g.y, width: g.width, height: g.height }}
+              />
+            )}
+            <div
+              className="bubble-label"
+              style={{ width: g.labelWidth, fontSize: g.label / Math.sqrt(ratio) }}
+            >
+              <span>{task.title}</span>
+              {task.urgency > 1 && <small>{URGENCY_LABEL[task.urgency]}</small>}
+            </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
-      {popping &&
-        Array.from({ length: 10 }, (_, i) => (
-          <motion.img
-            key={i}
-            src={drop}
-            alt=""
-            width="6"
-            height="6"
-            className="pop-drop"
-            initial={{ x: 0, y: 0, opacity: 1 }}
-            animate={{
-              x: Math.cos((i * Math.PI) / 5) * size * 0.32,
-              y: Math.sin((i * Math.PI) / 5) * size * 0.32,
-              opacity: 0,
-            }}
-            transition={{ duration: 0.35 }}
-          />
-        ))}
-      <div
-        className="bubble-hit"
-        style={{ left: g.x, top: g.y, width: g.width, height: g.height }}
-        onPointerDown={down}
-        onPointerMove={move}
-        onPointerUp={up}
-        onPointerCancel={(e) => {
-          drag.current = null;
-          window.todopop.drag('end', e.screenX, e.screenY);
-        }}
-        onMouseEnter={() => {
-          setHover(true);
-          window.todopop.hit(true);
-        }}
-        onMouseLeave={() => {
-          if (!drag.current) {
-            setHover(false);
-            window.todopop.hit(false);
-          }
-        }}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          void run(() => window.todopop.edit(task.id));
-        }}
-      >
-        <button
-          className="bubble-keyboard"
-          aria-label={`Open ${task.title}`}
-          onClick={(e) => {
-            if (e.detail === 0) void run(() => window.todopop.open(task.id));
-          }}
-        />
+        {popping &&
+          Array.from({ length: 10 }, (_, i) => (
+            <motion.img
+              key={i}
+              src={drop}
+              alt=""
+              width="6"
+              height="6"
+              className="pop-drop"
+              initial={{ x: 0, y: 0, opacity: 1 }}
+              animate={{
+                x: Math.cos((i * Math.PI) / 5) * size * 0.32,
+                y: Math.sin((i * Math.PI) / 5) * size * 0.32,
+                opacity: 0,
+              }}
+              transition={{ duration: 0.35 }}
+            />
+          ))}
         <div
-          className="bubble-tools"
-          onPointerDown={(e) => e.stopPropagation()}
-          onPointerUp={(e) => e.stopPropagation()}
+          className="bubble-hit"
+          style={{ left: g.x, top: g.y, width: g.width, height: g.height }}
+          onPointerDown={down}
+          onPointerMove={move}
+          onPointerUp={up}
+          onPointerCancel={(e) => {
+            drag.current = null;
+            window.todopop.drag('end', e.screenX, e.screenY);
+          }}
+          onMouseEnter={() => {
+            setHover(true);
+            window.todopop.hit(true);
+          }}
+          onMouseLeave={() => {
+            if (!drag.current) {
+              setHover(false);
+              window.todopop.hit(false);
+            }
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            void run(() => window.todopop.edit(task.id));
+          }}
         >
           <button
-            title="Snooze for 10 minutes"
-            aria-label="Snooze task"
-            onClick={() => {
-              void run(() => window.todopop.act(task.id, 'snooze'));
+            className="bubble-keyboard"
+            aria-label={`Open ${task.title}`}
+            onClick={(e) => {
+              if (e.detail === 0) void run(() => window.todopop.open(task.id));
             }}
+          />
+          <div
+            className="bubble-tools"
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
           >
-            z
-          </button>
-          <button
-            title="Edit task"
-            aria-label="Edit task"
-            onClick={() => {
-              void run(() => window.todopop.edit(task.id));
-            }}
-          >
-            ···
-          </button>
-          <button
-            title="Pop task"
-            aria-label="Complete task"
-            onClick={() => {
-              void run(() => window.todopop.act(task.id, 'complete'));
-            }}
-          >
-            ✓
-          </button>
+            <button
+              title="Snooze for 10 minutes"
+              aria-label="Snooze task"
+              onClick={() => {
+                void run(() => window.todopop.act(task.id, 'snooze'));
+              }}
+            >
+              z
+            </button>
+            <button
+              title="Edit task"
+              aria-label="Edit task"
+              onClick={() => {
+                void run(() => window.todopop.edit(task.id));
+              }}
+            >
+              ···
+            </button>
+            <button
+              title="Pop task"
+              aria-label="Complete task"
+              onClick={() => {
+                void run(() => window.todopop.act(task.id, 'complete'));
+              }}
+            >
+              ✓
+            </button>
+          </div>
         </div>
       </div>
     </div>

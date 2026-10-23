@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "date": "2026-10-23T04:25:21.189Z",
+  "date": "2026-10-23T15:18:47.793Z",
   "checks": [
     "task CRUD",
     "native bubbles",
@@ -14,5 +14,7 @@
     "archive restore",
     "Figma assets"
   ],
-  "rendererErrors": []
+  "rendererErrors": [],
+  "nativeForegroundVerified": true,
+  "foregroundFixture": false
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { URGENCY_LABEL, GROUP_COLOR, type Task } from '@todopop/shared';
+import { useState, type DragEvent } from 'react';
+import { URGENCY_LABEL, groupColor, type Task } from '@todopop/shared';
 import { useTaskStore } from '../store/taskStore';
 import popIcon from '../assets/a40db.svg';
 import grip from '../assets/6e302.svg';
@@ -12,64 +12,98 @@ export function TaskList({
   archived?: boolean;
   onEdit(id: string): void;
 }) {
-  const run = useTaskStore((s) => s.run);
-  const [popping, setPopping] = useState<string | null>(null);
-  if (!tasks.length)
-    return (
-      <p className="empty">
-        {archived
-          ? 'A little space for your little wins.'
-          : 'Nothing floating. Blow your first bubble.'}
-      </p>
-    );
+  const state = useTaskStore(),
+    [busy, setBusy] = useState<string | null>(null);
+  const ordered = [...tasks].sort((a, b) =>
+    archived ? (b.completedAt || 0) - (a.completedAt || 0) : (a.rank || 0) - (b.rank || 0),
+  );
+  async function move(id: string, before: string) {
+    const ids = ordered.map((t) => t.id);
+    const from = ids.indexOf(id),
+      to = ids.indexOf(before);
+    if (from < 0 || to < 0 || from === to) return;
+    ids.splice(from, 1);
+    ids.splice(to, 0, id);
+    await state.run(() => window.todopop.reorder(ids));
+  }
+  function drop(e: DragEvent, id: string) {
+    e.preventDefault();
+    void move(e.dataTransfer.getData('text/plain'), id);
+  }
+  if (!tasks.length) return <p className="empty">Nothing floating. Blow your first bubble.</p>;
   return (
     <ul className="task-list">
-      {[...tasks]
-        .sort((a, b) =>
-          archived ? (b.completedAt || 0) - (a.completedAt || 0) : b.urgency - a.urgency,
-        )
-        .map((task) => (
-          <li className={popping === task.id ? 'popping-row' : ''} key={task.id}>
-            <img src={grip} width="12" height="22" alt="" className="row-grip" />
+      {ordered.map((task) => {
+        const group = state.groups.find((g) => g.id === task.groupId),
+          snoozed = Boolean(task.snoozedUntil && task.snoozedUntil > Date.now());
+        return (
+          <li key={task.id} onDragOver={(e) => e.preventDefault()} onDrop={(e) => drop(e, task.id)}>
+            <button
+              type="button"
+              className="row-grip-button"
+              aria-label={`Reorder ${task.title}`}
+              title="Drag to reorder, or use ↑ / ↓"
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData('text/plain', task.id);
+                e.dataTransfer.effectAllowed = 'move';
+              }}
+              onKeyDown={(e) => {
+                const index = ordered.indexOf(task);
+                if (e.key === 'ArrowUp' && index > 0) {
+                  e.preventDefault();
+                  void move(task.id, ordered[index - 1].id);
+                }
+                if (e.key === 'ArrowDown' && index < ordered.length - 1) {
+                  e.preventDefault();
+                  void move(task.id, ordered[index + 1].id);
+                }
+              }}
+            >
+              <img src={grip} width="12" height="22" alt="" />
+            </button>
             <span
               className="task-dot"
               style={{
-                background: GROUP_COLOR[task.group || 'None'],
+                background: group ? groupColor(group.color, state.settings.tint) : 'transparent',
                 width: 12 + task.urgency * 3,
                 height: 12 + task.urgency * 3,
               }}
             />
-            <button
-              className="task-name"
-              onClick={() =>
-                archived ? void run(() => window.todopop.act(task.id, 'restore')) : onEdit(task.id)
-              }
-            >
+            <button className="task-name" onClick={() => onEdit(task.id)}>
               <span>{task.title}</span>
               <small>
-                {archived
-                  ? 'Popped · click to re-bubble'
-                  : task.snoozedUntil && task.snoozedUntil > Date.now()
-                    ? 'Snoozed · 10 min'
-                    : `${URGENCY_LABEL[task.urgency]}${task.url ? ' · URL linked' : ''}`}
+                {snoozed
+                  ? 'Snoozed · 10 min'
+                  : `${URGENCY_LABEL[task.urgency]} · ${Math.floor((task.growthMs || 0) / 60000)}m · ⌀ ${(((task.size || 118) * 0.61) / 37.8).toFixed(1)} cm`}
               </small>
             </button>
+            {snoozed && (
+              <button
+                className="row-resume"
+                onClick={() => {
+                  void state.run(() => window.todopop.act(task.id, 'wake'));
+                }}
+              >
+                Show now
+              </button>
+            )}
             <button
               className="icon-button row-action"
-              title={archived ? 'Re-bubble' : 'Pop task'}
-              aria-label={`${archived ? 'Restore' : 'Complete'} ${task.title}`}
+              disabled={busy === task.id}
+              aria-label={`Complete ${task.title}`}
+              title="Pop task"
               onClick={async () => {
-                if (popping) return;
-                setPopping(task.id);
-                await new Promise((r) => setTimeout(r, 220));
-                await run(() => window.todopop.act(task.id, archived ? 'restore' : 'complete'));
-                setPopping(null);
+                setBusy(task.id);
+                await state.run(() => window.todopop.act(task.id, 'complete'));
+                setBusy(null);
               }}
             >
-              {archived ? '↺' : <img src={popIcon} width="30" height="30" alt="" />}
+              <img src={popIcon} width="30" height="30" alt="" />
             </button>
           </li>
-        ))}
+        );
+      })}
     </ul>
   );
 }

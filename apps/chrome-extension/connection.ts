@@ -34,7 +34,15 @@ export async function connect(contextProvider: () => Promise<void>) {
   };
   current.onmessage = (event) => {
     try {
-      if (JSON.parse(event.data).type === 'AUTH_OK') {
+      const message = JSON.parse(event.data);
+      if (
+        message.type === 'APPEARANCE' &&
+        typeof message.tint === 'string' &&
+        /^#[a-fA-F0-9]{6}$/.test(message.tint)
+      ) {
+        void chrome.storage.local.set({ tint: message.tint });
+      }
+      if (message.type === 'AUTH_OK') {
         authenticated = true;
         void status('Connected');
         void reportContext();
