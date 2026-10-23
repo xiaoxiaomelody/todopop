@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "date": "2026-10-23T20:49:52.527Z",
+  "date": "2026-10-23T20:53:06.619Z",
   "isolatedUserData": true,
   "inspectorRetries": 0,
   "checks": [
@@ -11,7 +11,7 @@
     "linked single click opens URL without completing",
     "right click completes with ten Figma droplets; immediate Undo restores same round and history",
     "third O exposes original ring/saturation controls; custom group colors persist and other groups fade",
-    "selected group moves through dedicated handle and Esc clears highlight",
+    "group palette has no drag handle; Esc clears highlight",
     "second O switches to receipt, rather than opening all three panels",
     "billboard completion closes local session and records task once",
     "restart retains edits, group color, completion and tutorial state without reopening billboard",

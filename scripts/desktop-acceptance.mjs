@@ -220,33 +220,10 @@ try {
   pass(
     'third O exposes original ring/saturation controls; custom group colors persist and other groups fade',
   );
-  const before = (await snap(panel)).tasks.find((t) => t.id === 'local').position;
-  const companionBefore = (await snap(panel)).tasks.find(
-    (t) => t.title === 'Group companion',
-  ).position;
-  const handle = panel.getByRole('button', { name: 'Move group School', exact: true });
-  await handle.scrollIntoViewIfNeeded();
-  const box = await handle.boundingBox();
-  await panel.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await panel.mouse.down();
-  await panel.mouse.move(box.x + box.width / 2 + 40, box.y + box.height / 2 + 30, { steps: 8 });
-  await panel.mouse.up();
-  await until(async () => {
-    const p = (await snap(panel)).tasks.find((t) => t.id === 'local').position;
-    return (
-      Math.hypot(p.x - before.x, p.y - before.y) > 10 &&
-      (await snap(panel)).groups.find((g) => g.id === 'School').positionLocked
-    );
-  }, 'group move did not persist');
-  const movedState = await snap(panel),
-    movedLocal = movedState.tasks.find((t) => t.id === 'local').position,
-    movedCompanion = movedState.tasks.find((t) => t.title === 'Group companion').position;
-  assert.ok(Math.abs(movedLocal.x - before.x - (movedCompanion.x - companionBefore.x)) <= 2);
-  assert.ok(Math.abs(movedLocal.y - before.y - (movedCompanion.y - companionBefore.y)) <= 2);
-  assert.equal(movedState.groups.find((g) => g.id === 'School').positionLocked, true);
+  assert.equal(await panel.locator('.group-move-handle').count(), 0);
   await panel.keyboard.press('Escape');
   assert.equal((await snap(panel)).selectedGroupId, null);
-  pass('selected group moves through dedicated handle and Esc clears highlight');
+  pass('group palette has no drag handle; Esc clears highlight');
   await panel.getByRole('button', { name: 'Popped bubbles', exact: true }).click();
   await panel.getByRole('region', { name: 'Popped receipt' }).waitFor();
   assert.equal(await panel.getByRole('slider', { name: 'Tint hue', exact: true }).count(), 0);
@@ -269,7 +246,10 @@ try {
   assert.equal(restored.settings.tutorialDone, true);
   assert.equal(restored.billboardId, null);
   assert.equal(restored.groups.find((g) => g.id === 'School').color.hex, '#123456');
-  assert.equal(restored.groups.find((g) => g.id === 'School').positionLocked, true);
+  assert.equal(
+    restored.groups.find((g) => g.id === 'School').side,
+    saved.groups.find((g) => g.id === 'School').side,
+  );
   assert.equal(restored.tasks.find((t) => t.id === local.id).completed, true);
   assert.ok(restored.history.some((e) => e.taskId === local.id && e.kind === 'completed'));
   assert.equal(await panel.getByRole('button', { name: 'Try it', exact: true }).count(), 0);

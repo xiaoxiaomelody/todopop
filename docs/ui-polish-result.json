@@ -1,11 +1,12 @@
 {
   "passed": true,
-  "date": "2026-10-23T20:51:10.870Z",
+  "date": "2026-10-23T20:52:58.600Z",
   "checks": [
     "All three O glyphs centered within 0.5 CSS px of the ellipse",
     "Tutorial and all four dock panels replace each other; tutorial has opaque card surface",
     "Tint updates twice before pointer release, live theme changes; ring hole matches original 55% diameter",
     "Custom group color updates while pointer is still held",
+    "Group labels share a left edge, Close and HEX field align right, drag handle removed",
     "Billboard uses dark themed background, white text and readable controls; return works"
   ],
   "errors": []

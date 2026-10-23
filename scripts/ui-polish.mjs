@@ -115,6 +115,29 @@ try {
   });
   await p.mouse.up();
   checks.push('Custom group color updates while pointer is still held');
+  const card = p.locator('.group-color-card');
+  assert.equal(await card.locator('.group-move-handle').count(), 0);
+  const alignment = await card.evaluate((el) => {
+    const header = el.querySelector('.field-line').getBoundingClientRect();
+    const close = el.querySelector('.field-line button').getBoundingClientRect();
+    const label = el.querySelector('.hex-field > span').getBoundingClientRect();
+    const swatches = el.querySelector('.group-color-swatches').getBoundingClientRect();
+    const input = el.querySelector('.hex-field input').getBoundingClientRect();
+    return {
+      close: Math.abs(close.right - header.right),
+      left: Math.abs(label.left - swatches.left),
+      field: Math.abs(input.right - header.right),
+    };
+  });
+  assert.ok(Object.values(alignment).every((n) => n < 1));
+  await card.screenshot({
+    path: 'docs/screenshots/aligned-group-palette.png',
+    omitBackground: true,
+  });
+  checks.push(
+    'Group labels share a left edge, Close and HEX field align right, drag handle removed',
+  );
+
   await p.getByRole('button', { name: 'Close', exact: true }).click();
   await p.screenshot({ path: 'docs/screenshots/polished-palette.png', omitBackground: true });
   await p.evaluate(() => window.todopop.open('focus'));

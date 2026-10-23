@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { ActionGlyph } from '@todopop/ui';
 import { groupColor, slotHue, defaultWheelSat, type Side } from '@todopop/shared';
 import { useTaskStore } from '../store/taskStore';
@@ -50,8 +50,7 @@ export function GroupEditor({
     [editing, setEditing] = useState(initialEdit),
     [picker, setPicker] = useState<string | null>(null),
     [custom, setCustom] = useState(false),
-    [problem, setProblem] = useState(''),
-    move = useRef(false);
+    [problem, setProblem] = useState('');
   const choose = (id: string | null) => {
     onSelect?.(id);
     void s.run(() => window.todopop.selectGroup(id));
@@ -260,29 +259,6 @@ export function GroupEditor({
                   ? 'These six follow your tint. A color in use swaps.'
                   : 'Custom color. It stays put when you change your tint.'}
               </p>
-              <button
-                type="button"
-                className="group-move-handle"
-                aria-label={`Move group ${g.name}`}
-                onPointerDown={(e) => {
-                  e.currentTarget.setPointerCapture(e.pointerId);
-                  move.current = true;
-                  window.todopop.dragGroup('start', e.screenX, e.screenY, g.id);
-                }}
-                onPointerMove={(e) => {
-                  if (move.current) window.todopop.dragGroup('move', e.screenX, e.screenY);
-                }}
-                onPointerUp={(e) => {
-                  move.current = false;
-                  window.todopop.dragGroup('end', e.screenX, e.screenY);
-                }}
-                onPointerCancel={(e) => {
-                  move.current = false;
-                  window.todopop.dragGroup('end', e.screenX, e.screenY);
-                }}
-              >
-                Drag to move this group
-              </button>
             </div>
           );
         })()}

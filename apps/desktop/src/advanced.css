@@ -614,19 +614,6 @@
   color: var(--soft);
   margin-top: 12px;
 }
-.group-move-handle {
-  width: 100%;
-  border: 1px dashed var(--rule);
-  border-radius: 14px;
-  padding: 12px;
-  font-size: 10px;
-  cursor: grab;
-  touch-action: none;
-  margin: 10px 0;
-}
-.group-move-handle:active {
-  cursor: grabbing;
-}
 .group-row[aria-pressed='true'] {
   background: #eef3ff;
 }
@@ -1303,4 +1290,34 @@ body.bubble-window {
   background: color-mix(in srgb, var(--tint, #1a419e) 68%, #101827);
   color: white;
   border-radius: 18px;
+}
+
+/* Group palette uses a shared left edge and a right-aligned close action. */
+.group-color-card > .field-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.group-color-card > .field-line .eyebrow {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.group-color-card .hex-field {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+}
+.group-color-card .hex-field input {
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  padding-left: 0;
+  padding-right: 0;
+}
+.group-color-card .picker-caption,
+.group-color-card > .hint {
+  text-align: left;
 }
