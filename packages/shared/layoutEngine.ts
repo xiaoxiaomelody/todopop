@@ -7,9 +7,10 @@ export function layoutBubbles(
   obstacles: readonly Rect[],
   previous: Map<string, LayoutItem>,
   sideFor: (task: Task) => Side,
-): { items: LayoutItem[]; full: boolean; coverage: number } {
+  pinned: ReadonlySet<string> = new Set(),
+): { items: LayoutItem[] } {
   const circles = tasks.map((t, i) => {
-    const size = Math.min(t.size || 118, Math.max(area.width, area.height) * 1.6),
+    const size = Math.min(t.size || 118, Math.max(area.width, area.height) * 2.2),
       r = size * 0.305;
     const p = previous.get(t.id);
     return {
@@ -39,7 +40,7 @@ export function layoutBubbles(
         let dx = d.cx - c.cx,
           dy = d.cy - c.cy;
         let dist = Math.hypot(dx, dy);
-        const overlap = c.r + d.r + 8 - dist;
+        const overlap = (c.r + d.r) * 0.92 - dist;
         if (overlap > 0) {
           if (dist < 0.01) {
             dx = 1;
@@ -47,11 +48,20 @@ export function layoutBubbles(
             dist = Math.hypot(dx, dy);
           }
           const move = overlap * 0.51;
-          c.cx -= (dx / dist) * move;
-          c.cy -= (dy / dist) * move;
-          d.cx += (dx / dist) * move;
-          d.cy += (dy / dist) * move;
+          if (!pinned.has(c.id)) {
+            c.cx -= (dx / dist) * move;
+            c.cy -= (dy / dist) * move;
+          }
+          if (!pinned.has(d.id)) {
+            d.cx += (dx / dist) * move;
+            d.cy += (dy / dist) * move;
+          }
         }
+      }
+      if (pinned.has(c.id)) {
+        c.cx = Math.max(area.x + 16, Math.min(c.cx, area.x + area.width - 16));
+        c.cy = Math.max(area.y + 16, Math.min(c.cy, area.y + area.height - 16));
+        continue;
       }
       for (const rect of obstacles) {
         const x = Math.max(rect.x - 10, Math.min(c.cx, rect.x + rect.width + 10)),
@@ -94,11 +104,6 @@ export function layoutBubbles(
       if (c.side === 'top') c.cy = area.y + ry + inset;
       if (c.side === 'bottom') c.cy = area.y + area.height - ry - inset;
     }
-  const available = Math.max(
-    1,
-    area.width * area.height - obstacles.reduce((sum, o) => sum + o.width * o.height, 0),
-  );
-  const coverage = circles.reduce((sum, c) => sum + Math.PI * c.r * c.r, 0) / available;
   return {
     items: circles.map((c) => ({
       id: c.id,
@@ -107,28 +112,5 @@ export function layoutBubbles(
       size: c.size,
       side: c.side,
     })),
-    full: coverage >= 0.76,
-    coverage,
-  };
-}
-
-// Keep controls readable and reachable even when the growing body is larger than a display.
-export function bubbleToolbarPosition(body: Rect, viewport: Rect) {
-  const width = 112,
-    height = 32,
-    inset = 8;
-  const clamp = (value: number, min: number, max: number) =>
-    Math.max(min, Math.min(value, Math.max(min, max)));
-  return {
-    x: clamp(
-      body.x + body.width / 2,
-      viewport.x + width / 2 + inset,
-      viewport.x + viewport.width - width / 2 - inset,
-    ),
-    y: clamp(
-      body.y + body.height - height - inset,
-      viewport.y + inset,
-      viewport.y + viewport.height - height - inset,
-    ),
   };
 }

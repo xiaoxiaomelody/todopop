@@ -6,3 +6,5 @@ export * from './domain.ts';
 export * from './growthEngine.ts';
 export * from './layoutEngine.ts';
 export * from './history.ts';
+export * from './bubbleGeometry.ts';
+export * from './color.ts';

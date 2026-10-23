@@ -1,22 +1,21 @@
 {
   "passed": true,
-  "date": "2026-10-23T15:24:50.909Z",
+  "date": "2026-10-23T19:08:12.312Z",
+  "isolatedUserData": true,
+  "inspectorRetries": 0,
   "checks": [
-    "legacy tasks migrate with backup and historical completion",
-    "formal growth advances; global pause stops growth while keeping bubbles visible",
-    "60x Demo is an isolated preview and does not overwrite formal growth",
-    "keyboard task reordering persists manual rank",
-    "unlinked bubble click pops and records completion",
-    "linked bubble click opens URL without completing it",
-    "single-task snooze and Show now are distinct from global pause",
-    "Rebubble creates a fresh round and retains historical wins",
-    "delete toast Undo restores the same task",
-    "custom groups rename, color and side persist; custom color survives Tint",
-    "right-click opens an independent, bounded edit popover; Save persists",
-    "archive week/month views and date navigation use real completion records",
-    "minimized Launcher reopens the panel",
-    "restart retains settings, groups, order, pause and history; Demo defaults to real",
-    "unsaved new-task draft survives opening group management"
+    "tutorial rehearses click/double/right click without modifying real tasks; old pause migrated",
+    "first logo O creates tasks from fixed nonmovable control bar",
+    "single click enters Chrome-independent billboard; growth stops; Esc returns without completing",
+    "double click edits existing fields without firing first-click URL navigation",
+    "linked single click opens URL without completing",
+    "right click completes with ten Figma droplets; immediate Undo restores same round and history",
+    "third O exposes original ring/saturation controls; custom group colors persist and other groups fade",
+    "selected group moves through dedicated handle and Esc clears highlight",
+    "second O switches to receipt, rather than opening all three panels",
+    "billboard completion closes local session and records task once",
+    "restart retains edits, group color, completion and tutorial state without reopening billboard",
+    "new task draft survives group management; renderer has no errors"
   ],
-  "rendererErrors": []
+  "errors": []
 }

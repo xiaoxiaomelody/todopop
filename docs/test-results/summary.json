@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-23T15:18:47.847Z",
+  "date": "2026-10-23T19:08:39.939Z",
   "passed": true,
   "results": [
     {
@@ -7,49 +7,63 @@
       "command": "npm run typecheck",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 4883
+      "durationMs": 3355
     },
     {
       "name": "unit",
       "command": "npm test",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 440
+      "durationMs": 284
     },
     {
       "name": "format",
       "command": "npm run format:check",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1158
+      "durationMs": 1194
     },
     {
       "name": "build",
       "command": "npm run build",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1913
+      "durationMs": 1893
     },
     {
       "name": "extension-ui",
       "command": "node scripts/extension-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 3855
+      "durationMs": 2977
     },
     {
       "name": "desktop-acceptance",
       "command": "node scripts/desktop-acceptance.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 9885
+      "durationMs": 8626
+    },
+    {
+      "name": "giant-reachability",
+      "command": "node scripts/bubble-reachability.mjs",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 2828
+    },
+    {
+      "name": "layout-pressure",
+      "command": "node scripts/layout-pressure.mjs",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 5958
     },
     {
       "name": "integration",
       "command": "node scripts/e2e.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 17315
+      "durationMs": 18759
     }
   ]
 }

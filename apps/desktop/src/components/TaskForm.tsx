@@ -112,7 +112,7 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
             });
           }}
         >
-          {task.url ? '◯  Open work page' : '✓  Pop bubble'}
+          {task.url ? '◯  Open work page' : 'Enter the bubble'}
         </button>
       )}
       <div className="form-actions">

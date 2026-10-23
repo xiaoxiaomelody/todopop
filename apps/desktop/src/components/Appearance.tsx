@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, TextInput } from '@todopop/ui';
 import { PALETTE, groupColor, type Side } from '@todopop/shared';
+import { RingColorPicker } from './RingColorPicker';
 import { useTaskStore } from '../store/taskStore';
 const themes = [
   ['Ink Blue', '#1a419e'],
@@ -13,6 +14,7 @@ export function Appearance() {
     [name, setName] = useState(''),
     [editing, setEditing] = useState<string | null>(null),
     [renamed, setRenamed] = useState('');
+  const moving = useRef(false);
   return (
     <div className="appearance-content">
       <span className="eyebrow">Tint</span>
@@ -29,29 +31,29 @@ export function Appearance() {
             }}
           />
         ))}
-        <label className="custom-color" title="Custom tint">
-          <input
-            aria-label="Custom tint"
-            type="color"
-            value={s.settings.tint}
-            onChange={(e) => {
-              void s.run(() => window.todopop.setSettings({ tint: e.target.value }));
-            }}
-          />
-        </label>
         <code>{s.settings.tint.toUpperCase()}</code>
       </div>
-      <p className="hint">Outlines and text follow your color.</p>
+      {!editing && (
+        <RingColorPicker
+          label="Tint"
+          value={s.settings.tint}
+          onChange={(tint) => void s.run(() => window.todopop.setSettings({ tint }))}
+        />
+      )}
       <div className="field-line">
         <span className="eyebrow">Groups</span>
-        <span className="hint">Right-click a group to edit.</span>
+        <span className="hint">Select a group to edit and highlight.</span>
       </div>
       <div className="group-list">
         {s.groups.map((group) => (
           <div key={group.id}>
             <button
               className="group-row"
+              aria-pressed={s.selectedGroupId === group.id}
               onClick={() => {
+                void s.run(() =>
+                  window.todopop.selectGroup(s.selectedGroupId === group.id ? null : group.id),
+                );
                 setEditing(editing === group.id ? null : group.id);
                 setRenamed(group.name);
               }}
@@ -101,20 +103,45 @@ export function Appearance() {
                       }}
                     />
                   ))}
-                  <input
-                    type="color"
-                    aria-label="Custom group color"
-                    value={group.color.kind === 'custom' ? group.color.hex : '#76e2c8'}
-                    onChange={(e) => {
-                      void s.run(() =>
-                        window.todopop.groups('update', {
-                          id: group.id,
-                          color: { kind: 'custom', hex: e.target.value },
-                        }),
-                      );
-                    }}
-                  />
                 </div>
+                <RingColorPicker
+                  label={group.name}
+                  value={groupColor(group.color, s.settings.tint)}
+                  onChange={(hex) =>
+                    void s.run(() =>
+                      window.todopop.groups('update', {
+                        id: group.id,
+                        color: { kind: 'custom', hex },
+                      }),
+                    )
+                  }
+                />
+                <button
+                  type="button"
+                  className="group-move-handle"
+                  aria-label={`Move group ${group.name}`}
+                  onPointerDown={(e) => {
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                    moving.current = true;
+                    void s.run(async () => {
+                      await window.todopop.selectGroup(group.id);
+                      if (moving.current) window.todopop.dragGroup('start', e.screenX, e.screenY);
+                    });
+                  }}
+                  onPointerMove={(e) => {
+                    if (moving.current) window.todopop.dragGroup('move', e.screenX, e.screenY);
+                  }}
+                  onPointerUp={(e) => {
+                    moving.current = false;
+                    window.todopop.dragGroup('end', e.screenX, e.screenY);
+                  }}
+                  onPointerCancel={(e) => {
+                    moving.current = false;
+                    window.todopop.dragGroup('end', e.screenX, e.screenY);
+                  }}
+                >
+                  ↔ Drag to move this group
+                </button>
                 <div className="side-buttons">
                   {(['any', 'left', 'top', 'bottom', 'right'] as Side[]).map((side) => (
                     <button

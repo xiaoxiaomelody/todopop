@@ -1,12 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { DesktopApi, Snapshot, Rect } from '@todopop/shared';
+import type { DesktopApi, Snapshot } from '@todopop/shared';
 const api: DesktopApi & {
   show(): void;
   closeEdit(): void;
   resizeEdit(height: number): void;
   hit(hit: boolean): void;
-  bubbleViewport(): Promise<Rect | null>;
-  onBubbleViewport(callback: (rect: Rect | null) => void): () => void;
   onPop(callback: () => void): () => void;
 } = {
   snapshot: () => ipcRenderer.invoke('state:get'),
@@ -22,6 +20,9 @@ const api: DesktopApi & {
   act: (id, action) => ipcRenderer.invoke('task:act', id, action),
   open: (id) => ipcRenderer.invoke('task:open', id),
   edit: (id) => ipcRenderer.invoke('task:edit', id),
+  exitFocus: () => ipcRenderer.invoke('focus:exit'),
+  selectGroup: (id) => ipcRenderer.invoke('groups:select', id),
+  dragGroup: (phase, x, y) => ipcRenderer.send('groups:drag', phase, x, y),
   pairing: () => ipcRenderer.invoke('pairing:get'),
   onEdit: (callback) => {
     const listener = (_: unknown, id: string) => callback(id);
@@ -31,7 +32,6 @@ const api: DesktopApi & {
     };
   },
   setSettings: (input) => ipcRenderer.invoke('settings:set', input),
-  pause: (choice) => ipcRenderer.invoke('pause:set', choice),
   growthMode: (mode) => ipcRenderer.invoke('growth:mode', mode),
   groups: (action, input) => ipcRenderer.invoke('groups:change', action, input),
   arrange: (side) => ipcRenderer.invoke('layout:arrange', side),
@@ -44,14 +44,6 @@ const api: DesktopApi & {
   resize: (height) => ipcRenderer.send('panel:resize', height),
   drag: (phase, x, y) => ipcRenderer.send('bubble:drag', phase, x, y),
   hit: (hit) => ipcRenderer.send('bubble:hit', hit),
-  bubbleViewport: () => ipcRenderer.invoke('bubble:viewport'),
-  onBubbleViewport: (callback) => {
-    const listener = (_: unknown, rect: Rect | null) => callback(rect);
-    ipcRenderer.on('bubble:viewport', listener);
-    return () => {
-      ipcRenderer.removeListener('bubble:viewport', listener);
-    };
-  },
   onPop: (callback) => {
     const listener = () => callback();
     ipcRenderer.on('bubble:pop', listener);

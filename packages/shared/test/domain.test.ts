@@ -16,7 +16,7 @@ import {
   groupColor,
 } from '../domain.ts';
 import { bubbleSize, grow } from '../growthEngine.ts';
-import { layoutBubbles, bubbleToolbarPosition } from '../layoutEngine.ts';
+import { layoutBubbles } from '../layoutEngine.ts';
 import { historySummary } from '../history.ts';
 const now = Date.parse('2026-10-23T04:00:00Z');
 const input = { title: 'Graph notes', urgency: 4 as const, groupId: 'School' };
@@ -125,7 +125,7 @@ test('reorder validates the entire active list and persists rank', () => {
   assert.throws(() => reorder(s, ['task-1', 'task-1']));
   assert.throws(() => reorder(s, ['task-1']));
 });
-test('layout preserves reachable visible bodies, avoids a center panel, and detects screen full', () => {
+test('layout preserves reachable visible bodies and avoids a center panel', () => {
   const tasks = Array.from({ length: 4 }, (_, i) => ({
     ...populated().tasks[0],
     id: String(i),
@@ -135,7 +135,6 @@ test('layout preserves reachable visible bodies, avoids a center panel, and dete
   const area = { x: 0, y: 0, width: 1440, height: 900 };
   const panel = { x: 530, y: 300, width: 376, height: 300 };
   const result = layoutBubbles(tasks, area, [panel], new Map(), () => 'any');
-  assert.equal(result.full, false);
   assert.equal(result.items.length, 4);
   for (const item of result.items) {
     const cx = item.x + item.size / 2,
@@ -147,14 +146,6 @@ test('layout preserves reachable visible bodies, avoids a center panel, and dete
       y = Math.max(panel.y, Math.min(cy, panel.y + panel.height));
     assert.ok(Math.hypot(cx - x, cy - y) >= r - 2);
   }
-  const full = layoutBubbles(
-    tasks.map((t) => ({ ...t, size: 1100 })),
-    area,
-    [panel],
-    new Map(),
-    () => 'any',
-  );
-  assert.equal(full.full, true);
 });
 test('history counts completions once and apportions focus across the period boundary', () => {
   const summary = historySummary(
@@ -175,18 +166,4 @@ test('history counts completions once and apportions focus across the period bou
   );
   assert.equal(summary.completed, 1);
   assert.equal(summary.focusMs, 2000);
-});
-
-test('oversized bubble controls stay inside the visible work area at fixed dimensions', () => {
-  for (const viewport of [
-    { x: 0, y: 0, width: 1440, height: 810 },
-    { x: 680, y: 440, width: 800, height: 600 },
-    { x: 0, y: 900, width: 640, height: 480 },
-  ]) {
-    const p = bubbleToolbarPosition({ x: 100, y: 100, width: 2800, height: 2800 }, viewport);
-    assert.ok(p.x - 56 >= viewport.x + 8);
-    assert.ok(p.x + 56 <= viewport.x + viewport.width - 8);
-    assert.ok(p.y >= viewport.y + 8);
-    assert.ok(p.y + 32 <= viewport.y + viewport.height - 8);
-  }
 });

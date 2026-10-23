@@ -19,20 +19,22 @@ To launch from a production build:
 npm start
 ```
 
-The floating TODOPOP panel includes **Blow a bubble**, **Floating**, **Popped**, and **Tint & groups**.
-Create a task, choose an urgency, and optionally link its work URL. A transparent,
-always-on-top window appears for each active task. Drag the bubble to reposition
-it; click a linked bubble to open its work page, or an unlinked bubble to pop it; right-click to edit. Hover reveals snooze, edit,
-and explicit completion controls. Popped tasks can be bubbled again as a fresh round without removing their history.
-Closing the panel shows a bottom-right Launcher; use it or click the application in the Dock to reopen it,
-or use the TODOPOP menu’s **Show TODOPOP** command.
+The fixed TODOPOP wordmark has three interactive Os: **Blow a bubble**, **Popped**, and **Tint & Group**. Hover or keyboard-focus an O to see its symbol and tooltip.
+
+- Single click a linked bubble to open its URL; single click an unlinked bubble to enter a local large-text billboard. Clicks wait 350 ms to distinguish double clicks.
+- Double click a bubble to edit its name, URL, urgency and group; right click to Pop. There are no attached bubble buttons. You can undo completion from the control bar.
+- Drag a bubble to reposition it. In Tint & Group, select a group to highlight it, then drag its dedicated handle to move all members together. Manual group placement survives restart; Line up or Shuffle releases it.
+- Billboard works offline without Chrome. **Back / Esc** leaves the task unfinished; **Pop · Done** completes it. Browser context cannot close a local session.
+- The **?** button reopens the interactive tutorial. Practice uses temporary examples, not real tasks.
+
+The control bar stays near the top of the primary display. **⌘⇧Space** or the Dock reopens it if needed. Popped tasks can be bubbled again as a fresh round without removing history.
 
 ## Connect Chrome
 
 1. Run `npm run build` to generate the extension, if you have not built it yet.
 2. In Chrome, open `chrome://extensions` and enable **Developer mode**.
 3. Click **Load unpacked** and select this repository’s `apps/chrome-extension/dist` folder.
-4. In the desktop panel, click **Connect**, then **Copy pairing code**.
+4. In the desktop panel, click the connection dot, then **Copy code**.
 5. Click the TODOPOP extension in Chrome, paste the code, and connect.
 
 A linked task page in the foreground activates automatic Focus Mode and hides **all** normal bubbles and the panel.
@@ -50,7 +52,7 @@ apps/
   desktop/
     electron/       Main process, local storage, IPC, native windows, WebSocket bridge
     src/            React components, Figma assets, Motion animations, Zustand state
-  chrome-extension/ Manifest V3 worker, reconnect manager, pairing popup
+  chrome-extension/ Manifest V3 worker, reconnect manager, independent pairing window
 packages/
   shared/           Task/context types, validation, growth, layout, history, domain commands
   ui/               Shared Figma logo, Unbounded, theme tokens and React controls
@@ -95,18 +97,12 @@ The default Real speed uses logical display units: Now! grows about 37.8 visible
 pixels every two minutes, Today half as fast, Soon a quarter, and Remind stays small.
 This is a logical centimetre reference, not a physical monitor calibration.
 Demo · 60× uses a separate temporary clock and returns to real sizes when disabled.
-Global pause keeps bubbles visible; single-task snooze hides only that task.
+Pause Growing was removed. Local/browser focus, sleep and 95% screen coverage stop growth automatically; legacy snoozed tasks can still be shown again from the task list.
 Tasks do not catch up growth while the app is closed or the system sleeps.
 
-Implemented: conditional click behavior, task CRUD, continuous growth, pause/resume,
-isolated Demo, basic collision/edge layout, Shuffle/Line up, manual rank, groups,
-Tint, independent edit popovers, Undo, new-round Rebubble, week/month history,
-Launcher, authenticated Chrome pairing and automatic URL Focus.
+Implemented: conditional click/billboard behavior, double-click editing, right-click Pop with ten original Figma droplet assets, completion/deletion Undo, continuous growth, isolated Demo, contact deformation, clipped polygon-union coverage, fixed logo workspace, ring hue/saturation controls, group selection/movement, new-round Rebubble, and week/month receipt history. At 95% visible coverage, growth stops and resumes when space is freed. Oversized native windows are clipped to the work area rather than displaced by macOS.
 
-Known limits: circular layout approximates the Figma soft-body fill-up; custom color
-uses a native picker rather than the exact hue-ring UI. Native foreground switching,
-Spaces, external displays and long-running performance need the manual review.
-Phone, Steps, Focus timer bar and sound are explicitly excluded.
+The shape solver is a bounded radial-contact model, not a volume-preserving fluid simulation. Coverage uses 64-point contours and 1px scanlines, with overlapping areas counted once and screen/UI clipping applied. Primary-display layout is the current supported baseline; Spaces, external displays and extended daily use still need manual review. Phone, backend, Steps, timer bars, sound and URL blocking are excluded. Chrome pairing remains for the hackathon demo; it is not required for local billboard focus.
 
 ## Local preview distribution
 
@@ -114,6 +110,8 @@ Phone, Steps, Focus timer bar and sound are explicitly excluded.
 Electron runtime. The preview is ad-hoc signed for local testing, not Developer ID
 signed or notarized. It is not a public production release, and currently uses the
 default Electron app icon. There is no automatic updater or store submission.
+
+See the [0.2.0 implementation report](docs/implementation-report-0.2.zh-CN.md) for current changes and manual checks. Older reports are historical snapshots.
 
 See [progress report](docs/progress-report.zh-CN.md), [test details](docs/testing-details.zh-CN.md),
 [manual review](docs/manual-review.zh-CN.md) and [current decisions](docs/product-decisions.zh-CN.md).

@@ -1,12 +1,29 @@
 /// <reference path="./assets.d.ts" />
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
 import logoO from './assets/logo-o.svg';
-export function BrandLogo() {
+export function BrandLogo({
+  actions,
+}: { actions?: { name: string; symbol: string; active?: boolean; onClick(): void }[] } = {}) {
   return (
     <div className="logo" aria-label="TODOPOP">
       {['T', 'O', 'D', 'O', 'P', 'O', 'P'].map((letter, index) =>
         letter === 'O' ? (
-          <img key={index} src={logoO} alt="" width="24.08" height="21.77" />
+          actions ? (
+            <button
+              key={index}
+              type="button"
+              className="logo-o-button"
+              aria-label={actions[(index - 1) / 2].name}
+              aria-expanded={actions[(index - 1) / 2].active}
+              title={actions[(index - 1) / 2].name}
+              onClick={actions[(index - 1) / 2].onClick}
+            >
+              <img src={logoO} alt="" width="24.08" height="21.77" />
+              <span aria-hidden="true">{actions[(index - 1) / 2].symbol}</span>
+            </button>
+          ) : (
+            <img key={index} src={logoO} alt="" width="24.08" height="21.77" />
+          )
         ) : (
           <span key={index}>{letter}</span>
         ),
@@ -62,11 +79,27 @@ export function applyTheme(tint: string) {
     '--tp-asset-filter',
     `hue-rotate(${hue - 222.27}deg) saturate(${saturation / 0.7174})`,
   );
-  document.documentElement.style.setProperty('--ink', tint);
-  document.documentElement.style.setProperty('--rule', tint + '38');
+  const luminance = (rgb: number[]) =>
+    rgb
+      .map((n) => (n <= 0.04045 ? n / 12.92 : Math.pow((n + 0.055) / 1.055, 2.4)))
+      .reduce((sum, n, i) => sum + n * [0.2126, 0.7152, 0.0722][i], 0);
+  const readable = [...channels];
+  while (1.05 / (luminance(readable) + 0.05) < 4.5) for (let i = 0; i < 3; i++) readable[i] *= 0.94;
+  const ink =
+    '#' +
+    readable
+      .map((n) =>
+        Math.round(n * 255)
+          .toString(16)
+          .padStart(2, '0'),
+      )
+      .join('');
+  document.documentElement.style.setProperty('--tint', tint);
+  document.documentElement.style.setProperty('--ink', ink);
+  document.documentElement.style.setProperty('--rule', ink + '38');
   const rgb = [1, 3, 5]
     .map((i) =>
-      Math.round(parseInt(tint.slice(i, i + 2), 16) * 0.55 + 255 * 0.45)
+      Math.round(parseInt(ink.slice(i, i + 2), 16) * 0.55 + 255 * 0.45)
         .toString(16)
         .padStart(2, '0'),
     )

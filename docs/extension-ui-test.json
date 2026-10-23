@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "date": "2026-10-23T15:54:16.556Z",
-  "isolatedBridgePort": 17847,
+  "date": "2026-10-23T19:08:03.630Z",
+  "isolatedBridgePort": 17848,
   "checks": [
     "local Unbounded and Figma logo",
     "compact help",

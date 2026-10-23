@@ -19,18 +19,19 @@ import {
   taskAction,
   rebubble,
   undoDelete,
+  undoCompletion,
+  visibleCoverage,
+  clippedBubbleFrame,
+  COVERAGE_LIMIT,
   applySettings,
-  pauseSettings,
   changeGroup,
   reorder,
-  isPaused,
   bubbleSize,
   layoutBubbles,
   DEMO_SPEED,
   type AppState,
   type Task,
   type Settings,
-  type PauseChoice,
   type GroupChange,
   type Side,
   type BrowserContext,
@@ -41,6 +42,10 @@ import {
 import { TaskRepository } from './storage';
 import { BubbleWindows, loadRenderer, lockNavigation } from './windowManager';
 import { startBrowserBridge, BRIDGE_PORT } from './websocketServer';
+const bridgePort =
+  process.env.TODOPOP_DATA_DIR && process.env.TODOPOP_TEST_PORT
+    ? Number(process.env.TODOPOP_TEST_PORT)
+    : BRIDGE_PORT;
 app.setName('TODOPOP');
 app.setPath('userData', process.env.TODOPOP_DATA_DIR || join(app.getPath('appData'), 'TODOPOP'));
 const locked = app.requestSingleInstanceLock();
@@ -68,6 +73,15 @@ let mode: 'real' | 'demo' = 'real',
 const realGrowth = new Map<string, number>(),
   demoGrowth = new Map<string, number>(),
   positions = new Map<string, LayoutItem>();
+let billboardId: string | null = null;
+let billboardWindow: BrowserWindow | null = null;
+let selectedGroupId: string | null = null;
+let groupDrag: {
+  ending?: boolean;
+  x: number;
+  y: number;
+  origins: Map<string, { x: number; y: number }>;
+} | null = null;
 let focused: { id: string; startedAt: number } | null = null;
 function activeTask(tasks: Task[]) {
   return tasks.find(
@@ -82,7 +96,14 @@ function activeTask(tasks: Task[]) {
 function withGrowth(state: AppState): AppState {
   return {
     ...state,
-    tasks: state.tasks.map((t) => ({ ...t, growthMs: realGrowth.get(t.id) ?? t.growthMs ?? 0 })),
+    tasks: state.tasks.map((t) => {
+      const p = mode === 'real' ? positions.get(t.id) : undefined;
+      return {
+        ...t,
+        growthMs: realGrowth.get(t.id) ?? t.growthMs ?? 0,
+        position: p ? { x: p.x, y: p.y } : t.position,
+      };
+    }),
   };
 }
 async function finishFocus(now = Date.now()) {
@@ -118,7 +139,7 @@ async function finishFocus(now = Date.now()) {
 function snapshot(): Snapshot {
   const state = repository.state,
     now = Date.now();
-  const paused = isPaused(state.settings, now);
+  const paused = false;
   const tasks = state.tasks
     .filter((t) => !t.deletedAt)
     .map((t) => ({
@@ -127,8 +148,15 @@ function snapshot(): Snapshot {
     }));
   const focus = suspended
     ? 'NORMAL'
-    : getFocusState(context?.url ?? null, context?.isFocused ?? false, tasks);
-  const matched = focus === 'FOCUS' ? activeTask(tasks) : undefined;
+    : billboardId
+      ? 'FOCUS'
+      : getFocusState(context?.url ?? null, context?.isFocused ?? false, tasks);
+  const matched =
+    focus === 'FOCUS'
+      ? billboardId
+        ? tasks.find((t) => t.id === billboardId && !t.completed)
+        : activeTask(tasks)
+      : undefined;
   if (focused?.id !== matched?.id) {
     const old = focused;
     focused = null;
@@ -154,18 +182,53 @@ function snapshot(): Snapshot {
   const visible = tasks
     .filter((t) => !t.completed && !(t.snoozedUntil && t.snoozedUntil > now))
     .map((t) => ({ ...t, size: bubbleSize(t) }));
-  const layout = layoutBubbles(visible, area, obstacles, positions, (t) =>
-    state.settings.layoutSide !== 'any'
-      ? state.settings.layoutSide
-      : state.groups.find((g) => g.id === t.groupId)?.side || 'any',
+  const layout = layoutBubbles(
+    visible,
+    area,
+    obstacles,
+    positions,
+    (t) =>
+      state.settings.layoutSide !== 'any'
+        ? state.settings.layoutSide
+        : state.groups.find((g) => g.id === t.groupId)?.side || 'any',
+    new Set([
+      ...(groupDrag?.origins.keys() || []),
+      ...bubbles.draggingIds(),
+      ...visible
+        .filter(
+          (t) =>
+            state.groups.some((g) => g.id === t.groupId && g.positionLocked) &&
+            (t.position || positions.has(t.id)),
+        )
+        .map((t) => t.id),
+    ]),
   );
-  full = layout.full;
+
   for (const p of layout.items) positions.set(p.id, p);
   const viewed = tasks.map((t) => {
     const p = layout.items.find((p) => p.id === t.id);
-    return p ? { ...t, size: p.size, position: { x: p.x, y: p.y } } : t;
+    if (!p) return t;
+    const frame = clippedBubbleFrame(p.size, p, area);
+    return {
+      ...t,
+      size: p.size,
+      position: { x: p.x, y: p.y },
+      renderOffset: { x: p.x - frame.x, y: p.y - frame.y },
+    };
   });
+  const coverage =
+    focus === 'FOCUS'
+      ? 0
+      : visibleCoverage(
+          viewed.filter((t) => !t.completed && !(t.snoozedUntil && t.snoozedUntil > now)),
+          area,
+          obstacles,
+        );
+  full = coverage >= COVERAGE_LIMIT;
   return {
+    billboardId,
+    selectedGroupId,
+    coverage,
     tasks: viewed,
     groups: state.groups,
     history: state.history,
@@ -195,7 +258,7 @@ function publish() {
     !state.tasks.some((t) => t.id === editingId && !t.completed)
   )
     editor.close();
-  if (state.focus === 'FOCUS') {
+  if (state.focus === 'FOCUS' && !billboardId) {
     mainWindow?.hide();
     launcher?.hide();
   } else if (panelHidden) {
@@ -229,7 +292,7 @@ async function save(transform: (state: AppState) => AppState) {
 }
 async function createWindows() {
   const area = screen.getPrimaryDisplay().workArea;
-  const saved = repository.state.settings.panelPosition;
+  const saved = { x: area.x + (area.width - 376) / 2, y: area.y + 12 };
   const x = Math.round(
       Math.max(
         area.x,
@@ -257,6 +320,7 @@ async function createWindows() {
     hasShadow: false,
     alwaysOnTop: true,
     resizable: false,
+    movable: false,
     backgroundColor: '#00000000',
     show: false,
     title: 'TODOPOP',
@@ -271,13 +335,6 @@ async function createWindows() {
       mainWindow?.hide();
       publish();
     }
-  });
-  mainWindow.on('moved', () => {
-    if (quitting || !mainWindow) return;
-    const [x, y] = mainWindow.getPosition();
-    void repository
-      .mutateState((s) => ({ ...s, settings: { ...s.settings, panelPosition: { x, y } } }))
-      .catch(() => {});
   });
   mainWindow.once('ready-to-show', showPanel);
   await loadRenderer(mainWindow);
@@ -363,6 +420,65 @@ async function openEditor(id: string) {
   await loadRenderer(win, undefined, `edit=${encodeURIComponent(id)}`);
 }
 
+async function leaveBillboard() {
+  billboardId = null;
+  const win = billboardWindow;
+  billboardWindow = null;
+  if (win && !win.isDestroyed()) win.destroy();
+  await finishFocus();
+  publish();
+}
+async function openBillboard(id: string) {
+  if (billboardId === id && billboardWindow && !billboardWindow.isDestroyed()) {
+    billboardWindow.show();
+    return;
+  }
+  await leaveBillboard();
+  billboardId = id;
+  const area = screen.getPrimaryDisplay().workArea;
+  const width = Math.min(840, area.width - 32),
+    height = Math.min(560, area.height - 48);
+  const win = new BrowserWindow({
+    x: Math.round(area.x + (area.width - width) / 2),
+    y: Math.round(area.y + (area.height - height) / 2),
+    width,
+    height,
+    frame: false,
+    transparent: true,
+    hasShadow: false,
+    alwaysOnTop: true,
+    show: false,
+    title: 'TODOPOP · In the bubble',
+    webPreferences: {
+      preload: join(__dirname, '../preload/preload.cjs'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+    },
+  });
+  billboardWindow = win;
+  win.setAlwaysOnTop(true, 'pop-up-menu');
+  lockNavigation(win);
+  win.on('close', (e) => {
+    if (!quitting && billboardWindow === win) {
+      e.preventDefault();
+      void leaveBillboard();
+    }
+  });
+  win.once('ready-to-show', () => {
+    if (!win.isDestroyed() && billboardId === id) win.show();
+  });
+  publish();
+  try {
+    await loadRenderer(win, undefined, `billboard=${encodeURIComponent(id)}`);
+  } catch (e) {
+    if (!quitting) {
+      await leaveBillboard();
+      throw e;
+    }
+  }
+}
+
 function registerIPC() {
   function allowed(
     e: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent,
@@ -380,15 +496,106 @@ function registerIPC() {
       return true;
     if (!panelOnly && editor && !editor.isDestroyed() && e.sender.id === editor.webContents.id)
       return id === undefined || id === editingId;
+    if (
+      !panelOnly &&
+      billboardWindow &&
+      !billboardWindow.isDestroyed() &&
+      e.sender.id === billboardWindow.webContents.id
+    )
+      return id === undefined || id === billboardId;
     const taskId = bubbles.taskFor(e.sender);
     return !panelOnly && Boolean(taskId) && (id === undefined || id === taskId);
   }
   function authorize(e: Electron.IpcMainInvokeEvent, id?: string, panelOnly = false) {
     if (!allowed(e, id, panelOnly)) throw new Error('Untrusted window');
   }
-  ipcMain.handle('bubble:viewport', (e) => {
+  ipcMain.handle('focus:exit', async (e) => {
     authorize(e);
-    return bubbles.viewport(e.sender);
+    await leaveBillboard();
+  });
+  ipcMain.handle('groups:select', (e, id) => {
+    authorize(e, undefined, true);
+    if (id !== null && !repository.state.groups.some((g) => g.id === id))
+      throw new Error('Unknown group');
+    if (groupDrag && !groupDrag.ending && id !== selectedGroupId) {
+      for (const [taskId, p] of groupDrag.origins) {
+        const old = positions.get(taskId);
+        if (old) positions.set(taskId, { ...old, ...p });
+      }
+      groupDrag = null;
+    }
+    selectedGroupId = id;
+    publish();
+  });
+  ipcMain.on('groups:drag', (e, phase, x, y) => {
+    if (
+      !allowed(e, undefined, true) ||
+      !selectedGroupId ||
+      !Number.isFinite(x) ||
+      !Number.isFinite(y)
+    )
+      return;
+    if (phase === 'start') {
+      const origins = new Map<string, { x: number; y: number }>();
+      for (const t of repository.tasks.filter(
+        (t) => t.groupId === selectedGroupId && !t.completed && !t.deletedAt,
+      )) {
+        const w = bubbles.windows.get(t.id);
+        if (w && !w.isDestroyed()) {
+          const b = w.getBounds();
+          const p = positions.get(t.id);
+          origins.set(t.id, { x: p?.x ?? b.x, y: p?.y ?? b.y });
+        }
+      }
+      groupDrag = { x, y, origins };
+    } else if (phase === 'move' && groupDrag && !groupDrag.ending) {
+      const area = screen.getPrimaryDisplay().workArea;
+      let dx = x - groupDrag.x,
+        dy = y - groupDrag.y;
+      let loX = -Infinity,
+        hiX = Infinity,
+        loY = -Infinity,
+        hiY = Infinity;
+      for (const [id, p] of groupDrag.origins) {
+        const size = positions.get(id)?.size || 118;
+        loX = Math.max(loX, area.x + 12 - p.x - size * 0.2);
+        hiX = Math.min(hiX, area.x + area.width - 12 - p.x - size * 0.8);
+        loY = Math.max(loY, area.y + 12 - p.y - size * 0.2);
+        hiY = Math.min(hiY, area.y + area.height - 12 - p.y - size * 0.8);
+      }
+      dx = Math.max(loX, Math.min(dx, hiX));
+      dy = Math.max(loY, Math.min(dy, hiY));
+      for (const [id, p] of groupDrag.origins) {
+        const old = positions.get(id);
+        if (old) positions.set(id, { ...old, x: Math.round(p.x + dx), y: Math.round(p.y + dy) });
+      }
+      publish();
+    } else if (phase === 'end' && groupDrag && !groupDrag.ending) {
+      const ending = groupDrag,
+        groupId = selectedGroupId;
+      ending.ending = true;
+      const placed = new Map(
+        [...ending.origins.keys()].flatMap((id) => {
+          const p = positions.get(id);
+          return p ? [[id, { x: p.x, y: p.y }] as const] : [];
+        }),
+      );
+      void save((state) => ({
+        ...state,
+        settings: { ...state.settings, layoutSide: 'any' },
+        groups: state.groups.map((g) =>
+          g.id === groupId ? { ...g, side: 'any', positionLocked: true } : g,
+        ),
+        tasks: state.tasks.map((t) =>
+          placed.has(t.id) ? { ...t, position: placed.get(t.id) } : t,
+        ),
+      }))
+        .catch(() => {})
+        .finally(() => {
+          if (groupDrag === ending) groupDrag = null;
+          publish();
+        });
+    }
   });
   ipcMain.handle('state:get', (e) => {
     if (launcher && !launcher.isDestroyed() && e.sender.id === launcher.webContents.id)
@@ -404,14 +611,16 @@ function registerIPC() {
   });
   ipcMain.handle('task:update', async (e, id, input) => {
     authorize(e, id);
-    positions.delete(id);
     await save((s) => editTask(s, id, input));
     notify('Bubble updated.');
     publish();
   });
   ipcMain.handle('task:act', async (e, id, action: TaskAction) => {
     authorize(e, id);
-    if (focused?.id === id && (action === 'complete' || action === 'delete')) await finishFocus();
+    if (billboardId === id && (action === 'complete' || action === 'delete'))
+      await leaveBillboard();
+    else if (focused?.id === id && (action === 'complete' || action === 'delete'))
+      await finishFocus();
     if (action === 'restore') {
       await save((s) => rebubble(s, id, randomUUID(), Date.now()));
       notify('A fresh round. Your history stays.');
@@ -425,22 +634,22 @@ function registerIPC() {
             : action === 'snooze'
               ? 'Snoozed for 10 minutes.'
               : 'Popped. Nice work!',
-        action === 'delete' ? id : undefined,
+        action === 'delete' || action === 'complete' ? id : undefined,
       );
     }
     publish();
   });
   ipcMain.handle('task:open', async (e, id) => {
     authorize(e, id);
-    const task = repository.tasks.find((t) => t.id === id && !t.deletedAt);
+    const task = repository.tasks.find((t) => t.id === id && !t.deletedAt && !t.completed);
     if (!task) return;
+    selectedGroupId = null;
     if (task.url) {
       new URL(task.url);
       await shell.openExternal(task.url);
-    } else {
-      await save((s) => taskAction(s, id, 'complete', Date.now(), randomUUID()));
-      notify('Popped. Nice work!');
       publish();
+    } else {
+      await openBillboard(id);
     }
   });
   ipcMain.handle('task:edit', async (e, id) => {
@@ -449,19 +658,11 @@ function registerIPC() {
   });
   ipcMain.handle('pairing:get', (e) => {
     authorize(e, undefined, true);
-    return { token, port: BRIDGE_PORT };
+    return { token, port: bridgePort };
   });
   ipcMain.handle('settings:set', async (e, input: Partial<Settings>) => {
     authorize(e, undefined, true);
     await save((s) => ({ ...s, settings: applySettings(s.settings, input) }));
-  });
-  ipcMain.handle('pause:set', async (e, choice: PauseChoice) => {
-    authorize(e, undefined, true);
-    await save((s) => ({ ...s, settings: pauseSettings(s.settings, choice, Date.now()) }));
-    notify(
-      choice === 'resume' ? 'Bubbles growing again.' : 'Growth paused. Bubbles stay in sight.',
-    );
-    publish();
   });
   ipcMain.handle('growth:mode', (e, next: 'real' | 'demo') => {
     authorize(e, undefined, true);
@@ -479,8 +680,19 @@ function registerIPC() {
   });
   ipcMain.handle('groups:change', async (e, action, input: GroupChange) => {
     authorize(e, undefined, true);
-    positions.clear();
-    await save((s) => changeGroup(s, action, input, randomUUID()));
+    if (action === 'delete' && input.id === selectedGroupId) selectedGroupId = null;
+    if (input.side !== undefined) positions.clear();
+    await save((s) => {
+      const next = changeGroup(s, action, input, randomUUID());
+      return input.side !== undefined
+        ? {
+            ...next,
+            groups: next.groups.map((g) =>
+              g.id === input.id ? { ...g, positionLocked: false } : g,
+            ),
+          }
+        : next;
+    });
   });
   ipcMain.handle('tasks:reorder', async (e, ids: string[]) => {
     authorize(e, undefined, true);
@@ -492,6 +704,7 @@ function registerIPC() {
     await save((s) => ({
       ...s,
       settings: applySettings(s.settings, { layoutSide: side === 'shuffle' ? 'any' : side }),
+      groups: s.groups.map((g) => ({ ...g, positionLocked: false })),
       tasks: s.tasks.map((t) => ({ ...t, position: undefined })),
     }));
     if (side === 'shuffle') {
@@ -511,7 +724,9 @@ function registerIPC() {
   });
   ipcMain.handle('task:undo', async (e, id) => {
     authorize(e, undefined, true);
-    await save((s) => undoDelete(s, id));
+    await save((s) =>
+      s.tasks.find((t) => t.id === id)?.completed ? undoCompletion(s, id) : undoDelete(s, id),
+    );
     notify('Bubble restored.');
     publish();
   });
@@ -547,11 +762,11 @@ function registerIPC() {
   ipcMain.on('panel:resize', (e, height: number) => {
     if (!allowed(e, undefined, true) || !Number.isFinite(height) || !mainWindow) return;
     const area = screen.getDisplayMatching(mainWindow.getBounds()).workArea;
-    const h = Math.min(area.height - 20, Math.max(200, Math.ceil(height)));
+    const h = Math.min(area.height - 20, Math.max(80, Math.ceil(height)));
     const [x, y] = mainWindow.getPosition();
     mainWindow.setBounds({
-      x,
-      y: Math.max(area.y, Math.min(y, area.y + area.height - h)),
+      x: Math.round(area.x + (area.width - 376) / 2),
+      y: area.y + 12,
       height: h,
     });
   });
@@ -571,15 +786,33 @@ if (locked)
     .then(async () => {
       repository = new TaskRepository(app.getPath('userData'));
       await repository.load();
+      if (repository.state.settings.interactionVersion !== 1)
+        await repository.mutateState((s) => ({
+          ...s,
+          settings: {
+            ...s.settings,
+            interactionVersion: 1,
+            pauseUntil: null,
+            pauseIndefinite: false,
+          },
+        }));
       token = await repository.token();
       for (const t of repository.tasks) realGrowth.set(t.id, t.growthMs || 0);
-      bubbles = new BubbleWindows((id, position) => {
-        positions.delete(id);
-        void save((s) => ({
-          ...s,
-          tasks: s.tasks.map((t) => (t.id === id ? { ...t, position } : t)),
-        })).catch(() => {});
-      });
+      bubbles = new BubbleWindows(
+        (id, position) => {
+          const old = positions.get(id);
+          if (old) positions.set(id, { ...old, ...position });
+          void save((s) => ({
+            ...s,
+            tasks: s.tasks.map((t) => (t.id === id ? { ...t, position } : t)),
+          })).catch(() => {});
+        },
+        (id, position) => {
+          const old = positions.get(id);
+          if (old) positions.set(id, { ...old, ...position });
+          publish();
+        },
+      );
       registerIPC();
       await createWindows();
       if (quitting) return;
@@ -612,7 +845,16 @@ if (locked)
           error = message;
           publish();
         },
+        bridgePort,
       );
+      screen.on('display-metrics-changed', () => {
+        positions.clear();
+        publish();
+      });
+      screen.on('display-removed', () => {
+        positions.clear();
+        publish();
+      });
       powerMonitor.on('suspend', () => {
         suspended = true;
         void finishFocus();
@@ -631,7 +873,7 @@ if (locked)
         const state = repository.state;
         const stopped =
           suspended ||
-          isPaused(state.settings, now) ||
+          Boolean(billboardId) ||
           getFocusState(context?.url ?? null, context?.isFocused ?? false, repository.tasks) ===
             'FOCUS' ||
           full;

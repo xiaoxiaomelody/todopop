@@ -1,225 +1,178 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { useEffect, useRef, useState } from 'react';
+import { BrandLogo, Button, StatusDot } from '@todopop/ui';
 import { TaskForm } from '../components/TaskForm';
 import { TaskList } from '../components/TaskList';
 import { GrowthControls } from '../components/GrowthControls';
 import { Appearance } from '../components/Appearance';
 import { Archive } from '../components/Archive';
+import { Tutorial } from '../components/Tutorial';
 import { useTaskStore } from '../store/taskStore';
-import { BrandLogo, Button, StatusDot } from '@todopop/ui';
-import closeIcon from '../assets/42a21.svg';
-function Section({
-  title,
-  meta,
-  open,
-  toggle,
-  children,
-}: {
-  title: string;
-  meta?: string;
-  open: boolean;
-  toggle(): void;
-  children: ReactNode;
-}) {
-  return (
-    <section className="accordion">
-      <button className="accordion-head" aria-expanded={open} onClick={toggle}>
-        <span>{title}</span>
-        <small>{meta}</small>
-        <span className="chevron">{open ? '−' : '+'}</span>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="accordion-body"
-          >
-            <div className="section-content">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </section>
-  );
-}
 export function Landing() {
-  const state = useTaskStore();
-  const panel = useRef<HTMLDivElement>(null);
-  const [sections, setSections] = useState<string[]>([]);
-  const [info, setInfo] = useState(false);
-  const [pairing, setPairing] = useState<{ token: string; port: number } | null>(null);
-  const [copied, setCopied] = useState(false);
-  const floating = state.tasks.filter((t) => !t.completed && !t.deletedAt),
-    popped = state.tasks.filter((t) => t.completed);
+  const s = useTaskStore(),
+    panel = useRef<HTMLDivElement>(null),
+    offered = useRef(false);
+  const [section, setSection] = useState<string | null>(null),
+    [tour, setTour] = useState(false),
+    [pairing, setPairing] = useState<{ token: string; port: number } | null>(null),
+    [copied, setCopied] = useState(false);
+  const floating = s.tasks.filter((t) => !t.completed && !t.deletedAt);
+  const toggle = (id: string) => setSection((current) => (current === id ? null : id));
   useEffect(() => {
-    const open = () => setSections((current) => ['appearance']);
+    if (!s.loading && !offered.current) {
+      offered.current = true;
+      if (!s.settings.tutorialDone) setTour(true);
+    }
+  }, [s.loading, s.settings.tutorialDone]);
+  useEffect(() => {
+    const open = () => {
+      setTour(false);
+      setSection('appearance');
+    };
     window.addEventListener('manage-groups', open);
     return () => window.removeEventListener('manage-groups', open);
   }, []);
   useEffect(() => {
-    if (!panel.current || !window.todopop) return;
-    const observer = new ResizeObserver(() =>
-      window.todopop.resize(panel.current!.getBoundingClientRect().height + 32),
+    if (!panel.current) return;
+    const o = new ResizeObserver(() =>
+      window.todopop.resize(panel.current!.getBoundingClientRect().height + 8),
     );
-    observer.observe(panel.current);
-    return () => observer.disconnect();
+    o.observe(panel.current);
+    return () => o.disconnect();
   }, []);
-  const toggle = (id: string) => setSections((current) => (current.includes(id) ? [] : [id]));
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSection(null);
+        if (s.selectedGroupId) void s.run(() => window.todopop.selectGroup(null));
+      }
+    };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  }, [s.selectedGroupId]);
+  const done = () => {
+    setTour(false);
+    void s.run(() => window.todopop.setSettings({ tutorialDone: true }));
+  };
   return (
-    <div className="panel-shell" ref={panel}>
-      <div className="panel" data-node-id="14:6">
-        <header className="brand">
-          <div className="grip" />
-          <button
-            className="brand-tint"
-            aria-label="Open appearance"
-            title="Tint and groups"
-            onClick={() =>
-              setSections((current) => (current.includes('appearance') ? [] : ['appearance']))
-            }
-          >
-            <BrandLogo />
-          </button>
-          <button
-            className="icon-button close-panel"
-            aria-label="Hide panel"
-            title="Show again from the Dock"
-            onClick={() => window.todopop.hide()}
-          >
-            <img src={closeIcon} width="21" height="21" alt="" />
-          </button>
-          <div className="tagline">
-            Pop it before it fills your screen.{' '}
+    <div className="control-shell" ref={panel}>
+      <div className="control-panel">
+        <header className="control-bar">
+          <BrandLogo
+            actions={[
+              {
+                name: 'Blow a bubble',
+                symbol: '+',
+                active: section === 'new',
+                onClick: () => toggle('new'),
+              },
+              {
+                name: 'Popped bubbles',
+                symbol: '◌',
+                active: section === 'popped',
+                onClick: () => toggle('popped'),
+              },
+              {
+                name: 'Tint and groups',
+                symbol: '◐',
+                active: section === 'appearance',
+                onClick: () => toggle('appearance'),
+              },
+            ]}
+          />
+          <div className="control-utilities">
+            <button aria-label="Open tutorial" title="Quick tour" onClick={() => setTour(!tour)}>
+              ?
+            </button>
             <button
-              className="info-button"
-              aria-label="About TODOPOP"
-              onClick={() => setInfo(!info)}
+              aria-label="Chrome connection"
+              title="Chrome connection · demo"
+              onClick={async () => {
+                toggle('connection');
+                if (!pairing) await s.run(async () => setPairing(await window.todopop.pairing()));
+              }}
             >
-              i
+              <StatusDot state={s.connected ? 'connected' : 'idle'} />
             </button>
           </div>
         </header>
-        {info && (
-          <div className="info-copy">
-            Drag to move. Linked bubbles open their work page; unlinked bubbles pop when clicked.
-            Right-click to edit. Work pages hide the bubbles automatically.
-            <p>Close this panel to tuck it away. Click TODOPOP in the Dock to bring it back.</p>
-          </div>
-        )}
-        <Section title="Blow a bubble" open={sections.includes('new')} toggle={() => toggle('new')}>
-          <TaskForm
-            key={sections.includes('new') ? 'new-open' : 'new-closed'}
-            onDone={() => setSections(['floating'])}
-          />
-        </Section>
-        <Section
-          title="Floating"
-          meta={`${floating.length} FLOATING`}
-          open={sections.includes('floating')}
-          toggle={() => toggle('floating')}
-        >
-          <GrowthControls />
-          <TaskList
-            tasks={floating}
-            onEdit={(id) => {
-              void state.run(() => window.todopop.edit(id));
-            }}
-          />
-        </Section>
-        <Section
-          title="Popped"
-          meta={`${popped.length} POPPED`}
-          open={sections.includes('popped')}
-          toggle={() => toggle('popped')}
-        >
-          <Archive />
-        </Section>
-        <Section
-          title="Tint & groups"
-          open={sections.includes('appearance')}
-          toggle={() => toggle('appearance')}
-        >
-          <Appearance />
-        </Section>
-        <div className={`connection-bar ${state.focus === 'FOCUS' ? 'focused' : ''}`}>
-          <StatusDot state={state.connected ? 'connected' : 'idle'} />
-          <span>
-            {state.focus === 'FOCUS'
-              ? 'In the bubble'
-              : state.connected
-                ? 'Chrome connected'
-                : 'Chrome not connected'}
-          </span>
-          <button
-            aria-label="Chrome connection"
-            onClick={async () => {
-              toggle('connection');
-              if (!pairing)
-                await state.run(async () => {
-                  setPairing(await window.todopop.pairing());
-                });
-            }}
-          >
-            {sections.includes('connection') ? '−' : 'Connect'}
-          </button>
+        {tour && <Tutorial onDone={done} />}
+        <div className="control-content">
+          {section === 'new' && (
+            <section aria-label="Create a bubble">
+              <h2>Blow a bubble</h2>
+              <TaskForm onDone={() => setSection(null)} />
+              <details className="floating-details">
+                <summary>Floating · {floating.length}</summary>
+                <GrowthControls />
+                <TaskList
+                  tasks={floating}
+                  onEdit={(id) => void s.run(() => window.todopop.edit(id))}
+                />
+              </details>
+            </section>
+          )}
+          {section === 'popped' && (
+            <section aria-label="Popped receipt">
+              <h2>Popped</h2>
+              <Archive />
+            </section>
+          )}
+          {section === 'appearance' && (
+            <section aria-label="Tint and group settings">
+              <h2>Tint & Group</h2>
+              <Appearance />
+            </section>
+          )}
+          {section === 'connection' && (
+            <section aria-label="Chrome demo connection">
+              <h2>Connect Chrome</h2>
+              <p className="hint">Demo only · copy this code into the extension.</p>
+              {pairing && (
+                <>
+                  <input
+                    className="pairing-code"
+                    readOnly
+                    aria-label="Pairing code"
+                    value={pairing.token}
+                  />
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(pairing.token);
+                        setCopied(true);
+                      } catch {
+                        useTaskStore.setState({ problem: 'Select the code and copy it manually.' });
+                      }
+                    }}
+                  >
+                    {copied ? 'Copied' : 'Copy code'}
+                  </Button>
+                </>
+              )}
+              <p className="hint">{s.connected ? 'Connected' : 'Waiting for Chrome'}</p>
+            </section>
+          )}
         </div>
-        {state.focus === 'FOCUS' && (
-          <p className="focus-message">{state.matchedTask} · bubbles tucked away</p>
-        )}
-        {sections.includes('connection') && (
-          <div className="connection-details">
-            <h2>Make room for focus.</h2>
-            <p>Load the TODOPOP Chrome extension, then paste your pairing code into its popup.</p>
-            <ol>
-              <li>Chrome → Extensions → Developer mode</li>
-              <li>
-                Load unpacked → <code>apps/chrome-extension/dist</code>
-              </li>
-              <li>Click the extension and paste the code below.</li>
-            </ol>
-            {pairing && (
-              <>
-                <input readOnly aria-label="Pairing code" value={pairing.token} />
-                <Button
-                  className="pill"
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(pairing.token);
-                      setCopied(true);
-                    } catch {
-                      state.run(async () => {
-                        throw new Error('Select the pairing code and copy it manually.');
-                      });
-                    }
-                  }}
-                >
-                  {copied ? 'Copied ✓' : 'Copy pairing code'}
-                </Button>
-              </>
-            )}
-            <p className="hint">
-              Active-tab context stays on this computer. Nothing is sent to a cloud service.
-            </p>
-          </div>
-        )}
-        {(state.error || state.problem) && (
+        {(s.problem || s.error) && (
           <p className="error" role="alert">
-            {state.problem || state.error}
+            {s.problem || s.error}
           </p>
         )}
-        {state.loading && <p className="empty">Loading your bubbles…</p>}
+        {s.loading && <p className="empty">Loading…</p>}
+        {s.selectedGroupId && (
+          <button
+            className="clear-selection"
+            onClick={() => void s.run(() => window.todopop.selectGroup(null))}
+          >
+            Clear group selection · Esc
+          </button>
+        )}
       </div>
-      {state.toast && (
+      {s.toast && (
         <div className="toast" role="status">
-          <span>{state.toast.message}</span>
-          {state.toast.undoId && (
-            <button
-              onClick={() => {
-                void state.run(() => window.todopop.undo(state.toast!.undoId!));
-              }}
-            >
+          <span>{s.toast.message}</span>
+          {s.toast.undoId && (
+            <button onClick={() => void s.run(() => window.todopop.undo(s.toast!.undoId!))}>
               Undo
             </button>
           )}

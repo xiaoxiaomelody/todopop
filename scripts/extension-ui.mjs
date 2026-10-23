@@ -112,7 +112,8 @@ try {
   for (const client of server.clients)
     client.send(JSON.stringify({ type: 'APPEARANCE', tint: '#078b86' }));
   await popup.waitForFunction(
-    () => getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() === '#078b86',
+    () =>
+      getComputedStyle(document.documentElement).getPropertyValue('--tint').trim() === '#078b86',
   );
   await popup.getByRole('button', { name: 'Change code' }).click();
   assert.equal(await popup.locator('#token').inputValue(), '');

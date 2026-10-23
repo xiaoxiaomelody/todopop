@@ -1,12 +1,14 @@
 {
   "passed": true,
-  "date": "2026-10-23T15:52:27.990Z",
+  "date": "2026-10-23T19:08:15.133Z",
   "checks": [
-    "oversized bottom bubble retains 32px controls inside work area",
-    "oversized left bubble retains 32px controls inside work area",
-    "oversized top bubble retains 32px controls inside work area",
-    "oversized right bubble retains 32px controls inside work area",
-    "visible Pop button completes linked giant task without opening its URL"
+    "95% visible union coverage stops growth",
+    "giant bottom bubble body remains reachable for right-click Pop",
+    "giant left bubble body remains reachable for right-click Pop",
+    "giant top bubble body remains reachable for right-click Pop",
+    "giant right bubble body remains reachable for right-click Pop",
+    "actual right-click completes linked giant bubble with no attached buttons",
+    "Pop frees space and growth resumes for remaining tasks"
   ],
   "errors": []
 }

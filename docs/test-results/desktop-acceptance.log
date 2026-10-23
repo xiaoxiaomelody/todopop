@@ -1,15 +1,12 @@
-PASS legacy tasks migrate with backup and historical completion
-PASS formal growth advances; global pause stops growth while keeping bubbles visible
-PASS 60x Demo is an isolated preview and does not overwrite formal growth
-PASS keyboard task reordering persists manual rank
-PASS unlinked bubble click pops and records completion
-PASS linked bubble click opens URL without completing it
-PASS single-task snooze and Show now are distinct from global pause
-PASS Rebubble creates a fresh round and retains historical wins
-PASS delete toast Undo restores the same task
-PASS custom groups rename, color and side persist; custom color survives Tint
-PASS right-click opens an independent, bounded edit popover; Save persists
-PASS archive week/month views and date navigation use real completion records
-PASS minimized Launcher reopens the panel
-PASS restart retains settings, groups, order, pause and history; Demo defaults to real
-PASS unsaved new-task draft survives opening group management
+PASS tutorial rehearses click/double/right click without modifying real tasks; old pause migrated
+PASS first logo O creates tasks from fixed nonmovable control bar
+PASS single click enters Chrome-independent billboard; growth stops; Esc returns without completing
+PASS double click edits existing fields without firing first-click URL navigation
+PASS linked single click opens URL without completing
+PASS right click completes with ten Figma droplets; immediate Undo restores same round and history
+PASS third O exposes original ring/saturation controls; custom group colors persist and other groups fade
+PASS selected group moves through dedicated handle and Esc clears highlight
+PASS second O switches to receipt, rather than opening all three panels
+PASS billboard completion closes local session and records task once
+PASS restart retains edits, group color, completion and tutorial state without reopening billboard
+PASS new task draft survives group management; renderer has no errors

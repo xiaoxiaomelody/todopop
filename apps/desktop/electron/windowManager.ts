@@ -1,6 +1,6 @@
 import { BrowserWindow, screen, type WebContents } from 'electron';
 import { join } from 'node:path';
-import { BUBBLE_SIZE, type Task, type FocusState } from '@todopop/shared';
+import { BUBBLE_SIZE, clippedBubbleFrame, type Task, type FocusState } from '@todopop/shared';
 export function lockNavigation(win: BrowserWindow) {
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', (e) => e.preventDefault());
@@ -13,31 +13,28 @@ export async function loadRenderer(win: BrowserWindow, taskId?: string, route?: 
 }
 export class BubbleWindows {
   readonly windows = new Map<string, BrowserWindow>();
+  private logical = new Map<string, { x: number; y: number; size: number }>();
   private ready = new Set<string>();
   private visible = true;
   private closing = new Set<string>();
+  private closingTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private dragState = new Map<number, { x: number; y: number; left: number; top: number }>();
-  constructor(private persistPosition: (id: string, position: { x: number; y: number }) => void) {}
+  constructor(
+    private persistPosition: (id: string, position: { x: number; y: number }) => void,
+    private moved?: (id: string, position: { x: number; y: number }) => void,
+  ) {}
+  draggingIds() {
+    return [...this.dragState.keys()]
+      .map(
+        (id) => [...this.windows].find(([, w]) => !w.isDestroyed() && w.webContents.id === id)?.[0],
+      )
+      .filter((id): id is string => Boolean(id));
+  }
   taskFor(sender: WebContents) {
     if (sender.isDestroyed()) return undefined;
     return [...this.windows].find(
       ([, w]) => !w.isDestroyed() && w.webContents.id === sender.id,
     )?.[0];
-  }
-  viewport(sender: WebContents) {
-    const id = this.taskFor(sender);
-    const win = id ? this.windows.get(id) : undefined;
-    if (!win || win.isDestroyed()) return null;
-    const b = win.getBounds();
-    const area = screen.getDisplayMatching(b).workArea;
-    const x = Math.max(0, area.x - b.x),
-      y = Math.max(0, area.y - b.y);
-    return {
-      x,
-      y,
-      width: Math.max(0, Math.min(b.width, area.x + area.width - b.x) - x),
-      height: Math.max(0, Math.min(b.height, area.y + area.height - b.y) - y),
-    };
   }
   sync(tasks: Task[], focus: FocusState) {
     this.visible = focus === 'NORMAL';
@@ -48,29 +45,41 @@ export class BubbleWindows {
       if (!wanted.some((t) => t.id === id) && !this.closing.has(id)) {
         this.closing.add(id);
         if (!win.isDestroyed()) win.webContents.send('bubble:pop');
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           this.windows.delete(id);
+          this.logical.delete(id);
           this.ready.delete(id);
           this.closing.delete(id);
           if (!win.isDestroyed()) {
             this.dragState.delete(win.webContents.id);
             win.destroy();
           }
-        }, 360);
+          this.closingTimers.delete(id);
+        }, 520);
+        this.closingTimers.set(id, timer);
       }
     wanted.forEach((task, index) => {
       let win = this.windows.get(task.id);
+      if (this.closing.has(task.id)) {
+        clearTimeout(this.closingTimers.get(task.id));
+        this.closingTimers.delete(task.id);
+        this.closing.delete(task.id);
+        this.ready.delete(task.id);
+        if (win && !win.isDestroyed()) win.destroy();
+        this.windows.delete(task.id);
+        win = undefined;
+      }
       const size = Math.round(task.size || BUBBLE_SIZE[task.urgency]);
       const area = screen.getPrimaryDisplay().workArea;
       const position = task.position || {
         x: area.x + 20 + index * 90,
         y: area.y + 60 + index * 60,
       };
+      this.logical.set(task.id, { ...position, size });
+      const frame = clippedBubbleFrame(size, position, area);
       if (!win || win.isDestroyed()) {
         win = new BrowserWindow({
-          ...position,
-          width: size,
-          height: size,
+          ...frame,
           transparent: true,
           frame: false,
           alwaysOnTop: true,
@@ -91,12 +100,6 @@ export class BubbleWindows {
         win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
         win.setAlwaysOnTop(true, 'floating');
         win.setIgnoreMouseEvents(true, { forward: true });
-        const sendViewport = () => {
-          if (!win!.isDestroyed())
-            win!.webContents.send('bubble:viewport', this.viewport(win!.webContents));
-        };
-        win.on('move', sendViewport);
-        win.on('resize', sendViewport);
         lockNavigation(win);
         const bubble = win;
         win.once('ready-to-show', () => {
@@ -109,10 +112,15 @@ export class BubbleWindows {
           this.ready.delete(task.id);
           if (!bubble.isDestroyed()) bubble.destroy();
         });
-      } else if (!this.dragState.has(win.webContents.id)) {
+      } else {
         const b = win.getBounds();
-        if (b.width !== size || b.x !== position.x || b.y !== position.y)
-          win.setBounds({ ...position, width: size, height: size }, false);
+        if (
+          b.width !== frame.width ||
+          b.height !== frame.height ||
+          b.x !== frame.x ||
+          b.y !== frame.y
+        )
+          win.setBounds(frame, false);
       }
       if (focus === 'FOCUS') win.hide();
       else if (this.ready.has(task.id) && !this.closing.has(task.id) && !win.isVisible())
@@ -124,36 +132,34 @@ export class BubbleWindows {
     const win = id ? this.windows.get(id) : undefined;
     if (!win || !Number.isFinite(x) || !Number.isFinite(y)) return;
     if (phase === 'start') {
-      const [left, top] = win.getPosition();
-      this.dragState.set(sender.id, { x, y, left, top });
+      const origin = this.logical.get(id!)!;
+      this.dragState.set(sender.id, { x, y, left: origin.x, top: origin.y });
     }
     if (phase === 'move') {
       const d = this.dragState.get(sender.id);
       if (d) {
         const area = screen.getDisplayNearestPoint({ x: Math.round(x), y: Math.round(y) }).workArea;
-        const size = win.getSize()[0],
+        const size = this.logical.get(id!)!.size,
           margin = size * 0.2;
-        win.setPosition(
-          Math.round(
-            Math.max(
-              area.x - margin,
-              Math.min(d.left + x - d.x, area.x + area.width - size + margin),
-            ),
+        const clamp = (v: number, lo: number, hi: number) =>
+          Math.max(lo, Math.min(v, Math.max(lo, hi)));
+        const position = {
+          x: Math.round(
+            clamp(d.left + x - d.x, area.x - margin, area.x + area.width - size + margin),
           ),
-          Math.round(
-            Math.max(
-              area.y - margin,
-              Math.min(d.top + y - d.y, area.y + area.height - size + margin),
-            ),
+          y: Math.round(
+            clamp(d.top + y - d.y, area.y - margin, area.y + area.height - size + margin),
           ),
-          false,
-        );
+        };
+        this.logical.set(id!, { ...position, size });
+        win.setBounds(clippedBubbleFrame(size, position, area), false);
+        this.moved?.(id!, position);
       }
     }
     if (phase === 'end') {
       this.dragState.delete(sender.id);
-      const [left, top] = win.getPosition();
-      this.persistPosition(id!, { x: left, y: top });
+      const position = this.logical.get(id!)!;
+      this.persistPosition(id!, { x: position.x, y: position.y });
     }
   }
 }

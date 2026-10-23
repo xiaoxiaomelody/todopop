@@ -4,7 +4,13 @@ export type Group = 'None' | 'School' | 'Work' | 'Life';
 export type Side = 'any' | 'left' | 'top' | 'bottom' | 'right';
 export type PauseChoice = '30m' | '1h' | 'tomorrow' | 'manual' | 'resume';
 export type ColorSource = { kind: 'palette'; slot: number } | { kind: 'custom'; hex: string };
-export type TaskGroup = { id: string; name: string; color: ColorSource; side: Side };
+export type TaskGroup = {
+  id: string;
+  name: string;
+  color: ColorSource;
+  side: Side;
+  positionLocked?: boolean;
+};
 export type TaskInput = {
   title: string;
   url?: string;
@@ -25,6 +31,7 @@ export type Task = TaskInput & {
   rank?: number;
   sourceTaskId?: string;
   size?: number;
+  renderOffset?: { x: number; y: number };
 };
 export type HistoryEvent = {
   id: string;
@@ -38,6 +45,8 @@ export type HistoryEvent = {
 };
 export type Settings = {
   tint: string;
+  interactionVersion?: number;
+  tutorialDone?: boolean;
   pauseUntil: number | null;
   pauseIndefinite: boolean;
   layoutSide: Side;
@@ -66,6 +75,9 @@ export type Snapshot = {
   connected: boolean;
   error: string | null;
   matchedTask: string | null;
+  billboardId: string | null;
+  selectedGroupId: string | null;
+  coverage: number;
   paused: boolean;
   full: boolean;
   growthMode: 'real' | 'demo';
@@ -82,9 +94,11 @@ export type DesktopApi = {
   open(id: string): Promise<void>;
   edit(id: string): Promise<void>;
   onEdit(callback: (id: string) => void): () => void;
+  exitFocus(): Promise<void>;
+  selectGroup(id: string | null): Promise<void>;
+  dragGroup(phase: 'start' | 'move' | 'end', x: number, y: number): void;
   pairing(): Promise<{ token: string; port: number }>;
   setSettings(input: Partial<Settings>): Promise<void>;
-  pause(choice: PauseChoice): Promise<void>;
   growthMode(mode: 'real' | 'demo'): Promise<void>;
   groups(action: 'create' | 'update' | 'delete', input: GroupChange): Promise<void>;
   arrange(side: Side | 'shuffle'): Promise<void>;

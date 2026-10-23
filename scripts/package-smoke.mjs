@@ -1,5 +1,5 @@
 import { _electron as electron } from 'playwright';
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import assert from 'node:assert/strict';
@@ -13,10 +13,12 @@ try {
     env: { ...process.env, TODOPOP_DATA_DIR: dir },
     timeout: 20000,
   });
+  const version = await desktop.evaluate(({ app }) => app.getVersion());
+  assert.equal(version, JSON.parse(await readFile('apps/desktop/package.json', 'utf8')).version);
   const page = await desktop.firstWindow();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
-  await page.waitForSelector('.panel');
+  await page.waitForSelector('.control-panel');
   assert.ok(await desktop.evaluate(({ app }) => app.isPackaged));
   await page.evaluate(() => window.todopop.create({ title: 'Packaged smoke task', urgency: 1 }));
   await page.waitForFunction(async () => (await window.todopop.snapshot()).tasks.length === 1);
@@ -43,6 +45,7 @@ try {
       {
         passed: true,
         date: new Date().toISOString(),
+        version,
         architecture: 'arm64',
         packaged: true,
         isolatedUserData: true,

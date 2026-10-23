@@ -1,0 +1,25 @@
+{
+  "fileKey": "51bGy6oFsJV6YJa9jvBKIT",
+  "references": [
+    {
+      "nodeId": "95:4381",
+      "purpose": "ring color picker",
+      "assets": [
+        { "file": "apps/desktop/src/assets/figma/hue-ring.png", "renderedLogicalSize": [150, 150] },
+        { "file": "apps/desktop/src/assets/figma/hue-knob.svg", "renderedLogicalSize": [20, 20] }
+      ]
+    },
+    {
+      "nodeId": "11:360",
+      "purpose": "Popped variant: hidden label/body, ten outlined droplets",
+      "assets": [
+        { "file": "apps/desktop/src/assets/figma/pop-drop.svg", "renderedLogicalSize": [7.2, 7.2] }
+      ],
+      "motionContextNodes": [],
+      "implementationTransitionMs": 480,
+      "note": "Figma returned state geometry but no keyframe tracks; transition timing is a local adaptation for manual review."
+    }
+  ],
+  "squishReference": "User screenshot of Reply to Melody touching Problem set 4, plus original Figma contours",
+  "runtimeAssetUrls": false
+}

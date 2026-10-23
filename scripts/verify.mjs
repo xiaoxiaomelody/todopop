@@ -9,6 +9,8 @@ const steps = [
   ['build', ['npm', 'run', 'build']],
   ['extension-ui', ['node', 'scripts/extension-ui.mjs']],
   ['desktop-acceptance', ['node', 'scripts/desktop-acceptance.mjs']],
+  ['giant-reachability', ['node', 'scripts/bubble-reachability.mjs']],
+  ['layout-pressure', ['node', 'scripts/layout-pressure.mjs']],
   ['integration', ['node', 'scripts/e2e.mjs']],
 ];
 const results = [];
@@ -16,6 +18,7 @@ for (const [name, [command, ...args]] of steps) {
   const started = Date.now();
   const result = spawnSync(command, args, {
     encoding: 'utf8',
+    env: { ...process.env, TODOPOP_TEST_PORT: process.env.TODOPOP_TEST_PORT || '17848' },
     timeout: 180000,
     maxBuffer: 10 * 1024 * 1024,
   });

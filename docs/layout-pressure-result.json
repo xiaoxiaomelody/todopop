@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "date": "2026-10-23T19:08:20.948Z",
+  "bubbles": 30,
+  "snapshotMs": [
+    148.36404199999924,
+    31.01104099999975,
+    34.52258400000028,
+    20.009667000000263,
+    19.025915999999597
+  ],
+  "coverage": 0.40209556285809156,
+  "checks": [
+    "30 native bubble renderers loaded",
+    "local focus hides all 30",
+    "return restores all 30",
+    "zero renderer errors"
+  ],
+  "errors": []
+}

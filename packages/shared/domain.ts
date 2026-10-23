@@ -47,6 +47,8 @@ export function hydrate(value: unknown, now = Date.now()): AppState {
       if (!g.id || !g.name || !g.color || !SIDES.includes(g.side) || ids.has(g.id))
         throw new Error('Invalid groups');
       ids.add(g.id);
+      if (g.positionLocked !== undefined && typeof g.positionLocked !== 'boolean')
+        throw new Error('Invalid group placement');
       return { ...g, color: { ...g.color } };
     });
   }
@@ -136,6 +138,14 @@ export function applySettings(settings: Settings, input: Partial<Settings>): Set
   if (input.pauseIndefinite !== undefined) {
     if (typeof input.pauseIndefinite !== 'boolean') throw new Error('Invalid pause');
     next.pauseIndefinite = input.pauseIndefinite;
+  }
+  if (input.tutorialDone !== undefined) {
+    if (typeof input.tutorialDone !== 'boolean') throw new Error('Invalid tutorial state');
+    next.tutorialDone = input.tutorialDone;
+  }
+  if (input.interactionVersion !== undefined) {
+    if (input.interactionVersion !== 1) throw new Error('Invalid interaction version');
+    next.interactionVersion = 1;
   }
   for (const key of ['panelPosition', 'launcherPosition'] as const)
     if (input[key] !== undefined) {
@@ -384,4 +394,19 @@ export function hexHue(hex: string) {
   return (
     ((max === r ? (g - b) / d : max === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60 + 360) % 360
   );
+}
+
+export function undoCompletion(state: AppState, id: string): AppState {
+  const task = state.tasks.find((t) => t.id === id && t.completed && !t.deletedAt);
+  if (!task) throw new Error('Nothing to undo');
+  capacity(state);
+  return {
+    ...state,
+    tasks: state.tasks.map((t) =>
+      t.id === id ? { ...t, completed: false, completedAt: undefined } : t,
+    ),
+    history: state.history.filter(
+      (e) => !(e.taskId === id && e.kind === 'completed' && e.at === task.completedAt),
+    ),
+  };
 }

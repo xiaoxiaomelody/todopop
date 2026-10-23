@@ -1,6 +1,7 @@
 {
   "passed": true,
-  "date": "2026-10-23T15:55:57.129Z",
+  "date": "2026-10-23T19:10:16.062Z",
+  "version": "0.2.0",
   "architecture": "arm64",
   "packaged": true,
   "isolatedUserData": true,
