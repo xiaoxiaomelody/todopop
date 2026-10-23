@@ -51,3 +51,9 @@ chrome.storage.onChanged.addListener((changes, area) => {
 void chrome.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
 void chrome.alarms.create('reconnect', { periodInMinutes: 0.5 });
 refresh();
+
+chrome.runtime.onMessage.addListener((message, sender, respond) => {
+  if (sender.id !== chrome.runtime.id || !message || message.type !== 'RECONNECT') return;
+  reconnect(report);
+  respond({ ok: true });
+});

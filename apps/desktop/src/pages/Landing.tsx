@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { TaskForm } from '../components/TaskForm';
 import { TaskList } from '../components/TaskList';
 import { useTaskStore } from '../store/taskStore';
-import logoO from '../assets/b64f3.svg';
+import { BrandLogo, Button, StatusDot } from '@todopop/ui';
 import closeIcon from '../assets/42a21.svg';
 function Section({
   title,
@@ -70,15 +70,7 @@ export function Landing() {
       <div className="panel" data-node-id="14:6">
         <header className="brand">
           <div className="grip" />
-          <div className="logo" aria-label="TODOPOP">
-            {['T', 'O', 'D', 'O', 'P', 'O', 'P'].map((c, i) =>
-              c === 'O' ? (
-                <img key={i} src={logoO} alt="" width="24.08" height="21.77" />
-              ) : (
-                <span key={i}>{c}</span>
-              ),
-            )}
-          </div>
+          <BrandLogo />
           <button
             className="icon-button close-panel"
             aria-label="Hide panel"
@@ -130,7 +122,7 @@ export function Landing() {
           <TaskList tasks={popped} archived onEdit={setEditing} />
         </Section>
         <div className={`connection-bar ${state.focus === 'FOCUS' ? 'focused' : ''}`}>
-          <span className="status-dot" />
+          <StatusDot state={state.connected ? 'connected' : 'idle'} />
           <span>
             {state.focus === 'FOCUS'
               ? 'In the bubble'
@@ -168,7 +160,7 @@ export function Landing() {
             {pairing && (
               <>
                 <input readOnly aria-label="Pairing code" value={pairing.token} />
-                <button
+                <Button
                   className="pill"
                   onClick={async () => {
                     try {
@@ -182,7 +174,7 @@ export function Landing() {
                   }}
                 >
                   {copied ? 'Copied ✓' : 'Copy pairing code'}
-                </button>
+                </Button>
               </>
             )}
             <p className="hint">

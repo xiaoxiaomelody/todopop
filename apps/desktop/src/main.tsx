@@ -3,7 +3,7 @@ import { MotionConfig } from 'motion/react';
 import { Landing } from './pages/Landing';
 import { BubbleOverlay } from './pages/BubbleOverlay';
 import { connectStore } from './store/taskStore';
-import '@fontsource-variable/unbounded';
+import '@todopop/ui/styles.css';
 import './styles.css';
 const id = new URLSearchParams(location.hash.slice(1)).get('bubble');
 document.body.classList.toggle('bubble-window', Boolean(id));

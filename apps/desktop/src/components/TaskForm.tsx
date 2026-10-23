@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button, TextInput } from '@todopop/ui';
 import { GROUP_COLOR, type Group, type Task, type Urgency } from '@todopop/shared';
 import { UrgencyPicker } from './UrgencyPicker';
 import { useTaskStore } from '../store/taskStore';
@@ -26,7 +27,7 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
     >
       <label>
         <span className="eyebrow">Task name</span>
-        <input
+        <TextInput
           name="title"
           autoFocus
           required
@@ -40,7 +41,7 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
         <span className="eyebrow">
           Work URL <span className="optional">Optional</span>
         </span>
-        <input
+        <TextInput
           name="url"
           type="url"
           maxLength={4096}
@@ -95,13 +96,14 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
             Cancel
           </button>
         )}
-        <button
+        <Button
           type="submit"
           disabled={busy || !title.trim()}
           className={task ? 'pill filled' : 'pill'}
+          variant={task ? 'filled' : 'outline'}
         >
           {busy ? 'Saving…' : task ? 'Save' : 'Blow it'}
-        </button>
+        </Button>
       </div>
     </form>
   );

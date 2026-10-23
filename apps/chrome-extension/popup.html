@@ -2,30 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>TODOPOP pairing</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TODOPOP · Chrome connection</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <h1>TODOPOP</h1>
-    <p>Pop it before it fills your screen.</p>
-    <div id="status" role="status">Checking connection…</div>
-    <form id="pair">
-      <label for="token">DESKTOP PAIRING CODE</label
-      ><input
-        id="token"
-        type="password"
-        autocomplete="off"
-        spellcheck="false"
-        required
-        pattern="[a-f0-9]{64}"
-        placeholder="Paste your 64-character code"
-      /><button type="submit">Connect to TODOPOP</button>
-    </form>
-    <p class="hint">
-      In TODOPOP, open Chrome connection and copy the pairing code. Active-tab context goes only to
-      this computer.
-    </p>
-    <button id="disconnect" class="secondary">Disconnect</button>
+    <div id="root"></div>
     <script type="module" src="popup.js"></script>
   </body>
 </html>

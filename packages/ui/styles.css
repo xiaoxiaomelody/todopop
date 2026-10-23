@@ -1,0 +1,130 @@
+@import '@fontsource-variable/dm-sans';
+@import '@fontsource-variable/unbounded';
+:root {
+  --ink: #1a419e;
+  --soft: #728ac1;
+  --rule: rgba(26, 65, 158, 0.22);
+  --tp-surface: rgba(255, 255, 255, 0.96);
+  --tp-wash: #f3f6fc;
+  --tp-font: 'DM Sans Variable', sans-serif;
+  --tp-logo-font: 'Unbounded Variable', sans-serif;
+  --tp-radius: 28px;
+  --tp-panel-width: 348px;
+  --tp-gutter: 26px;
+  font-family: var(--tp-font);
+  color: var(--ink);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 1.26px;
+  width: max-content;
+  font-family: var(--tp-logo-font);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.28px;
+  line-height: 1;
+}
+.logo img {
+  display: block;
+  width: 24.08px;
+  height: 21.77px;
+}
+.tp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.4px solid var(--ink);
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--ink);
+  font: 500 12px/1.2 var(--tp-font);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    opacity 0.15s;
+}
+.tp-button:hover {
+  background: #eef3ff;
+}
+.tp-button--filled {
+  background: var(--ink);
+  color: white;
+}
+.tp-button--filled:hover {
+  background: #153782;
+}
+.tp-button--text {
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  color: var(--soft);
+  text-decoration: underline;
+}
+.tp-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.tp-button:focus-visible,
+.tp-input:focus-visible {
+  outline: 2px solid #3668e8;
+  outline-offset: 3px;
+}
+.tp-input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 0;
+  border-bottom: 1.4px solid var(--ink);
+  border-radius: 0;
+  padding: 10px 0 9px;
+  background: transparent;
+  color: var(--ink);
+  font: 400 14.5px/1.4 var(--tp-font);
+  user-select: text;
+}
+.tp-input::placeholder {
+  color: #9badcf;
+}
+.tp-field-label {
+  display: block;
+  color: var(--soft);
+  font: 500 9px/1.4 var(--tp-font);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.tp-status-dot {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.tp-status-dot--connected {
+  color: #168769;
+}
+.tp-status-dot--connecting {
+  color: var(--ink);
+  animation: tp-pulse 1.4s ease-in-out infinite;
+}
+.tp-status-dot--error {
+  color: #a13b36;
+}
+@keyframes tp-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tp-button {
+    transition: none;
+  }
+  .tp-status-dot {
+    animation: none;
+  }
+}

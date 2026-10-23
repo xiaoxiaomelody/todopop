@@ -1,10 +1,7 @@
 @import 'tailwindcss';
 :root {
-  font-family: 'Unbounded Variable', sans-serif;
-  color: #1a419e;
-  --ink: #1a419e;
-  --soft: #728ac1;
-  --rule: rgba(26, 65, 158, 0.22);
+  font-family: var(--tp-font);
+  color: var(--ink);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -636,4 +633,8 @@ img {
 }
 .urgency-track button:last-child .stop-slot {
   justify-content: flex-end;
+}
+
+.bubble-label {
+  font-family: var(--tp-logo-font);
 }

@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "date": "2026-10-23T05:06:17.775Z",
+  "checks": [
+    "local DM Sans and Figma logo",
+    "help accordion",
+    "invalid input",
+    "rejected token",
+    "authenticated pairing",
+    "secret visibility",
+    "retry",
+    "disconnect",
+    "popup bounds"
+  ],
+  "errors": []
+}
