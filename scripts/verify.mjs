@@ -12,6 +12,7 @@ const steps = [
   ['dock-ui', ['node', 'scripts/dock-ui.mjs']],
   ['ui-polish', ['node', 'scripts/ui-polish.mjs']],
   ['designer-iteration', ['node', 'scripts/designer-iteration.mjs']],
+  ['hold-gesture', ['node', 'scripts/hold-gesture.mjs']],
   ['desktop-acceptance', ['node', 'scripts/desktop-acceptance.mjs']],
   ['giant-reachability', ['node', 'scripts/bubble-reachability.mjs']],
   ['layout-pressure', ['node', 'scripts/layout-pressure.mjs']],

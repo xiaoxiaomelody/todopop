@@ -279,7 +279,7 @@ try {
   await page.evaluate((id) => window.todopop.act(id, 'wake'), task.id);
   await until(async () => (await bubbleWindows()).length === 1, 'Unsnooze did not restore bubble');
   bubble = desktop.windows().find((p) => !p.isClosed() && p.url().includes('#bubble='));
-  await bubble.locator('.organic-hit').click({ button: 'right' });
+  await bubble.locator('.organic-hit').click({ delay: 950 });
   await until(async () => (await snap(page)).tasks[0].completed, 'Completion failed');
   await until(async () => (await bubbleWindows()).length === 0, 'Completed bubble remained');
   const persisted = JSON.parse(await readFile(join(dataDir, 'state.json'), 'utf8')).tasks;

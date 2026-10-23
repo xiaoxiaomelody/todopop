@@ -2,4 +2,6 @@ PASS All three O glyphs centered within 0.5 CSS px of the ellipse
 PASS Tutorial and all four dock panels replace each other; tutorial has opaque card surface
 PASS Tint updates twice before pointer release, live theme changes; ring hole matches original 55% diameter
 PASS Custom group color updates while pointer is still held
+PASS Drawn SVG bounds centered within 0.6px in all five palette directions, group rows and six global controls
+PASS Group labels share a left edge, Close and HEX field align right, drag handle removed
 PASS Billboard uses dark themed background, white text and readable controls; return works

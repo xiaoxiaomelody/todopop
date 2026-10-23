@@ -68,18 +68,18 @@ try {
       return null;
     });
     assert.ok(point, `No visible hit target at ${side}`);
-    checks.push(`giant ${side} bubble body remains reachable for right-click Pop`);
+    checks.push(`giant ${side} bubble body remains reachable for hold-to-Pop`);
   }
   const point = await bubble.evaluate(() => {
     for (let y = 20; y < innerHeight - 10; y += 20)
       for (let x = 20; x < innerWidth - 10; x += 20)
         if (document.elementFromPoint(x, y)?.classList.contains('organic-hit')) return { x, y };
   });
-  await bubble.mouse.click(point.x, point.y, { button: 'right' });
+  await bubble.mouse.click(point.x, point.y, { delay: 950 });
   await panel.waitForFunction(
     async () => (await window.todopop.snapshot()).tasks.find((t) => t.id === 'giant')?.completed,
   );
-  checks.push('actual right-click completes linked giant bubble with no attached buttons');
+  checks.push('actual long press completes linked giant bubble with no attached buttons');
   await panel.evaluate(() => window.todopop.create({ title: 'Space is back', urgency: 4 }));
   await panel.waitForFunction(async () => {
     const s = await window.todopop.snapshot();
@@ -92,7 +92,7 @@ try {
     JSON.stringify({ passed: true, date: new Date().toISOString(), checks, errors }, null, 2) +
       '\n',
   );
-  console.log('PASS giant bubble: four reachable body anchors and actual right-click Pop');
+  console.log('PASS giant bubble: four reachable body anchors and actual hold-to-Pop');
 } finally {
   await desktop?.close();
 }

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
+import { useHoldGesture } from './useHoldGesture';
 import { PopDrops } from './PopDrops';
 import { Button, TextInput } from '@todopop/ui';
 export function Tutorial({ onDone }: { onDone(): void }) {
@@ -6,18 +7,22 @@ export function Tutorial({ onDone }: { onDone(): void }) {
     [entered, setEntered] = useState(false),
     [edited, setEdited] = useState(false),
     [popped, setPopped] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(
-    () => () => {
-      if (timer.current) clearTimeout(timer.current);
+  const gesture = useHoldGesture({
+    open: () => {
+      if (step === 1) setEntered(true);
     },
-    [],
-  );
+    edit: () => {
+      if (step === 2) setEdited(true);
+    },
+    pop: () => {
+      if (step === 3) setPopped(true);
+    },
+  });
   const instructions = [
     'Your bubbles stay until you pop them.',
     'Click to enter a task.',
-    'Double-click to edit.',
-    'Right-click to pop.',
+    'Right-click to edit.',
+    'Hold to pop. Feel it sizzle.',
   ];
   return (
     <section className="tutorial" aria-label="TODOPOP tutorial">
@@ -73,30 +78,14 @@ export function Tutorial({ onDone }: { onDone(): void }) {
         <button
           className="practice-bubble"
           aria-label="Practice bubble"
-          onClick={(e) => {
-            if (step === 1) {
-              if (e.detail === 0) setEntered(true);
-              else {
-                if (timer.current) clearTimeout(timer.current);
-                timer.current = setTimeout(() => setEntered(true), 350);
-              }
-            }
-          }}
-          onDoubleClick={() => {
-            if (timer.current) clearTimeout(timer.current);
-            if (step === 2) setEdited(true);
-          }}
-          onContextMenu={(e) => {
-            e.preventDefault();
-            if (timer.current) clearTimeout(timer.current);
-            if (step === 3) setPopped(true);
-          }}
+          data-holding={gesture.holding}
+          {...gesture.handlers}
         >
           Feed your pet
         </button>
       )}
       <p className="hint">
-        No-link tasks focus locally. Linked tasks open their URL. Esc returns from focus.
+        Click to focus or open a link. Right-click to edit. Hold for a bigger Pop.
       </p>
     </section>
   );

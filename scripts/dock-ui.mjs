@@ -9,7 +9,7 @@ await writeFile(
   JSON.stringify({
     schemaVersion: 2,
     tasks: [],
-    settings: { tutorialDone: true, interactionVersion: 1 },
+    settings: { tutorialDone: true, interactionVersion: 2 },
   }),
 );
 let app;
@@ -108,7 +108,9 @@ try {
     return b.x !== restored.x;
   });
   const edge = await app.evaluate(({ BrowserWindow, screen }) => {
-    const w = BrowserWindow.getAllWindows().find((w) => !new URL(w.webContents.getURL()).hash);
+    const w = BrowserWindow.getAllWindows().find(
+      (w) => w.webContents.getURL().startsWith('file:') && !w.webContents.getURL().includes('#'),
+    );
     return { b: w.getBounds(), a: screen.getDisplayMatching(w.getBounds()).workArea };
   });
   assert.ok(

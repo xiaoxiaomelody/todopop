@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "date": "2026-10-23T20:49:37.062Z",
+  "date": "2026-10-23T21:11:35.484Z",
   "checks": [
     "actual hue-ring drag changes color with zero image drag events and no dock movement",
     "slightly changed blue and Berry/Teal/Graphite tints all render valid translucent group colors, never fallback black",

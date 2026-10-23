@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { useEffect, useState } from 'react';
+import { useHoldGesture } from './useHoldGesture';
+import { motion } from 'motion/react';
 import {
   BUBBLE_SIZE,
   URGENCY_LABEL,
@@ -12,11 +13,28 @@ import { useTaskStore } from '../store/taskStore';
 import { useMembrane } from './useMembrane';
 import { PopDrops } from './PopDrops';
 export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
-  const state = useTaskStore(),
-    reduced = useReducedMotion();
+  const state = useTaskStore();
+  const [reduced, setReduced] = useState(
+    () => matchMedia('(prefers-reduced-motion: reduce)').matches,
+  );
+  useEffect(() => {
+    const query = matchMedia('(prefers-reduced-motion: reduce)');
+    const changed = () => setReduced(query.matches);
+    query.addEventListener('change', changed);
+    return () => query.removeEventListener('change', changed);
+  }, []);
   const [hover, setHover] = useState(false);
-  const click = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  const gesture = useHoldGesture(
+    {
+      open: () => void state.run(() => window.todopop.open(task.id)),
+      edit: () => void state.run(() => window.todopop.edit(task.id)),
+      pop: () => void state.run(() => window.todopop.act(task.id, 'complete')),
+      start: (x, y) => window.todopop.drag('start', x, y),
+      move: (x, y) => window.todopop.drag('move', x, y),
+      end: (x, y) => window.todopop.drag('end', x, y),
+    },
+    popping || state.focus !== 'NORMAL',
+  );
   const size = task.size || BUBBLE_SIZE[task.urgency];
   const group = state.groups.find((g) => g.id === task.groupId);
   const color = group ? groupColor(group.color, state.settings.tint) : state.settings.tint;
@@ -31,51 +49,15 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
     state.obstacles,
     !popping && state.focus === 'NORMAL',
     Boolean(reduced),
-    () => Boolean(drag.current?.moved),
+    gesture.moving,
+    () => gesture.pressure.current,
   );
   const faded = state.selectedGroupId && task.groupId !== state.selectedGroupId;
-  const cancelClick = () => {
-    if (click.current) clearTimeout(click.current);
-    click.current = null;
-  };
-  useEffect(
-    () => () => {
-      if (click.current) clearTimeout(click.current);
-    },
-    [],
-  );
-  function down(e: PointerEvent) {
-    if (e.button !== 0 || popping) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    drag.current = { x: e.screenX, y: e.screenY, moved: false };
-    window.todopop.drag('start', e.screenX, e.screenY);
-  }
-  function move(e: PointerEvent) {
-    if (!drag.current) return;
-    if (Math.hypot(e.screenX - drag.current.x, e.screenY - drag.current.y) > 6) {
-      drag.current.moved = true;
-      cancelClick();
-    }
-    if (drag.current.moved) window.todopop.drag('move', e.screenX, e.screenY);
-  }
-  function up(e: PointerEvent) {
-    if (!drag.current || e.button !== 0) return;
-    const moved = drag.current.moved;
-    drag.current = null;
-    window.todopop.drag('end', e.screenX, e.screenY);
-    if (moved || popping) return;
-    if (click.current) {
-      cancelClick();
-      void state.run(() => window.todopop.edit(task.id));
-    } else
-      click.current = setTimeout(() => {
-        click.current = null;
-        void state.run(() => window.todopop.open(task.id));
-      }, 350);
-  }
   return (
     <div
       className="organic-bubble"
+      data-holding={gesture.holding}
+      data-reduced-motion={reduced}
       style={{
         width: size,
         height: size,
@@ -91,7 +73,7 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
         className="organic-art"
       >
         <motion.g
-          animate={popping ? { opacity: 0, scale: reduced ? 1 : 1.16 } : { opacity: 1, scale: 1 }}
+          animate={popping ? { opacity: 0, scale: reduced ? 1 : 1.35 } : { opacity: 1, scale: 1 }}
           style={{ transformOrigin: '50% 50%' }}
           transition={{ duration: reduced ? 0.1 : 0.2 }}
         >
@@ -128,40 +110,18 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
         ref={membrane.hit}
         className="organic-hit"
         aria-label={`Open ${task.title}`}
-        aria-description="Click to open. Double-click to edit. Right-click to pop."
+        aria-description="Click to open. Hold to pop. Right-click to edit. F2 also edits."
         style={{
           clipPath: `polygon(${points.map((p) => `${(p.x / size) * 100}% ${(p.y / size) * 100}%`).join(',')})`,
         }}
-        onPointerDown={down}
-        onPointerMove={move}
-        onPointerUp={up}
-        onPointerCancel={(e) => {
-          drag.current = null;
-          cancelClick();
-          window.todopop.drag('end', e.screenX, e.screenY);
-        }}
+        {...gesture.handlers}
         onMouseEnter={() => {
           setHover(true);
           window.todopop.hit(true);
         }}
         onMouseLeave={() => {
           setHover(false);
-          if (!drag.current) window.todopop.hit(false);
-        }}
-        onClick={(e) => {
-          if (e.detail === 0 && !popping) void state.run(() => window.todopop.open(task.id));
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'F2') {
-            e.preventDefault();
-            cancelClick();
-            void state.run(() => window.todopop.edit(task.id));
-          }
-        }}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          cancelClick();
-          if (!popping) void state.run(() => window.todopop.act(task.id, 'complete'));
+          if (!gesture.holding && !gesture.moving()) window.todopop.hit(false);
         }}
       >
         <span

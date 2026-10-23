@@ -18,7 +18,7 @@ await writeFile(
   JSON.stringify({
     schemaVersion: 2,
     tasks,
-    settings: { tutorialDone: true, interactionVersion: 1 },
+    settings: { tutorialDone: true, interactionVersion: 2 },
   }),
 );
 let desktop;

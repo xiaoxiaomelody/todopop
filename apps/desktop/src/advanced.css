@@ -1327,3 +1327,39 @@ body.bubble-window {
 .group-color-card > .hint {
   text-align: left;
 }
+
+.practice-bubble[data-holding='true'] {
+  animation: practice-charge 850ms linear forwards;
+}
+@keyframes practice-charge {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.16) rotate(0.5deg);
+    border-radius: 46% 54% 50% 50%;
+  }
+  65% {
+    transform: scale(1.28) rotate(-1deg);
+    border-radius: 52% 48% 44% 56%;
+  }
+  80% {
+    transform: scale(1.35) translate(1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: scale(1.39) translate(-2px, 1px) rotate(-1deg);
+  }
+  100% {
+    transform: scale(1.42);
+    border-radius: 44% 56% 52% 48%;
+  }
+}
+.organic-bubble[data-holding='true'] .organic-hit {
+  cursor: progress;
+}
+@media (prefers-reduced-motion: reduce) {
+  .practice-bubble[data-holding='true'] {
+    animation: none;
+    transform: scale(1.05);
+  }
+}

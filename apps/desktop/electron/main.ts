@@ -866,12 +866,13 @@ if (locked)
     .then(async () => {
       repository = new TaskRepository(app.getPath('userData'));
       await repository.load();
-      if (repository.state.settings.interactionVersion !== 1)
+      if (repository.state.settings.interactionVersion !== 2)
         await repository.mutateState((s) => ({
           ...s,
           settings: {
             ...s.settings,
-            interactionVersion: 1,
+            interactionVersion: 2,
+            tutorialDone: false,
             pauseUntil: null,
             pauseIndefinite: false,
           },

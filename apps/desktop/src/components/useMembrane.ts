@@ -13,20 +13,22 @@ export function useMembrane(
   active: boolean,
   reduced: boolean,
   dragging: () => boolean,
+  pressure: () => number,
 ) {
   const body = useRef<SVGPathElement>(null),
     inner = useRef<SVGPathElement>(null),
     hit = useRef<HTMLButtonElement>(null),
     label = useRef<HTMLSpanElement>(null),
-    latest = useRef({ task, peers, obstacles, reduced, dragging }),
+    latest = useRef({ task, peers, obstacles, reduced, dragging, pressure }),
     mouse = useRef({ x: -9999, y: -9999, vx: 0, vy: 0 });
-  latest.current = { task, peers, obstacles, reduced, dragging };
+  latest.current = { task, peers, obstacles, reduced, dragging, pressure };
   useEffect(() => {
     if (!active) return;
     const m = createMembrane();
     let frame = 0,
       last = performance.now(),
-      sent = 0;
+      sent = 0,
+      charge = 0;
     const move = (e: MouseEvent) => {
       const old = mouse.current;
       mouse.current = {
@@ -46,7 +48,7 @@ export function useMembrane(
           ) <
           (next.task.size || 118) * 0.305 + 90;
       const hz =
-        next.dragging() || close
+        next.dragging() || next.pressure() > 0 || charge > 0.01 || close
           ? 60
           : next.peers.length > 24
             ? 15
@@ -70,17 +72,39 @@ export function useMembrane(
           p.dragging(),
           p.reduced,
         ),
-        curve = smoothMembrane(shape.points);
+        base = smoothMembrane(shape.points);
+      charge += (p.pressure() - charge) * Math.min(1, dt * 18);
+      const size = p.task.size || 118,
+        center = size / 2;
+      const scale = 1 + charge * (p.reduced ? 0.1 : 0.42);
+      const shake = p.reduced ? 0 : charge * charge * Math.min(4, size * 0.008);
+      const dx = Math.sin(now * 0.075) * shake,
+        dy = Math.cos(now * 0.091) * shake;
+      const curve =
+        charge > 0.001
+          ? smoothMembrane(
+              shape.points.map((point, i) => {
+                const angle = Math.atan2(point.y - center, point.x - center);
+                const wave = p.reduced
+                  ? 0
+                  : Math.sin(i * 1.8 + now * 0.065) * charge * charge * Math.min(7, size * 0.016);
+                return {
+                  x: center + (point.x - center) * scale + Math.cos(angle) * wave + dx,
+                  y: center + (point.y - center) * scale + Math.sin(angle) * wave + dy,
+                };
+              }),
+            )
+          : base;
       body.current?.setAttribute('d', curve.path);
       inner.current?.setAttribute('d', curve.path);
       if (hit.current) hit.current.style.clipPath = `path('${curve.path}')`;
       if (label.current)
-        label.current.style.transform = `translate(-50%,-50%) translate(${shape.dx}px,${shape.dy}px)`;
+        label.current.style.transform = `translate(-50%,-50%) translate(${shape.dx + dx}px,${shape.dy + dy}px) scale(${1 + charge * 0.1})`;
       mouse.current.vx *= 0.82;
       mouse.current.vy *= 0.82;
       if (now - sent > 250) {
         sent = now;
-        window.todopop.contour(p.task.size || 118, curve.flat);
+        window.todopop.contour(p.task.size || 118, base.flat);
       }
       frame = requestAnimationFrame(tick);
     };

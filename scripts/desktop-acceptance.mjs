@@ -84,18 +84,18 @@ try {
   await panel.getByRole('button', { name: 'Try it', exact: true }).click();
   await panel.getByRole('button', { name: 'Practice bubble', exact: true }).click();
   await panel.getByRole('button', { name: 'Back · task stays', exact: true }).click();
-  await panel.getByRole('button', { name: 'Practice bubble', exact: true }).dblclick();
-  await panel.getByRole('button', { name: 'Save practice edit', exact: true }).click();
   await panel
     .getByRole('button', { name: 'Practice bubble', exact: true })
     .click({ button: 'right' });
+  await panel.getByRole('button', { name: 'Save practice edit', exact: true }).click();
+  await panel.getByRole('button', { name: 'Practice bubble', exact: true }).click({ delay: 950 });
   await panel.getByRole('button', { name: 'Start bubbling', exact: true }).click();
   assert.equal((await snap(panel)).tasks.length, 2);
   assert.equal((await snap(panel)).settings.tutorialDone, true);
   assert.equal((await snap(panel)).settings.pauseIndefinite, false);
   assert.equal(await panel.getByRole('button', { name: /Pause growing/ }).count(), 0);
   pass(
-    'tutorial rehearses click/double/right click without modifying real tasks; old pause migrated',
+    'tutorial rehearses click/right-click/hold without modifying real tasks; old pause migrated',
   );
   const nativePanel = await desktop.browserWindow(panel);
   const bar = await nativePanel.evaluate((w) => ({ b: w.getBounds(), movable: w.isMovable() }));
@@ -135,8 +135,10 @@ try {
       globalThis.__opened.push(url);
     };
   });
-  await linked.getByRole('button', { name: 'Open Linked task', exact: true }).dblclick();
-  await until(() => Boolean(windowFor('#edit=linked')), 'double click did not edit');
+  await linked
+    .getByRole('button', { name: 'Open Linked task', exact: true })
+    .click({ button: 'right' });
+  await until(() => Boolean(windowFor('#edit=linked')), 'right click did not edit');
   let editor = windowFor('#edit=linked');
   await editor.locator('input[name=title]').waitFor();
   assert.deepEqual(await desktop.evaluate(() => globalThis.__opened), []);
@@ -147,7 +149,7 @@ try {
       (await snap(panel)).tasks.find((t) => t.id === 'linked').title === 'Edited linked task',
     'edit not saved',
   );
-  pass('double click edits existing fields without firing first-click URL navigation');
+  pass('right click edits existing fields without opening URL or completing');
   await linked.getByRole('button', { name: 'Open Edited linked task', exact: true }).click();
   await until(
     async () => (await desktop.evaluate(() => globalThis.__opened)).length === 1,
@@ -157,10 +159,10 @@ try {
   pass('linked single click opens URL without completing');
   await linked
     .getByRole('button', { name: 'Open Edited linked task', exact: true })
-    .click({ button: 'right' });
+    .click({ delay: 950 });
   await until(
     async () => (await snap(panel)).tasks.find((t) => t.id === 'linked').completed,
-    'right click failed',
+    'hold did not pop',
   );
   assert.equal(await linked.locator('.figma-pop-drop').count(), 10);
   await panel.getByRole('button', { name: 'Undo', exact: true }).click();
@@ -175,7 +177,7 @@ try {
   );
   await until(() => !linked.isClosed(), 'old pop still closing', 1000).catch(() => {});
   pass(
-    'right click completes with ten Figma droplets; immediate Undo restores same round and history',
+    'long press completes with ten Figma droplets; immediate Undo restores same round and history',
   );
   await panel.evaluate(() =>
     window.todopop.create({ title: 'Group companion', urgency: 3, groupId: 'School' }),

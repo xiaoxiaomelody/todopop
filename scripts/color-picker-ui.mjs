@@ -18,7 +18,7 @@ await writeFile(
         createdAt: Date.now(),
       },
     ],
-    settings: { tutorialDone: true, interactionVersion: 1 },
+    settings: { tutorialDone: true, interactionVersion: 2 },
   }),
 );
 let app;

@@ -1,5 +1,5 @@
 
-> todopop@0.3.1 format:check
+> todopop@0.4.0 format:check
 > prettier --check apps packages scripts *.json *.md docs/*.md
 
 Checking formatting...

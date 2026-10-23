@@ -153,8 +153,8 @@ export function applySettings(settings: Settings, input: Partial<Settings>): Set
     next.tutorialDone = input.tutorialDone;
   }
   if (input.interactionVersion !== undefined) {
-    if (input.interactionVersion !== 1) throw new Error('Invalid interaction version');
-    next.interactionVersion = 1;
+    if (![1, 2].includes(input.interactionVersion)) throw new Error('Invalid interaction version');
+    next.interactionVersion = input.interactionVersion;
   }
   for (const key of ['panelPosition', 'launcherPosition'] as const)
     if (input[key] !== undefined) {

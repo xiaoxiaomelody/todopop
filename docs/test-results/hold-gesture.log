@@ -1,0 +1,8 @@
+PASS Single click opens URL promptly; double click opens at most once, never pops or edits
+PASS Right click edits without completing
+PASS Holding inflates and continuously distorts the membrane; early release rebounds without Pop or navigation
+PASS Escape cancels a hold without accidental navigation
+PASS Window blur cancellation boundary leaves task untouched
+PASS Dragging beyond 6px cancels charging and never completes
+PASS Reduced motion limits inflation and removes high frequency sizzle
+PASS 850ms hold produces one Pop and ten droplets; release never navigates; Undo restores the same task

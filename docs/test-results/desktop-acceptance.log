@@ -1,11 +1,11 @@
-PASS tutorial rehearses click/double/right click without modifying real tasks; old pause migrated
+PASS tutorial rehearses click/right-click/hold without modifying real tasks; old pause migrated
 PASS first logo O creates tasks from movable compact control bar
 PASS single click enters Chrome-independent billboard; growth stops; Esc returns without completing
-PASS double click edits existing fields without firing first-click URL navigation
+PASS right click edits existing fields without opening URL or completing
 PASS linked single click opens URL without completing
-PASS right click completes with ten Figma droplets; immediate Undo restores same round and history
+PASS long press completes with ten Figma droplets; immediate Undo restores same round and history
 PASS third O exposes original ring/saturation controls; custom group colors persist and other groups fade
-PASS selected group moves through dedicated handle and Esc clears highlight
+PASS group palette has no drag handle; Esc clears highlight
 PASS second O switches to receipt, rather than opening all three panels
 PASS billboard completion closes local session and records task once
 PASS restart retains edits, group color, completion and tutorial state without reopening billboard

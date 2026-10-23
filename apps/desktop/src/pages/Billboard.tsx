@@ -17,7 +17,7 @@ export function Billboard({ id }: { id: string }) {
       aria-label="Task focus"
       onContextMenu={(e) => {
         e.preventDefault();
-        if (task) void s.run(() => window.todopop.act(id, 'complete'));
+        if (task) void s.run(() => window.todopop.edit(id));
       }}
     >
       <header>

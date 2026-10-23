@@ -1,13 +1,13 @@
 {
   "passed": true,
-  "date": "2026-10-23T20:49:55.332Z",
+  "date": "2026-10-23T21:12:03.836Z",
   "checks": [
     "95% visible union coverage stops growth",
-    "giant bottom bubble body remains reachable for right-click Pop",
-    "giant left bubble body remains reachable for right-click Pop",
-    "giant top bubble body remains reachable for right-click Pop",
-    "giant right bubble body remains reachable for right-click Pop",
-    "actual right-click completes linked giant bubble with no attached buttons",
+    "giant bottom bubble body remains reachable for hold-to-Pop",
+    "giant left bubble body remains reachable for hold-to-Pop",
+    "giant top bubble body remains reachable for hold-to-Pop",
+    "giant right bubble body remains reachable for hold-to-Pop",
+    "actual long press completes linked giant bubble with no attached buttons",
     "Pop frees space and growth resumes for remaining tasks"
   ],
   "errors": []
