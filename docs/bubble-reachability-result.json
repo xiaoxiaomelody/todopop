@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "date": "2026-10-23T21:12:03.836Z",
+  "date": "2026-10-23T22:09:32.876Z",
   "checks": [
     "95% visible union coverage stops growth",
     "giant bottom bubble body remains reachable for hold-to-Pop",

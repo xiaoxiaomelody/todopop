@@ -23,6 +23,16 @@ await writeFile(
 );
 let desktop;
 const errors = [];
+async function readNative(fn) {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await desktop.evaluate(fn);
+    } catch (e) {
+      if (attempt >= 2 || !String(e).includes('Resulting promise was garbage collected')) throw e;
+      await new Promise((resolve) => setTimeout(resolve, 80));
+    }
+  }
+}
 try {
   desktop = await electron.launch({
     args: [resolve('apps/desktop')],
@@ -65,7 +75,7 @@ try {
     async () => (await window.todopop.snapshot()).billboardId === 'pressure-0',
   );
   assert.equal(
-    await desktop.evaluate(
+    await readNative(
       ({ BrowserWindow }) =>
         BrowserWindow.getAllWindows().filter(
           (w) => w.webContents.getURL().includes('#bubble=') && w.isVisible(),
@@ -75,7 +85,7 @@ try {
   );
   await panel.evaluate(() => window.todopop.exitFocus());
   assert.equal(
-    await desktop.evaluate(
+    await readNative(
       ({ BrowserWindow }) =>
         BrowserWindow.getAllWindows().filter(
           (w) => w.webContents.getURL().includes('#bubble=') && w.isVisible(),

@@ -137,7 +137,7 @@ export function Landing() {
             </button>
             <button
               aria-label="Chrome connection"
-              title="Chrome connection · demo"
+              title="Chrome connection"
               onClick={async () => {
                 toggle('connection');
                 if (!pairing) await s.run(async () => setPairing(await window.todopop.pairing()));
@@ -181,7 +181,7 @@ export function Landing() {
           {section === 'connection' && (
             <section aria-label="Chrome demo connection">
               <h2>Connect Chrome</h2>
-              <p className="hint">Demo only · copy this code into the extension.</p>
+
               {pairing && (
                 <>
                   <input

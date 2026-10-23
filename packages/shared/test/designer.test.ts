@@ -69,3 +69,33 @@ test('ported membrane responds to pressure and remains finite with smooth curves
   assert.match(curve.path, /^M.*Q.*Z$/);
   assert.ok(result.points[0].x < 223 + 446 * 0.305);
 });
+
+test('crowded growing layouts keep centers local and edge identities stable', () => {
+  const area = { x: 0, y: 0, width: 1100, height: 700 };
+  const obstacles = [{ x: 360, y: 24, width: 340, height: 440 }];
+  for (const side of ['any', 'left', 'right'] as const) {
+    let tasks: Task[] = Array.from({ length: 5 }, (_, i) => ({
+      id: String(i),
+      title: 'growing',
+      urgency: 4,
+      completed: false,
+      size: 560 + i * 63,
+    }));
+    let previous = new Map(
+      layoutBubbles(tasks, area, obstacles, new Map(), () => side).items.map((p) => [p.id, p]),
+    );
+    for (let frame = 0; frame < 180; frame++) {
+      tasks = tasks.map((t) => ({ ...t, size: t.size! + 1 }));
+      const next = layoutBubbles(tasks, area, obstacles, previous, () => side).items;
+      for (const p of next) {
+        const old = previous.get(p.id)!;
+        const delta = Math.hypot(
+          p.x + p.size / 2 - old.x - old.size / 2,
+          p.y + p.size / 2 - old.y - old.size / 2,
+        );
+        assert.ok(delta <= 2.5, `${side} ${p.id} jumped ${delta}px`);
+      }
+      previous = new Map(next.map((p) => [p.id, p]));
+    }
+  }
+});

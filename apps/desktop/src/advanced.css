@@ -1363,3 +1363,32 @@ body.bubble-window {
     transform: scale(1.05);
   }
 }
+
+/* Messages need their own surface over arbitrary desktop wallpaper. */
+.clear-selection {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  text-align: center;
+  line-height: 1.5;
+}
+.control-panel > .error {
+  padding: 10px 14px;
+  margin-top: 8px;
+  border-radius: 14px;
+  border: 1px solid #a3293933;
+  background: #fff;
+  color: #962331;
+}
+.toast,
+.toast button {
+  color: #fff;
+}
+.edit-shell .edit-panel {
+  background: #fff;
+}

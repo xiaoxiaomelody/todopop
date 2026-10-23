@@ -3,6 +3,7 @@ PASS task creation, native transparent bubble, Figma UI assets
 PASS drag bounds and persisted position
 PASS bridge rejects website origins and invalid pairing tokens
 PASS authenticated focus/normal transitions, non-foreground context, disconnect fallback
-PASS real MV3 worker pairing, navigation and tab switches; foreground transitions verified natively
+NOTE Foreground is injected at the Chrome API boundary for this run. Native app switching remains a manual check.
+PASS real MV3 worker pairing, navigation and tab switches; foreground transitions use an explicit boundary fixture
 PASS snooze, completion pop, restart persistence, and archive restore
 PASS editing, deletion, all four sizes, local assets, corrupt-file recovery, and zero renderer exceptions

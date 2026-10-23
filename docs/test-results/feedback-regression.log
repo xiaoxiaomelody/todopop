@@ -1,0 +1,6 @@
+PASS Actual right-click editor selects, creates and renames groups then saves without Untrusted window
+PASS Editor cannot edit another task or settings; bubble renderer cannot mutate groups
+PASS Selection message has opaque white surface and notification text contrast meets 4.5:1
+PASS Chrome connection demo line removed; bubble group autofill is more translucent (14–28%)
+PASS Repeated snapshots with unchanged geometry never move bubbles
+PASS Crowded 60x growing bubbles move locally without teleporting or snapshot-induced oscillation

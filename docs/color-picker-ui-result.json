@@ -1,10 +1,11 @@
 {
   "passed": true,
-  "date": "2026-10-23T21:11:35.484Z",
+  "date": "2026-10-23T22:06:42.711Z",
   "checks": [
     "actual hue-ring drag changes color with zero image drag events and no dock movement",
     "slightly changed blue and Berry/Teal/Graphite tints all render valid translucent group colors, never fallback black",
-    "preset groups remain editable by ring after changing global Tint, without NaN colors"
+    "preset groups remain editable by ring after changing global Tint, without NaN colors",
+    "Group HEX directly autofills bubble body at 14–28% opacity, no inner line; custom fill survives Tint changes"
   ],
   "errors": []
 }

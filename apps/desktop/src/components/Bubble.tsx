@@ -41,8 +41,15 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
   const peers = state.tasks.filter(
     (t) => !t.completed && !t.deletedAt && !(t.snoozedUntil && t.snoozedUntil > Date.now()),
   );
-  const points = bubbleOutline(task, peers),
-    path = polygonPath(points);
+  // The membrane owns these DOM paths after mounting. React must not reset
+  // them to the static outline on every growth/state broadcast.
+  const [initialShape] = useState(() => {
+    const points = bubbleOutline(task, peers);
+    return {
+      path: polygonPath(points),
+      clip: `polygon(${points.map((p) => `${(p.x / size) * 100}% ${(p.y / size) * 100}%`).join(',')})`,
+    };
+  });
   const membrane = useMembrane(
     task,
     peers,
@@ -79,31 +86,17 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
         >
           <path
             ref={membrane.body}
-            d={path}
-            fill="#fafaf8"
+            d={initialShape.path}
+            fill={color}
             fillOpacity={
-              task.urgency === 1 ? 0.55 : Math.min(0.94, 0.62 + (size * 0.305 - 42) / 420)
+              task.urgency === 1
+                ? 0.14
+                : Math.min(0.28, 0.18 + Math.max(0, size * 0.305 - 42) / 1800)
             }
             stroke="var(--ink)"
             strokeWidth={hover ? 1.8 : 1.4}
             vectorEffect="non-scaling-stroke"
           />
-          {(group || task.urgency >= 3) && (
-            <g
-              transform={`translate(${size / 2} ${size / 2}) scale(${group ? 0.965 : 0.925}) translate(${-size / 2} ${-size / 2})`}
-            >
-              <path
-                ref={membrane.inner}
-                d={path}
-                fill="none"
-                stroke={group ? color : 'var(--soft)'}
-                strokeWidth={group ? 2 : 0.9}
-                strokeDasharray={!group && task.urgency === 3 ? '2 4' : undefined}
-                opacity={group ? 0.67 : 0.28}
-                vectorEffect="non-scaling-stroke"
-              />
-            </g>
-          )}
         </motion.g>
       </svg>
       <button
@@ -112,7 +105,7 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
         aria-label={`Open ${task.title}`}
         aria-description="Click to open. Hold to pop. Right-click to edit. F2 also edits."
         style={{
-          clipPath: `polygon(${points.map((p) => `${(p.x / size) * 100}% ${(p.y / size) * 100}%`).join(',')})`,
+          clipPath: initialShape.clip,
         }}
         {...gesture.handlers}
         onMouseEnter={() => {

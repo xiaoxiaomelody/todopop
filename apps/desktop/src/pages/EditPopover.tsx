@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { ActionGlyph } from '@todopop/ui';
 import { TaskForm } from '../components/TaskForm';
 import { useTaskStore } from '../store/taskStore';
 export function EditPopover({ id }: { id: string }) {
@@ -30,7 +31,7 @@ export function EditPopover({ id }: { id: string }) {
             aria-label="Close edit"
             onClick={() => window.todopop.closeEdit()}
           >
-            ×
+            <ActionGlyph name="close" />
           </button>
         </div>
         {task ? (

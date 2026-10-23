@@ -5,18 +5,22 @@ import { join, resolve } from 'node:path';
 import assert from 'node:assert/strict';
 const dir = await mkdtemp(join(tmpdir(), 'todopop-giant-'));
 await writeFile(
-  join(dir, 'tasks.json'),
-  JSON.stringify([
-    {
-      id: 'giant',
-      title: 'Oversized linked bubble',
-      url: 'https://example.com/work',
-      urgency: 4,
-      completed: false,
-      createdAt: Date.now(),
-      growthMs: 20000000,
-    },
-  ]),
+  join(dir, 'state.json'),
+  JSON.stringify({
+    schemaVersion: 2,
+    settings: { tutorialDone: true, interactionVersion: 2 },
+    tasks: [
+      {
+        id: 'giant',
+        title: 'Oversized linked bubble',
+        url: 'https://example.com/work',
+        urgency: 4,
+        completed: false,
+        createdAt: Date.now(),
+        growthMs: 20000000,
+      },
+    ],
+  }),
 );
 let desktop;
 const errors = [],

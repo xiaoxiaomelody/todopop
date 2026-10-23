@@ -18,7 +18,10 @@ export class BubbleWindows {
   private visible = true;
   private closing = new Set<string>();
   private closingTimers = new Map<string, ReturnType<typeof setTimeout>>();
-  private dragState = new Map<number, { x: number; y: number; left: number; top: number }>();
+  private dragState = new Map<
+    number,
+    { x: number; y: number; left: number; top: number; moved: boolean }
+  >();
   constructor(
     private persistPosition: (id: string, position: { x: number; y: number }) => void,
     private moved?: (id: string, position: { x: number; y: number }) => void,
@@ -133,11 +136,12 @@ export class BubbleWindows {
     if (!win || !Number.isFinite(x) || !Number.isFinite(y)) return;
     if (phase === 'start') {
       const origin = this.logical.get(id!)!;
-      this.dragState.set(sender.id, { x, y, left: origin.x, top: origin.y });
+      this.dragState.set(sender.id, { x, y, left: origin.x, top: origin.y, moved: false });
     }
     if (phase === 'move') {
       const d = this.dragState.get(sender.id);
       if (d) {
+        d.moved = true;
         const area = screen.getDisplayNearestPoint({ x: Math.round(x), y: Math.round(y) }).workArea;
         const size = this.logical.get(id!)!.size,
           margin = size * 0.2;
@@ -157,9 +161,10 @@ export class BubbleWindows {
       }
     }
     if (phase === 'end') {
+      const moved = this.dragState.get(sender.id)?.moved;
       this.dragState.delete(sender.id);
       const position = this.logical.get(id!)!;
-      this.persistPosition(id!, { x: position.x, y: position.y });
+      if (moved) this.persistPosition(id!, { x: position.x, y: position.y });
     }
   }
 }

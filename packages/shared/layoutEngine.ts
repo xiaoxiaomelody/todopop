@@ -119,7 +119,13 @@ export function layoutBubbles(
     }
     const normal = list
       .filter((c) => !giants.includes(c))
-      .sort((a, b) => (vertical ? a.cy - b.cy : a.cx - b.cx));
+      .sort((a, b) => {
+        const oldA = previous.get(a.id),
+          oldB = previous.get(b.id);
+        const axis = (c: typeof a, old: LayoutItem | undefined) =>
+          old ? (vertical ? old.y : old.x) + old.size / 2 : vertical ? c.cy : c.cx;
+        return axis(a, oldA) - axis(b, oldB) || a.id.localeCompare(b.id);
+      });
     const need = normal.reduce((sum, c) => sum + 2 * c.r + gap, -gap);
     if (need > along - 2 * m) {
       let pos = m,
@@ -173,6 +179,22 @@ export function layoutBubbles(
           c.cy = side === 'top' ? area.y + m + c.r : area.y + area.height - m - c.r;
         }
       }
+    }
+  }
+  // Growing bubbles keep their identity and move locally, even when an overfull
+  // collision solve has no perfect answer. Explicit Arrange clears previous first.
+  for (const c of circles) {
+    const old = previous.get(c.id);
+    if (!old || pinned.has(c.id)) continue;
+    const cx = old.x + old.size / 2,
+      cy = old.y + old.size / 2;
+    const dx = c.cx - cx,
+      dy = c.cy - cy,
+      distance = Math.hypot(dx, dy);
+    const limit = Math.max(1, Math.abs(c.size - old.size) * 0.7);
+    if (distance > limit) {
+      c.cx = cx + (dx / distance) * limit;
+      c.cy = cy + (dy / distance) * limit;
     }
   }
   return {

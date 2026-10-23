@@ -76,6 +76,11 @@ const realGrowth = new Map<string, number>(),
 let panelAnchor: { x: number; y: number } | null = null;
 let panelDrag: { x: number; y: number; left: number; top: number } | null = null;
 let coverageCache = { key: '', at: 0, value: 0 };
+let layoutCache: { key: string; items: LayoutItem[] } = { key: '', items: [] };
+function resetLayout() {
+  positions.clear();
+  layoutCache.key = '';
+}
 const contours = new Map<string, { size: number; points: { x: number; y: number }[] }>();
 let billboardId: string | null = null;
 let billboardWindow: BrowserWindow | null = null;
@@ -186,28 +191,40 @@ function snapshot(): Snapshot {
   const visible = tasks
     .filter((t) => !t.completed && !(t.snoozedUntil && t.snoozedUntil > now))
     .map((t) => ({ ...t, size: bubbleSize(t) }));
-  const layout = layoutBubbles(
-    visible,
+  const sideFor = (t: Task) =>
+    state.settings.layoutSide !== 'any'
+      ? state.settings.layoutSide
+      : state.groups.find((g) => g.id === t.groupId)?.side || 'any';
+  const pinned = new Set([
+    ...(groupDrag?.origins.keys() || []),
+    ...bubbles.draggingIds(),
+    ...visible
+      .filter(
+        (t) =>
+          state.settings.layoutSide === 'any' &&
+          state.groups.some((g) => g.id === t.groupId && g.positionLocked) &&
+          (t.position || positions.has(t.id)),
+      )
+      .map((t) => t.id),
+  ]);
+  const layoutKey = JSON.stringify([
     area,
     obstacles,
-    positions,
-    (t) =>
-      state.settings.layoutSide !== 'any'
-        ? state.settings.layoutSide
-        : state.groups.find((g) => g.id === t.groupId)?.side || 'any',
-    new Set([
-      ...(groupDrag?.origins.keys() || []),
-      ...bubbles.draggingIds(),
-      ...visible
-        .filter(
-          (t) =>
-            state.settings.layoutSide === 'any' &&
-            state.groups.some((g) => g.id === t.groupId && g.positionLocked) &&
-            (t.position || positions.has(t.id)),
-        )
-        .map((t) => t.id),
+    visible.map((t) => [
+      t.id,
+      t.size,
+      sideFor(t),
+      t.position,
+      pinned.has(t.id) ? positions.get(t.id) : null,
     ]),
-  );
+  ]);
+  if (layoutCache.key !== layoutKey) {
+    layoutCache = {
+      key: layoutKey,
+      ...layoutBubbles(visible, area, obstacles, positions, sideFor, pinned),
+    };
+  }
+  const layout = layoutCache;
 
   for (const p of layout.items) positions.set(p.id, p);
   const viewed = tasks.map((t) => {
@@ -297,9 +314,10 @@ function showPanel() {
   launcher?.hide();
   publish();
 }
-async function save(transform: (state: AppState) => AppState) {
+async function save(transform: (state: AppState) => AppState, resetPositions = false) {
   try {
     await repository.mutateState((state) => transform(withGrowth(state)));
+    if (resetPositions) resetLayout();
     error = null;
     publish();
   } catch (e) {
@@ -524,12 +542,17 @@ function registerIPC() {
   function authorize(e: Electron.IpcMainInvokeEvent, id?: string, panelOnly = false) {
     if (!allowed(e, id, panelOnly)) throw new Error('Untrusted window');
   }
+  function authorizeForm(e: Electron.IpcMainInvokeEvent) {
+    authorize(e);
+    const isEditor = editor && !editor.isDestroyed() && e.sender.id === editor.webContents.id;
+    if (!isEditor && !allowed(e, undefined, true)) throw new Error('Untrusted window');
+  }
   ipcMain.handle('focus:exit', async (e) => {
     authorize(e);
     await leaveBillboard();
   });
   ipcMain.handle('groups:select', (e, id) => {
-    authorize(e, undefined, true);
+    authorizeForm(e);
     if (id !== null && !repository.state.groups.some((g) => g.id === id))
       throw new Error('Unknown group');
     if (groupDrag && !groupDrag.ending && id !== selectedGroupId) {
@@ -687,16 +710,15 @@ function registerIPC() {
     if (next === 'demo')
       for (const t of repository.tasks)
         demoGrowth.set(t.id, realGrowth.get(t.id) ?? t.growthMs ?? 0);
-    positions.clear();
+    resetLayout();
     notify(
       next === 'demo' ? 'Demo · 60× preview. Real growth is untouched.' : 'Back to real growth.',
     );
     publish();
   });
   ipcMain.handle('groups:change', async (e, action, input: GroupChange) => {
-    authorize(e, undefined, true);
+    authorizeForm(e);
     if (action === 'delete' && input.id === selectedGroupId) selectedGroupId = null;
-    if (input.side !== undefined) positions.clear();
     await save((s) => {
       const next = changeGroup(s, action, input, randomUUID());
       return input.side !== undefined
@@ -707,7 +729,7 @@ function registerIPC() {
             ),
           }
         : next;
-    });
+    }, input.side !== undefined);
   });
   ipcMain.handle('tasks:reorder', async (e, ids: string[]) => {
     authorize(e, undefined, true);
@@ -715,13 +737,15 @@ function registerIPC() {
   });
   ipcMain.handle('layout:arrange', async (e, side: Side | 'shuffle') => {
     authorize(e, undefined, true);
-    positions.clear();
-    await save((s) => ({
-      ...s,
-      settings: applySettings(s.settings, { layoutSide: side === 'shuffle' ? 'any' : side }),
-      groups: s.groups.map((g) => ({ ...g, positionLocked: false })),
-      tasks: s.tasks.map((t) => ({ ...t, position: undefined })),
-    }));
+    await save(
+      (s) => ({
+        ...s,
+        settings: applySettings(s.settings, { layoutSide: side === 'shuffle' ? 'any' : side }),
+        groups: s.groups.map((g) => ({ ...g, positionLocked: false })),
+        tasks: s.tasks.map((t) => ({ ...t, position: undefined })),
+      }),
+      true,
+    );
     if (side === 'shuffle') {
       const area = screen.getPrimaryDisplay().workArea;
       for (const t of repository.tasks) {
@@ -734,6 +758,7 @@ function registerIPC() {
           side: 'any',
         });
       }
+      layoutCache.key = '';
       publish();
     }
   });
@@ -929,11 +954,11 @@ if (locked)
         bridgePort,
       );
       screen.on('display-metrics-changed', () => {
-        positions.clear();
+        resetLayout();
         publish();
       });
       screen.on('display-removed', () => {
-        positions.clear();
+        resetLayout();
         publish();
       });
       powerMonitor.on('suspend', () => {

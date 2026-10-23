@@ -1,5 +1,7 @@
 {
-  "date": "2026-10-23T21:12:28.749Z",
+  "date": "2026-10-23T22:19:34.062Z",
+  "resumed": true,
+  "foregroundFixture": true,
   "passed": true,
   "results": [
     {
@@ -7,98 +9,105 @@
       "command": "npm run typecheck",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 3628
+      "durationMs": 3540
     },
     {
       "name": "unit",
       "command": "npm test",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 299
+      "durationMs": 354
     },
     {
       "name": "format",
       "command": "npm run format:check",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1326
+      "durationMs": 1358
     },
     {
       "name": "build",
       "command": "npm run build",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1897
+      "durationMs": 1899
     },
     {
       "name": "extension-ui",
       "command": "node scripts/extension-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 2635
+      "durationMs": 2707
     },
     {
       "name": "color-picker-ui",
       "command": "node scripts/color-picker-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 2123
+      "durationMs": 2082
     },
     {
       "name": "dock-ui",
       "command": "node scripts/dock-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1817
+      "durationMs": 1937
     },
     {
       "name": "ui-polish",
       "command": "node scripts/ui-polish.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 2459
+      "durationMs": 2447
     },
     {
       "name": "designer-iteration",
       "command": "node scripts/designer-iteration.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 3173
+      "durationMs": 3090
+    },
+    {
+      "name": "feedback-regression",
+      "command": "node scripts/feedback-regression.mjs",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 6495
     },
     {
       "name": "hold-gesture",
       "command": "node scripts/hold-gesture.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 7768
+      "durationMs": 7736
     },
     {
       "name": "desktop-acceptance",
       "command": "node scripts/desktop-acceptance.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 9415
+      "durationMs": 8507
     },
     {
       "name": "giant-reachability",
       "command": "node scripts/bubble-reachability.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 3713
+      "durationMs": 4348
     },
     {
       "name": "layout-pressure",
       "command": "node scripts/layout-pressure.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 6118
+      "durationMs": 6621
     },
     {
       "name": "integration",
       "command": "node scripts/e2e.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 18713
+      "durationMs": 19618
     }
   ]
 }

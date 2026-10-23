@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "date": "2026-10-23T21:11:39.771Z",
+  "date": "2026-10-23T22:06:47.090Z",
   "checks": [
     "All three O glyphs centered within 0.5 CSS px of the ellipse",
     "Tutorial and all four dock panels replace each other; tutorial has opaque card surface",

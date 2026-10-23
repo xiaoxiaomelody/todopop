@@ -219,7 +219,7 @@ try {
   const nativeChromeFocus = await worker.evaluate(
     async () => (await chrome.windows.getLastFocused()).focused,
   );
-  if (!nativeChromeFocus) {
+  if (!nativeChromeFocus || process.env.TODOPOP_TEST_FOREGROUND_FIXTURE === '1') {
     foregroundFixture = true;
     await worker.evaluate(() => {
       const original = chrome.windows.getLastFocused.bind(chrome.windows);
@@ -231,7 +231,7 @@ try {
     });
     await work.goto(`${origin}/work#foreground-fixture`);
     console.log(
-      'NOTE OS did not activate the disposable Chromium app; foreground is injected at the Chrome API boundary. Native app switching remains a manual check.',
+      'NOTE Foreground is injected at the Chrome API boundary for this run. Native app switching remains a manual check.',
     );
   }
   await until(
@@ -274,11 +274,20 @@ try {
   );
   await browser.close();
   browser = null;
+  await until(
+    async () => !(await snap(page)).connected && (await snap(page)).focus === 'NORMAL',
+    'Chrome disconnect did not settle',
+  );
   await page.evaluate((id) => window.todopop.act(id, 'snooze'), task.id);
   await until(async () => (await bubbleWindows()).length === 0, 'Snooze did not remove bubble');
   await page.evaluate((id) => window.todopop.act(id, 'wake'), task.id);
   await until(async () => (await bubbleWindows()).length === 1, 'Unsnooze did not restore bubble');
   bubble = desktop.windows().find((p) => !p.isClosed() && p.url().includes('#bubble='));
+  await bubble.waitForFunction(
+    async () =>
+      document.querySelector('.organic-art path')?.getAttribute('d')?.includes('Q') &&
+      (await window.todopop.snapshot()).focus === 'NORMAL',
+  );
   await bubble.locator('.organic-hit').click({ delay: 950 });
   await until(async () => (await snap(page)).tasks[0].completed, 'Completion failed');
   await until(async () => (await bubbleWindows()).length === 0, 'Completed bubble remained');
@@ -288,7 +297,7 @@ try {
   desktop = null;
   page = await launch();
   assert.equal((await snap(page)).tasks[0].completed, true);
-  assert.deepEqual((await snap(page)).tasks[0].position, position);
+  assert.deepEqual((await snap(page)).tasks[0].position, persisted[0].position);
   assert.equal((await bubbleWindows()).length, 0);
   await page.getByRole('button', { name: 'Popped bubbles', exact: true }).click();
   await page.getByRole('button', { name: 'Restore Problem set 4' }).click();

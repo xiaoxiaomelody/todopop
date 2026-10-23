@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "date": "2026-10-23T21:11:42.930Z",
+  "date": "2026-10-23T22:06:50.193Z",
   "checks": [
     "designer form: real slider, inline editable groups, add, optional Link and plain oval dock",
     "per-group School left / Work right applies independently",

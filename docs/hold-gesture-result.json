@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "date": "2026-10-23T21:11:50.725Z",
+  "date": "2026-10-23T22:19:14.329Z",
   "holdMs": 850,
   "checks": [
     "Single click opens URL promptly; double click opens at most once, never pops or edits",

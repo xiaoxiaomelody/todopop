@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 const dir = 'docs/test-results';
 mkdirSync(dir, { recursive: true });
 const steps = [
@@ -12,6 +12,7 @@ const steps = [
   ['dock-ui', ['node', 'scripts/dock-ui.mjs']],
   ['ui-polish', ['node', 'scripts/ui-polish.mjs']],
   ['designer-iteration', ['node', 'scripts/designer-iteration.mjs']],
+  ['feedback-regression', ['node', 'scripts/feedback-regression.mjs']],
   ['hold-gesture', ['node', 'scripts/hold-gesture.mjs']],
   ['desktop-acceptance', ['node', 'scripts/desktop-acceptance.mjs']],
   ['giant-reachability', ['node', 'scripts/bubble-reachability.mjs']],
@@ -19,7 +20,15 @@ const steps = [
   ['integration', ['node', 'scripts/e2e.mjs']],
 ];
 const results = [];
-for (const [name, [command, ...args]] of steps) {
+if (process.argv.includes('--resume')) {
+  const previous = JSON.parse(readFileSync(`${dir}/summary.json`, 'utf8'));
+  for (const row of previous.results) {
+    if (!row.passed || steps[results.length]?.[0] !== row.name) break;
+    results.push(row);
+  }
+  console.log(`Resuming after ${results.length} completed checks`);
+}
+for (const [name, [command, ...args]] of steps.slice(results.length)) {
   const started = Date.now();
   const result = spawnSync(command, args, {
     encoding: 'utf8',
@@ -50,6 +59,8 @@ writeFileSync(
   JSON.stringify(
     {
       date: new Date().toISOString(),
+      resumed: process.argv.includes('--resume'),
+      foregroundFixture: process.env.TODOPOP_TEST_FOREGROUND_FIXTURE === '1',
       passed: results.length === steps.length && results.every((r) => r.passed),
       results,
     },

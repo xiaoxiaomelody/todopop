@@ -96,7 +96,7 @@ try {
         computed: getComputedStyle(p).fill,
       }));
     assert.match(paint.fill, /^#[0-9a-f]{6}$/i);
-    assert.ok(paint.opacity >= 0.55 && paint.opacity <= 0.95);
+    assert.ok(paint.opacity >= 0.14 && paint.opacity <= 0.28);
     assert.notEqual(paint.computed, 'rgb(0, 0, 0)');
   }
   checks.push(
@@ -123,6 +123,19 @@ try {
     'preset groups remain editable by ring after changing global Tint, without NaN colors',
   );
   const bubble = app.windows().find((p) => p.url().includes('#bubble=colored'));
+  await panel.getByRole('textbox', { name: 'School HEX', exact: true }).fill('#c875db');
+  await panel.getByRole('textbox', { name: 'School HEX', exact: true }).press('Enter');
+  await until(
+    async () =>
+      (await bubble.locator('.organic-art path').first().getAttribute('fill')) === '#c875db',
+  );
+  assert.equal(await bubble.locator('.organic-art path').count(), 1);
+  await panel.evaluate(() => window.todopop.setSettings({ tint: '#1a419e' }));
+  assert.equal(await bubble.locator('.organic-art path').first().getAttribute('fill'), '#c875db');
+  checks.push(
+    'Group HEX directly autofills bubble body at 14–28% opacity, no inner line; custom fill survives Tint changes',
+  );
+
   await bubble.screenshot({
     path: 'docs/screenshots/tinted-bubble-fixed.png',
     omitBackground: true,
