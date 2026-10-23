@@ -526,14 +526,14 @@ function registerIPC() {
     selectedGroupId = id;
     publish();
   });
-  ipcMain.on('groups:drag', (e, phase, x, y) => {
-    if (
-      !allowed(e, undefined, true) ||
-      !selectedGroupId ||
-      !Number.isFinite(x) ||
-      !Number.isFinite(y)
-    )
-      return;
+  ipcMain.on('groups:drag', (e, phase, x, y, groupId?: string) => {
+    if (!allowed(e, undefined, true) || !Number.isFinite(x) || !Number.isFinite(y)) return;
+    if (phase === 'start' && groupId !== undefined) {
+      if (typeof groupId !== 'string' || !repository.state.groups.some((g) => g.id === groupId))
+        return;
+      selectedGroupId = groupId;
+    }
+    if (!selectedGroupId) return;
     if (phase === 'start') {
       const origins = new Map<string, { x: number; y: number }>();
       for (const t of repository.tasks.filter(

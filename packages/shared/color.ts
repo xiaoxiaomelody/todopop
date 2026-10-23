@@ -35,3 +35,8 @@ export function hsvToHex(h: number, s: number, v: number) {
       .join('')
   );
 }
+
+export function hslToHex(h: number, s: number, l: number) {
+  const v = l + s * Math.min(l, 1 - l);
+  return hsvToHex(h, v ? 2 * (1 - l / v) : 0, v);
+}

@@ -8,6 +8,7 @@ const steps = [
   ['format', ['npm', 'run', 'format:check']],
   ['build', ['npm', 'run', 'build']],
   ['extension-ui', ['node', 'scripts/extension-ui.mjs']],
+  ['color-picker-ui', ['node', 'scripts/color-picker-ui.mjs']],
   ['dock-ui', ['node', 'scripts/dock-ui.mjs']],
   ['desktop-acceptance', ['node', 'scripts/desktop-acceptance.mjs']],
   ['giant-reachability', ['node', 'scripts/bubble-reachability.mjs']],

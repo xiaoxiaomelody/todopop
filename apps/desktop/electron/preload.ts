@@ -22,7 +22,7 @@ const api: DesktopApi & {
   edit: (id) => ipcRenderer.invoke('task:edit', id),
   exitFocus: () => ipcRenderer.invoke('focus:exit'),
   selectGroup: (id) => ipcRenderer.invoke('groups:select', id),
-  dragGroup: (phase, x, y) => ipcRenderer.send('groups:drag', phase, x, y),
+  dragGroup: (phase, x, y, groupId) => ipcRenderer.send('groups:drag', phase, x, y, groupId),
   pairing: () => ipcRenderer.invoke('pairing:get'),
   onEdit: (callback) => {
     const listener = (_: unknown, id: string) => callback(id);

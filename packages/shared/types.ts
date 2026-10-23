@@ -96,7 +96,7 @@ export type DesktopApi = {
   onEdit(callback: (id: string) => void): () => void;
   exitFocus(): Promise<void>;
   selectGroup(id: string | null): Promise<void>;
-  dragGroup(phase: 'start' | 'move' | 'end', x: number, y: number): void;
+  dragGroup(phase: 'start' | 'move' | 'end', x: number, y: number, groupId?: string): void;
   pairing(): Promise<{ token: string; port: number }>;
   setSettings(input: Partial<Settings>): Promise<void>;
   growthMode(mode: 'real' | 'demo'): Promise<void>;

@@ -7,7 +7,7 @@ import {
   COVERAGE_LIMIT,
   clippedBubbleFrame,
 } from '../bubbleGeometry.ts';
-import { initialState, addTask, taskAction, undoCompletion } from '../domain.ts';
+import { initialState, addTask, taskAction, undoCompletion, groupColor } from '../domain.ts';
 import { hexToHsv, hsvToHex } from '../color.ts';
 const area = { x: 0, y: 0, width: 100, height: 100 };
 const rect = (x: number, y: number, w: number, h: number) => [
@@ -80,4 +80,15 @@ test('large bubble frames clip to the work area without changing logical contour
     ]),
     0.7,
   );
+});
+
+test('every tinted preset stays valid hex for the picker and SVG', () => {
+  for (const tint of ['#1a249e', '#9c1c31', '#078b86', '#292929', '#ffffff'])
+    for (let slot = 0; slot < 6; slot++) {
+      const hex = groupColor({ kind: 'palette', slot }, tint);
+      assert.match(hex, /^#[0-9a-f]{6}$/i);
+      const c = hexToHsv(hex);
+      assert.ok(Number.isFinite(c.h) && Number.isFinite(c.s) && Number.isFinite(c.v));
+      assert.equal(hsvToHex(c.h, c.s, c.v), hex);
+    }
 });

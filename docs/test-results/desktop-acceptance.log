@@ -1,5 +1,5 @@
 PASS tutorial rehearses click/double/right click without modifying real tasks; old pause migrated
-PASS first logo O creates tasks from fixed nonmovable control bar
+PASS first logo O creates tasks from movable compact control bar
 PASS single click enters Chrome-independent billboard; growth stops; Esc returns without completing
 PASS double click edits existing fields without firing first-click URL navigation
 PASS linked single click opens URL without completing

@@ -90,7 +90,8 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
             d={path}
             animate={{ d: path, strokeWidth: hover ? 1.8 : 1.5 }}
             transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 180, damping: 16 }}
-            fill={color + '18'}
+            fill={color}
+            fillOpacity={0.095}
             stroke="var(--ink)"
             strokeWidth={1.5}
             vectorEffect="non-scaling-stroke"

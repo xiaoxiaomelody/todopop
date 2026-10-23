@@ -39,7 +39,7 @@ export function RingColorPicker({
   }
   const theta = ((color.h - 60) * Math.PI) / 180;
   return (
-    <div className="ring-picker" data-node-id="95:4381">
+    <div className="ring-picker" data-node-id="95:4381" onDragStart={(e) => e.preventDefault()}>
       <div className="ring-picker-row">
         <div
           className="hue-ring"
@@ -50,6 +50,10 @@ export function RingColorPicker({
           aria-valuenow={Math.round(color.h)}
           tabIndex={0}
           onPointerDown={(e) => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.focus({ preventScroll: true });
             dragging.current = true;
             e.currentTarget.setPointerCapture(e.pointerId);
             hue(e);
@@ -57,7 +61,10 @@ export function RingColorPicker({
           onPointerMove={(e) => {
             if (e.currentTarget.hasPointerCapture(e.pointerId)) hue(e);
           }}
-          onPointerUp={() => {
+          onPointerUp={(e) => {
+            e.stopPropagation();
+            if (e.currentTarget.hasPointerCapture(e.pointerId))
+              e.currentTarget.releasePointerCapture(e.pointerId);
             dragging.current = false;
             onChange(hsvToHex(current.current.h, current.current.s, current.current.v));
           }}
@@ -76,12 +83,12 @@ export function RingColorPicker({
             update({ ...color, h: (h + 360) % 360 }, true);
           }}
         >
-          <img src={ring} width="150" height="150" alt="" />
+          <img draggable={false} src={ring} width="150" height="150" alt="" />
           <span
             className="hue-knob"
             style={{ left: 75 + Math.cos(theta) * 66 - 10, top: 75 + Math.sin(theta) * 66 - 10 }}
           >
-            <img src={knob} width="20" height="20" alt="" />
+            <img draggable={false} src={knob} width="20" height="20" alt="" />
             <i style={{ background: hsvToHex(color.h, 1, 1) }} />
           </span>
         </div>

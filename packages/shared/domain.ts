@@ -1,3 +1,4 @@
+import { hslToHex } from './color.ts';
 import { validateTaskInput } from './validation.ts';
 import type {
   AppState,
@@ -381,7 +382,7 @@ export function groupColor(color: ColorSource, tint = '#1a419e'): string {
   // The default palette stays stable; other tints rotate the preset palette coherently.
   if (tint.toLowerCase() === '#1a419e') return PALETTE[color.slot];
   const hue = (hexHue(tint) - hexHue('#1a419e') + hexHue(PALETTE[color.slot]) + 360) % 360;
-  return `hsl(${Math.round(hue)} 66% 76%)`;
+  return hslToHex(Math.round(hue), 0.66, 0.76);
 }
 export function hexHue(hex: string) {
   const r = parseInt(hex.slice(1, 3), 16) / 255,

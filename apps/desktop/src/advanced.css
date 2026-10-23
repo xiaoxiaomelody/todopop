@@ -826,3 +826,14 @@ body.bubble-window {
 .control-utilities > button:hover {
   background: var(--tp-wash);
 }
+
+.ring-picker,
+.hue-ring {
+  user-select: none;
+  -webkit-app-region: no-drag;
+}
+.hue-ring img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}

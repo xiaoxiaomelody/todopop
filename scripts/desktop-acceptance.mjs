@@ -225,6 +225,7 @@ try {
     (t) => t.title === 'Group companion',
   ).position;
   const handle = panel.getByRole('button', { name: 'Move group School', exact: true });
+  await handle.scrollIntoViewIfNeeded();
   const box = await handle.boundingBox();
   await panel.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await panel.mouse.down();

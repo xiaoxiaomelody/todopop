@@ -123,13 +123,7 @@ export function Appearance() {
                   onPointerDown={(e) => {
                     e.currentTarget.setPointerCapture(e.pointerId);
                     moving.current = true;
-                    if (s.selectedGroupId === group.id)
-                      window.todopop.dragGroup('start', e.screenX, e.screenY);
-                    else
-                      void s.run(async () => {
-                        await window.todopop.selectGroup(group.id);
-                        if (moving.current) window.todopop.dragGroup('start', e.screenX, e.screenY);
-                      });
+                    window.todopop.dragGroup('start', e.screenX, e.screenY, group.id);
                   }}
                   onPointerMove={(e) => {
                     if (moving.current) window.todopop.dragGroup('move', e.screenX, e.screenY);
