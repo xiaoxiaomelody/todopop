@@ -19,7 +19,7 @@ export function ActionGlyph({ name }: { name: 'add' | 'close' | 'receipt' | 'tin
       ) : name === 'close' ? (
         <path d="m6 6 12 12M18 6 6 18" />
       ) : name === 'receipt' ? (
-        <circle cx="12" cy="12" r="7" strokeDasharray="2 4" />
+        <path d="m5 12 4.5 4.5L19 7" />
       ) : name === 'tint' ? (
         <>
           <circle cx="12" cy="12" r="8" />
