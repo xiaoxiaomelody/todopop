@@ -1,6 +1,14 @@
-import { useRef, useState, type PointerEvent, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type PointerEvent, type CSSProperties } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { BUBBLE_SIZE, URGENCY_LABEL, groupColor, hexHue, type Task } from '@todopop/shared';
+import {
+  BUBBLE_SIZE,
+  URGENCY_LABEL,
+  bubbleToolbarPosition,
+  type Rect,
+  groupColor,
+  hexHue,
+  type Task,
+} from '@todopop/shared';
 import { useTaskStore } from '../store/taskStore';
 import bodyS from '../assets/5a58f.svg';
 import bodyM from '../assets/3b683.svg';
@@ -28,6 +36,29 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
   const run = useTaskStore((s) => s.run);
   const g = geo[task.urgency],
     size = BUBBLE_SIZE[task.urgency];
+  const [viewport, setViewport] = useState<Rect | null>(null);
+  useEffect(() => {
+    let alive = true;
+    let updated = false;
+    const off = window.todopop.onBubbleViewport((rect) => {
+      updated = true;
+      setViewport(rect);
+    });
+    void window.todopop
+      .bubbleViewport()
+      .then((rect) => {
+        if (alive && !updated) setViewport(rect);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+      off();
+    };
+  }, []);
+  const controls = bubbleToolbarPosition(
+    { x: g.x * ratio, y: g.y * ratio, width: g.width * ratio, height: g.height * ratio },
+    viewport || { x: 0, y: 0, width: size * ratio, height: size * ratio },
+  );
   function down(e: PointerEvent) {
     if (e.button !== 0) return;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -190,6 +221,12 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
           />
           <div
             className="bubble-tools"
+            style={{
+              left: controls.x / ratio - g.x,
+              top: controls.y / ratio - g.y,
+              transform: `translateX(-50%) scale(${1 / ratio})`,
+              transformOrigin: 'top center',
+            }}
             onPointerDown={(e) => e.stopPropagation()}
             onPointerUp={(e) => e.stopPropagation()}
           >

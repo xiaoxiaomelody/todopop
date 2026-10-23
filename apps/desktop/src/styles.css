@@ -569,9 +569,10 @@ img {
 }
 .bubble-tools {
   position: absolute;
-  bottom: 7px;
-  left: 50%;
-  transform: translateX(-50%);
+  z-index: 2;
+  width: 112px;
+  height: 32px;
+  justify-content: center;
   display: flex;
   gap: 3px;
   opacity: 0;
@@ -585,8 +586,8 @@ img {
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid var(--rule);
   border-radius: 50%;
-  width: 23px;
-  height: 23px;
+  width: 32px;
+  height: 32px;
   font-size: 12px;
   line-height: 1;
 }

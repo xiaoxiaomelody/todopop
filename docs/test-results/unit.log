@@ -2,31 +2,32 @@
 > todopop@0.1.0 test
 > node --test packages/shared/test/*.test.ts
 
-✔ legacy tasks migrate without changing identity and completed history is created once (1.984958ms)
-✔ versioned state round-trips groups, settings, growth, sessions and deleted tasks (3.201416ms)
-✔ rebubble starts a new round and preserves historical completion (0.623584ms)
-✔ complete is idempotent and delete undo retains the same task and history (0.3705ms)
-✔ global pause supports exact durations, tomorrow and indefinite resume (2.333375ms)
-✔ growth is exact at the formal rate, slower per urgency, and ignores paused or hidden tasks (0.323125ms)
-✔ palette colors swap, custom colors survive tint, and deleting a group unassigns tasks (0.562208ms)
-✔ reorder validates the entire active list and persists rank (0.350875ms)
-✔ layout preserves reachable visible bodies, avoids a center panel, and detects screen full (1.6535ms)
-✔ history counts completions once and apportions focus across the period boundary (0.43825ms)
-✔ normalizes fragments and trailing slashes (1.360916ms)
-✔ does not match unrelated paths, origins or queries (0.516ms)
-✔ matches Google Docs IDs across editor routes (0.581333ms)
-✔ invalid URLs never match (0.188ms)
-✔ focus requires active Chrome and an incomplete matching task (0.455334ms)
-✔ trims task inputs and allows URL-free reminders (1.566708ms)
-✔ rejects unsafe URLs, credentials, invalid names, and urgency (0.426708ms)
-✔ validates browser messages before they reach focus decisions (0.46575ms)
-✔ completing one shared-URL task keeps focus until all matching tasks complete (0.498709ms)
-✔ does not conflate Google document kinds, IDs, or nested paths (0.4145ms)
-ℹ tests 20
+✔ legacy tasks migrate without changing identity and completed history is created once (1.111583ms)
+✔ versioned state round-trips groups, settings, growth, sessions and deleted tasks (1.764125ms)
+✔ rebubble starts a new round and preserves historical completion (0.213625ms)
+✔ complete is idempotent and delete undo retains the same task and history (0.151833ms)
+✔ global pause supports exact durations, tomorrow and indefinite resume (0.959167ms)
+✔ growth is exact at the formal rate, slower per urgency, and ignores paused or hidden tasks (0.20925ms)
+✔ palette colors swap, custom colors survive tint, and deleting a group unassigns tasks (0.224041ms)
+✔ reorder validates the entire active list and persists rank (0.181959ms)
+✔ layout preserves reachable visible bodies, avoids a center panel, and detects screen full (0.78025ms)
+✔ history counts completions once and apportions focus across the period boundary (0.245708ms)
+✔ oversized bubble controls stay inside the visible work area at fixed dimensions (0.132084ms)
+✔ normalizes fragments and trailing slashes (0.732708ms)
+✔ does not match unrelated paths, origins or queries (0.148666ms)
+✔ matches Google Docs IDs across editor routes (0.279875ms)
+✔ invalid URLs never match (0.173875ms)
+✔ focus requires active Chrome and an incomplete matching task (0.17ms)
+✔ trims task inputs and allows URL-free reminders (1.044042ms)
+✔ rejects unsafe URLs, credentials, invalid names, and urgency (0.245584ms)
+✔ validates browser messages before they reach focus decisions (0.179125ms)
+✔ completing one shared-URL task keeps focus until all matching tasks complete (0.233167ms)
+✔ does not conflate Google document kinds, IDs, or nested paths (0.235958ms)
+ℹ tests 21
 ℹ suites 0
-ℹ pass 20
+ℹ pass 21
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 188.989333
+ℹ duration_ms 106.731958

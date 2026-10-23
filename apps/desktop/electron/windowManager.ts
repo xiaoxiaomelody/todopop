@@ -24,6 +24,21 @@ export class BubbleWindows {
       ([, w]) => !w.isDestroyed() && w.webContents.id === sender.id,
     )?.[0];
   }
+  viewport(sender: WebContents) {
+    const id = this.taskFor(sender);
+    const win = id ? this.windows.get(id) : undefined;
+    if (!win || win.isDestroyed()) return null;
+    const b = win.getBounds();
+    const area = screen.getDisplayMatching(b).workArea;
+    const x = Math.max(0, area.x - b.x),
+      y = Math.max(0, area.y - b.y);
+    return {
+      x,
+      y,
+      width: Math.max(0, Math.min(b.width, area.x + area.width - b.x) - x),
+      height: Math.max(0, Math.min(b.height, area.y + area.height - b.y) - y),
+    };
+  }
   sync(tasks: Task[], focus: FocusState) {
     this.visible = focus === 'NORMAL';
     const wanted = tasks.filter(
@@ -76,6 +91,12 @@ export class BubbleWindows {
         win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
         win.setAlwaysOnTop(true, 'floating');
         win.setIgnoreMouseEvents(true, { forward: true });
+        const sendViewport = () => {
+          if (!win!.isDestroyed())
+            win!.webContents.send('bubble:viewport', this.viewport(win!.webContents));
+        };
+        win.on('move', sendViewport);
+        win.on('resize', sendViewport);
         lockNavigation(win);
         const bubble = win;
         win.once('ready-to-show', () => {

@@ -57,3 +57,33 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
   reconnect(report);
   respond({ ok: true });
 });
+
+// Reuse the connection window, including after a service-worker restart.
+let openingPanel: Promise<void> | null = null;
+function openPanel() {
+  if (openingPanel) return openingPanel;
+  openingPanel = (async () => {
+    const url = chrome.runtime.getURL('popup.html');
+    const windows = await chrome.windows.getAll({ populate: true, windowTypes: ['popup'] });
+    const existing = windows.find((win) => win.tabs?.some((tab) => tab.url === url));
+    if (existing?.id !== undefined) {
+      await chrome.windows.update(existing.id, { focused: true });
+    } else {
+      await chrome.windows.create({ url, type: 'popup', width: 376, height: 370, focused: true });
+    }
+  })().finally(() => {
+    openingPanel = null;
+  });
+  return openingPanel;
+}
+chrome.action.onClicked.addListener(() => {
+  void openPanel().catch(console.error);
+});
+chrome.runtime.onMessage.addListener((message, sender, respond) => {
+  if (sender.id !== chrome.runtime.id || message?.type !== 'OPEN_PANEL') return;
+  void openPanel().then(
+    () => respond({ ok: true }),
+    () => respond({ ok: false }),
+  );
+  return true;
+});

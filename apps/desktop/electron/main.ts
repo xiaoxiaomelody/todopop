@@ -386,6 +386,10 @@ function registerIPC() {
   function authorize(e: Electron.IpcMainInvokeEvent, id?: string, panelOnly = false) {
     if (!allowed(e, id, panelOnly)) throw new Error('Untrusted window');
   }
+  ipcMain.handle('bubble:viewport', (e) => {
+    authorize(e);
+    return bubbles.viewport(e.sender);
+  });
   ipcMain.handle('state:get', (e) => {
     if (launcher && !launcher.isDestroyed() && e.sender.id === launcher.webContents.id)
       return snapshot();

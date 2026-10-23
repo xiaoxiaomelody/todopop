@@ -1,10 +1,12 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { DesktopApi, Snapshot } from '@todopop/shared';
+import type { DesktopApi, Snapshot, Rect } from '@todopop/shared';
 const api: DesktopApi & {
   show(): void;
   closeEdit(): void;
   resizeEdit(height: number): void;
   hit(hit: boolean): void;
+  bubbleViewport(): Promise<Rect | null>;
+  onBubbleViewport(callback: (rect: Rect | null) => void): () => void;
   onPop(callback: () => void): () => void;
 } = {
   snapshot: () => ipcRenderer.invoke('state:get'),
@@ -42,6 +44,14 @@ const api: DesktopApi & {
   resize: (height) => ipcRenderer.send('panel:resize', height),
   drag: (phase, x, y) => ipcRenderer.send('bubble:drag', phase, x, y),
   hit: (hit) => ipcRenderer.send('bubble:hit', hit),
+  bubbleViewport: () => ipcRenderer.invoke('bubble:viewport'),
+  onBubbleViewport: (callback) => {
+    const listener = (_: unknown, rect: Rect | null) => callback(rect);
+    ipcRenderer.on('bubble:viewport', listener);
+    return () => {
+      ipcRenderer.removeListener('bubble:viewport', listener);
+    };
+  },
   onPop: (callback) => {
     const listener = () => callback();
     ipcRenderer.on('bubble:pop', listener);

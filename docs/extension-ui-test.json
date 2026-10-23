@@ -1,9 +1,11 @@
 {
   "passed": true,
-  "date": "2026-10-23T15:24:41.429Z",
+  "date": "2026-10-23T15:54:16.556Z",
+  "isolatedBridgePort": 17847,
   "checks": [
     "local Unbounded and Figma logo",
-    "help accordion",
+    "compact help",
+    "standalone native window and singleton reuse",
     "invalid input",
     "rejected token",
     "authenticated pairing",

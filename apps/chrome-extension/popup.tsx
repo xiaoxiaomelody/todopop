@@ -60,6 +60,28 @@ function Popup() {
       setError(null);
     }
   }, [connection]);
+  useEffect(() => {
+    const root = document.querySelector('.popup-shell');
+    if (!root) return;
+    const observer = new ResizeObserver(() => {
+      void chrome.windows
+        .getCurrent()
+        .then(async (win) => {
+          if (win.type !== 'popup' || win.id === undefined || !win.height) return;
+          const height = Math.min(
+            600,
+            Math.max(
+              220,
+              Math.ceil(root.getBoundingClientRect().height) + win.height - window.innerHeight,
+            ),
+          );
+          if (Math.abs(win.height - height) > 2) await chrome.windows.update(win.id, { height });
+        })
+        .catch(() => {});
+    });
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
   const paired = connection !== 'unpaired';
   const connected = connection === 'connected';
   const formVisible = !paired || connection === 'rejected' || changeCode;
@@ -134,7 +156,6 @@ function Popup() {
             <BrandLogo />
             <span className="chrome-label">Chrome</span>
           </div>
-          <p className="tagline">Pop it before it fills your screen.</p>
         </header>
         <section className="connection" aria-labelledby="connection-heading">
           <div className="section-head">
@@ -145,29 +166,9 @@ function Popup() {
             </span>
           </div>
           <div className="connection-body">
-            <h2>
-              {connected
-                ? 'A little room to focus.'
-                : connection === 'connecting'
-                  ? 'Finding your desktop…'
-                  : connection === 'disconnected'
-                    ? 'Your bubbles are waiting.'
-                    : 'Bring your bubbles along.'}
-            </h2>
-            <p className="description">
-              {connected
-                ? 'Your work pages are linked to TODOPOP. Bubbles tuck away when you’re on task and return when you leave.'
-                : connection === 'connecting'
-                  ? 'Keep TODOPOP open on your Mac. We’ll connect this browser to your desktop.'
-                  : connection === 'disconnected'
-                    ? 'Open TODOPOP on your Mac. This browser will reconnect automatically.'
-                    : 'Pair Chrome with TODOPOP on your Mac, so your bubbles know when to give you space.'}
-            </p>
-            {connected && (
-              <div className="connected-note">
-                <StatusDot state="connected" />
-                <span>Ready for automatic focus</span>
-              </div>
+            {connected && <p className="description">Automatic focus is on.</p>}
+            {(connection === 'connecting' || connection === 'disconnected') && (
+              <p className="description">Keep TODOPOP open on your Mac.</p>
             )}
             {connection === 'rejected' && (
               <p className="inline-error" role="alert">
@@ -205,7 +206,7 @@ function Popup() {
                   />
                 </label>
                 <p className="code-hint" id="code-hint">
-                  Copy it from Chrome connection in the desktop panel.
+                  Desktop panel → Connect → Copy code.
                 </p>
                 {error && (
                   <p className="inline-error" id="pair-error" role="alert">
@@ -218,7 +219,7 @@ function Popup() {
                   className="full-width"
                   disabled={busy || loading || !code.trim()}
                 >
-                  {busy ? 'Connecting…' : 'Connect to TODOPOP'}
+                  {busy ? 'Connecting…' : 'Connect'}
                 </Button>
                 {paired && changeCode && (
                   <Button type="button" variant="text" onClick={() => setChangeCode(false)}>
@@ -248,7 +249,7 @@ function Popup() {
                     onClick={() => setChangeCode(true)}
                     disabled={busy}
                   >
-                    Change pairing code
+                    Change code
                   </Button>
                   <Button
                     type="button"
@@ -270,45 +271,26 @@ function Popup() {
             )}
           </div>
         </section>
-        <section className="help-section">
-          <button
-            className="help-toggle"
-            aria-expanded={help}
-            aria-controls="pairing-help"
-            onClick={() => setHelp(!help)}
-          >
-            <span>Where’s my code?</span>
-            <span className="chevron" aria-hidden="true">
-              {help ? '−' : '+'}
-            </span>
-          </button>
-          {help && (
-            <ol id="pairing-help" className="help-steps">
-              <li>
-                <span>1</span>
-                <p>Open TODOPOP on your Mac.</p>
-              </li>
-              <li>
-                <span>2</span>
-                <p>
-                  Click <strong>Connect</strong> at the bottom of the panel.
-                </p>
-              </li>
-              <li>
-                <span>3</span>
-                <p>Copy the pairing code and paste it here.</p>
-              </li>
-            </ol>
-          )}
-        </section>
-        <footer className="privacy">
-          <span className="privacy-ring" aria-hidden="true" />
-          <p>
-            Just between Chrome and your Mac.
-            <br />
-            <span>Page context stays on this computer.</span>
-          </p>
-        </footer>
+        {formVisible && (
+          <section className="help-section">
+            <button
+              className="help-toggle"
+              aria-expanded={help}
+              aria-controls="pairing-help"
+              onClick={() => setHelp(!help)}
+            >
+              <span>Where’s my code?</span>
+              <span className="chevron" aria-hidden="true">
+                {help ? '−' : '+'}
+              </span>
+            </button>
+            {help && (
+              <p id="pairing-help" className="help-copy">
+                Open the desktop panel → Connect → Copy code.
+              </p>
+            )}
+          </section>
+        )}
       </div>
     </main>
   );

@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "date": "2026-10-23T15:52:27.990Z",
+  "checks": [
+    "oversized bottom bubble retains 32px controls inside work area",
+    "oversized left bubble retains 32px controls inside work area",
+    "oversized top bubble retains 32px controls inside work area",
+    "oversized right bubble retains 32px controls inside work area",
+    "visible Pop button completes linked giant task without opening its URL"
+  ],
+  "errors": []
+}

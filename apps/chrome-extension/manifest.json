@@ -10,8 +10,7 @@
     "type": "module"
   },
   "action": {
-    "default_popup": "popup.html",
-    "default_title": "Pair TODOPOP"
+    "default_title": "Open TODOPOP connection"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'none'; connect-src ws://127.0.0.1:17846"

@@ -111,3 +111,24 @@ export function layoutBubbles(
     coverage,
   };
 }
+
+// Keep controls readable and reachable even when the growing body is larger than a display.
+export function bubbleToolbarPosition(body: Rect, viewport: Rect) {
+  const width = 112,
+    height = 32,
+    inset = 8;
+  const clamp = (value: number, min: number, max: number) =>
+    Math.max(min, Math.min(value, Math.max(min, max)));
+  return {
+    x: clamp(
+      body.x + body.width / 2,
+      viewport.x + width / 2 + inset,
+      viewport.x + viewport.width - width / 2 - inset,
+    ),
+    y: clamp(
+      body.y + body.height - height - inset,
+      viewport.y + inset,
+      viewport.y + viewport.height - height - inset,
+    ),
+  };
+}
