@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "date": "2026-10-23T04:08:57.013Z",
+  "checks": [
+    "task CRUD",
+    "native bubbles",
+    "drag persistence",
+    "origin/token authentication",
+    "focus transitions",
+    "real MV3 extension",
+    "navigation and foreground changes",
+    "snooze",
+    "restart persistence",
+    "archive restore",
+    "Figma assets"
+  ],
+  "rendererErrors": []
+}

@@ -1,0 +1,56 @@
+body {
+  width: 300px;
+  padding: 20px;
+  margin: 0;
+  font:
+    12px system-ui,
+    sans-serif;
+  color: #1a419e;
+  background: #fff;
+}
+h1 {
+  font-size: 26px;
+  letter-spacing: -1px;
+  margin: 0;
+}
+p {
+  font-size: 11px;
+  color: #728ac1;
+  line-height: 1.6;
+}
+label {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid #1a419e;
+  color: #1a419e;
+  margin: 8px 0 18px;
+  outline-offset: 4px;
+}
+button {
+  width: 100%;
+  border: 1px solid #1a419e;
+  border-radius: 24px;
+  background: #1a419e;
+  color: #fff;
+  padding: 10px;
+  cursor: pointer;
+}
+.secondary {
+  background: white;
+  color: #1a419e;
+}
+#status {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f0f5ff;
+  margin: 18px 0;
+}
+.hint {
+  margin: 16px 0;
+}

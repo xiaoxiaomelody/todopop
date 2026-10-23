@@ -2,18 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
-    "types": [
-      "node",
-      "vite/client"
-    ]
+    "lib": ["ES2022", "DOM"],
+    "types": ["node", "vite/client"]
   },
-  "include": [
-    "electron",
-    "src",
-    "electron.vite.config.ts"
-  ]
+  "include": ["electron", "src", "electron.vite.config.ts"]
 }

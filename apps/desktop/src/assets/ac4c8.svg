@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="Knob">
+<use xlink:href="#stroke0_0_6" fill="white"/>
+<use xlink:href="#stroke0_0_6" fill="#1A419E" fill-opacity="0.06"/>
+<path d="M28.25 14.5C28.25 22.0939 22.0939 28.25 14.5 28.25C6.90608 28.25 0.75 22.0939 0.75 14.5C0.75 6.90608 6.90608 0.75 14.5 0.75C22.0939 0.75 28.25 6.90608 28.25 14.5Z" stroke-width="1.5" stroke="#1A419E"/>
+</g>
+<defs>
+<path id="stroke0_0_6" d="M29 14.5C29 22.5081 22.5081 29 14.5 29C6.49187 29 0 22.5081 0 14.5C0 6.49187 6.49187 0 14.5 0C22.5081 0 29 6.49187 29 14.5Z"/>
+</defs>
+</svg>

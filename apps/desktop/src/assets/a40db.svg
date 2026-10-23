@@ -1,0 +1,11 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Pop button" clip-path="url(#clip0_0_4)">
+<path id="Ring" d="M29.3 15C29.3 22.8977 22.8977 29.3 15 29.3C7.10233 29.3 0.7 22.8977 0.7 15C0.7 7.10233 7.10233 0.7 15 0.7C22.8977 0.7 29.3 7.10233 29.3 15Z" stroke-width="1.4" stroke="#1A419E" stroke-opacity="0.22"/>
+<path id="Check" d="M10 15.5L13.2 18.5L20 11.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke="#1A419E"/>
+</g>
+<defs>
+<clipPath id="clip0_0_4">
+<rect width="30" height="30" fill="white"/>
+</clipPath>
+</defs>
+</svg>

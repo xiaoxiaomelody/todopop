@@ -1,55 +1,103 @@
 # TODOPOP
 
-Your tasks disappear when you’re working on them, and reappear when you’re not.
+**Your tasks disappear when you’re working on them, and reappear when you’re not.**
 
-macOS-first hackathon project. Stack: Electron, React, TypeScript, Vite,
-Tailwind CSS, Motion, Zustand, Chrome Manifest V3, localhost WebSocket, and local JSON.
-No backend or cloud services.
+A macOS-first desktop MVP built from the supplied technical plan and [Figma prototype](https://www.figma.com/design/51bGy6oFsJV6YJa9jvBKIT/TODOPOP).
 
-## Development
+## Run locally
 
-Use Node.js 24+ and npm. The shared tests use Node’s built-in TypeScript support.
+Use Node.js 24+ and npm. From this repository:
 
 ```sh
 npm ci
 npm run dev
+```
+
+To launch from a production build:
+
+```sh
+npm start
+```
+
+The floating TODOPOP panel has three sections: **Blow a bubble**, **Floating**, and **Popped**.
+Create a task, choose an urgency, and optionally link its work URL. A transparent,
+always-on-top window appears for each active task. Drag the bubble to reposition
+it; click to open its work page; right-click to edit. Hover reveals snooze, edit,
+and explicit completion controls. Completed tasks can be restored from Popped.
+Closing the panel tucks it away; click the application in the Dock to reopen it,
+or use the TODOPOP menu’s **Show TODOPOP** command.
+
+## Connect Chrome
+
+1. Run `npm run build` to generate the extension, if you have not built it yet.
+2. In Chrome, open `chrome://extensions` and enable **Developer mode**.
+3. Click **Load unpacked** and select this repository’s `apps/chrome-extension/dist` folder.
+4. In the desktop panel, click **Connect**, then **Copy pairing code**.
+5. Click the TODOPOP extension in Chrome, paste the code, and connect.
+
+A linked task page in the foreground activates Focus Mode and hides **all** bubbles.
+An unrelated page, switching away from Chrome, or losing the extension connection
+restores them without stealing focus. Pairing persists across restarts.
+
+Active-tab context travels only to `ws://127.0.0.1:17846`. There is no backend,
+cloud synchronization, or browsing-history storage. The extension requires Chrome
+120+ so that its reconnect alarm and WebSocket keepalive work consistently.
+
+## Architecture
+
+```text
+apps/
+  desktop/
+    electron/       Main process, local storage, IPC, native windows, WebSocket bridge
+    src/            React components, Figma assets, Motion animations, Zustand state
+  chrome-extension/ Manifest V3 worker, reconnect manager, pairing popup
+packages/
+  shared/           Task/context types, input validation, URL matching, focus engine
+docs/
+  technical-plan.md Original supplied plan
+  design-reference.md Design decisions and source nodes
+  testing.md        Validation and live-demo checklist
+scripts/
+  e2e.mjs           Real Electron + Chromium integration test
+```
+
+Electron main owns task data and validates every renderer mutation. Writes are
+serialized and saved through an atomic rename. On macOS, tasks and the pairing
+token live in `~/Library/Application Support/TODOPOP/`; no credentials belong in
+this repository. An unreadable task file is preserved in a dated recovery copy
+and a visible warning explains what happened. Bubble positions and snooze expiry
+are saved with the task.
+
+The bridge requires a random 256-bit pairing token, validates message shapes,
+limits payload sizes, and accepts extension origins only. It restores Normal
+Mode after a disconnect or 25 seconds without fresh context. The extension sends
+fresh context on reconnect, foreground/tab changes, navigation, and every 10 seconds.
+
+## Checks
+
+```sh
 npm run typecheck
 npm test
 npm run build
+npx playwright install chromium
+npm run test:e2e
+npm run format:check
 ```
 
-`npm run dev` starts the Electron desktop shell and Vite renderer.
-`npm run build` produces desktop renderer/main/preload bundles and an unpacked
-extension at `apps/chrome-extension/dist`. Load that folder through Chrome’s
-Extensions → Developer mode → Load unpacked. The extension is a scaffold and
-currently does not collect or send browser context.
+The integration test opens disposable Electron and Chromium profiles and a local
+HTTP fixture. It never uses your normal Chrome profile. See [testing notes](docs/testing.md).
 
-## Structure
+## Scope
 
-- `apps/desktop/electron`: main process, preload, bubble window and WebSocket integration modules.
-- `apps/desktop/src`: React pages/components and Zustand store module.
-- `apps/chrome-extension`: Manifest V3 service worker and connection module.
-- `packages/shared`: typed task/context contracts, URL matcher, independent focus engine.
-- `docs/technical-plan.md`: original supplied plan.
-- `docs/design-reference.md`: verified Figma reference and node IDs.
+Implemented: task CRUD, urgency sizes, independent transparent bubbles, drag and
+position persistence, hover/pop animations, explicit completion and archive
+restore, local JSON persistence, authenticated Chrome pairing, automatic Focus
+Mode, reconnect, focus status, predefined groups, and 10-minute snooze.
 
-## Current status
+Figma’s browser backdrop is a stand-in for the user’s desktop; the app renders
+real floating windows instead. Time-based bubble growth, custom tint/group
+management, advanced physics, other browsers, signed installers, and App Store
+packaging are outside this MVP. Electron-builder is available for a later
+packaging milestone.
 
-Implemented: workspace tooling, desktop starter window, extension build pipeline,
-shared types, conservative URL matching, focus decisions, and focus-engine tests.
-
-Next: authenticated browser-context communication POC → floating desktop bubbles →
-local JSON task persistence and management → Figma UI and animations → demo verification.
-Files marked TODO are deliberate integration points, not working MVP features.
-The starter screen is a development placeholder.
-
-The WebSocket milestone must bind to 127.0.0.1, authenticate with a random local
-pairing token, validate messages, handle MV3 reconnects/heartbeat, and return to
-NORMAL on stale or disconnected context. Keep tokens out of renderer bundles
-and version control. Persist task data in Electron’s userData directory.
-
-## Version control
-
-Local Git repository on `main`. No GitHub repository or remote is configured.
-Electron-builder is included for a later packaging milestone; installers,
-macOS signing, and notarization are not configured yet.
+Git is local on `main`; no remote repository is configured.

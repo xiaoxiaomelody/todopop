@@ -2,15 +2,18 @@
   "manifest_version": 3,
   "name": "TODOPOP",
   "version": "0.1.0",
-  "description": "Local browser context companion for TODOPOP. Development scaffold.",
-  "minimum_chrome_version": "116",
-  "permissions": [
-    "tabs",
-    "storage",
-    "alarms"
-  ],
+  "description": "Hide TODOPOP bubbles while you work on a matching task page. Browsing context stays on this computer.",
+  "minimum_chrome_version": "120",
+  "permissions": ["tabs", "storage", "alarms"],
   "background": {
     "service_worker": "background.js",
     "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Pair TODOPOP"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src ws://127.0.0.1:17846"
   }
 }
