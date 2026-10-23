@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "version": "0.2.1",
+  "date": "2026-10-23T19:34:44.299Z",
+  "checks": [
+    "compact 300px dock with visible controls and movable native window",
+    "actual grip pointer drag changes native position and saves it",
+    "logo click opens content without dragging; expansion/collapse keeps the anchor",
+    "keyboard arrow keys nudge the dock without triggering logo actions",
+    "restart restores saved dock position",
+    "dragging beyond screen clamps the whole dock to the work area"
+  ],
+  "errors": []
+}

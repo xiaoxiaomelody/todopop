@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { BrandLogo, Button, StatusDot } from '@todopop/ui';
 import { TaskForm } from '../components/TaskForm';
 import { TaskList } from '../components/TaskList';
@@ -34,7 +34,10 @@ export function Landing() {
   useEffect(() => {
     if (!panel.current) return;
     const o = new ResizeObserver(() =>
-      window.todopop.resize(panel.current!.getBoundingClientRect().height + 8),
+      window.todopop.resize(
+        panel.current!.getBoundingClientRect().height + 8,
+        panel.current!.getBoundingClientRect().width,
+      ),
     );
     o.observe(panel.current);
     return () => o.disconnect();
@@ -53,10 +56,61 @@ export function Landing() {
     setTour(false);
     void s.run(() => window.todopop.setSettings({ tutorialDone: true }));
   };
+  function dragStart(e: PointerEvent<HTMLElement>) {
+    if (e.button !== 0) return;
+    if (e.currentTarget.tagName !== 'BUTTON' && (e.target as HTMLElement).closest('button')) return;
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    window.todopop.dragPanel('start', e.screenX, e.screenY);
+  }
+  function dragMove(e: PointerEvent<HTMLElement>) {
+    if (e.currentTarget.hasPointerCapture(e.pointerId))
+      window.todopop.dragPanel('move', e.screenX, e.screenY);
+  }
+  function dragEnd(e: PointerEvent<HTMLElement>) {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+      window.todopop.dragPanel('end', e.screenX, e.screenY);
+    }
+  }
   return (
-    <div className="control-shell" ref={panel}>
+    <div className={`control-shell ${!section && !tour ? 'is-compact' : ''}`} ref={panel}>
       <div className="control-panel">
-        <header className="control-bar">
+        <header
+          className="control-bar"
+          onPointerDown={dragStart}
+          onPointerMove={dragMove}
+          onPointerUp={dragEnd}
+          onPointerCancel={dragEnd}
+        >
+          <button
+            className="dock-grip"
+            aria-label="Move TODOPOP"
+            title="Drag to move · arrow keys to nudge"
+            onPointerDown={dragStart}
+            onPointerMove={dragMove}
+            onPointerUp={dragEnd}
+            onPointerCancel={dragEnd}
+            onKeyDown={(e) => {
+              const directions: Record<string, [number, number]> = {
+                ArrowLeft: [-16, 0],
+                ArrowRight: [16, 0],
+                ArrowUp: [0, -16],
+                ArrowDown: [0, 16],
+              };
+              const d = directions[e.key];
+              if (d) {
+                e.preventDefault();
+                const x = window.screenX,
+                  y = window.screenY;
+                window.todopop.dragPanel('start', x, y);
+                window.todopop.dragPanel('move', x + d[0], y + d[1]);
+                window.todopop.dragPanel('end', x + d[0], y + d[1]);
+              }
+            }}
+          >
+            ⠿
+          </button>
           <BrandLogo
             actions={[
               {

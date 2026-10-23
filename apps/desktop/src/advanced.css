@@ -409,24 +409,29 @@
   filter: var(--tp-asset-filter, none);
 }
 
-/* Fixed wordmark workspace */
+/* Movable, compact wordmark dock */
 .control-shell {
   width: 376px;
   padding: 8px;
 }
+.control-shell.is-compact {
+  width: 300px;
+}
 .control-panel {
   border: 1px solid var(--rule);
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.97);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
   overflow: hidden;
-  box-shadow: 0 8px 22px #10203018;
+  box-shadow: 0 5px 16px #10203014;
 }
 .control-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px;
-  gap: 12px;
+  padding: 12px;
+  gap: 8px;
+  cursor: grab;
+  touch-action: none;
   -webkit-app-region: no-drag;
 }
 .control-bar .logo {
@@ -467,12 +472,14 @@
   gap: 6px;
 }
 .control-utilities > button {
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--rule);
+  width: 24px;
+  height: 24px;
+  border: 0;
   border-radius: 50%;
   display: grid;
   place-items: center;
+  color: var(--soft);
+  background: transparent;
 }
 .control-content {
   max-height: calc(var(--work-height, 800px) - 160px);
@@ -787,4 +794,35 @@ body.bubble-window {
   height: 150px;
   position: relative;
   margin: auto;
+}
+
+.dock-grip {
+  width: 16px;
+  height: 28px;
+  flex-shrink: 0;
+  font: 18px/1 sans-serif;
+  color: var(--soft);
+  opacity: 0.55;
+  cursor: grab;
+  touch-action: none;
+}
+.dock-grip:hover,
+.dock-grip:focus-visible {
+  opacity: 1;
+}
+.control-bar:active,
+.dock-grip:active {
+  cursor: grabbing;
+}
+.control-utilities {
+  gap: 2px;
+  opacity: 0.65;
+  transition: opacity 0.15s;
+}
+.control-bar:hover .control-utilities,
+.control-bar:focus-within .control-utilities {
+  opacity: 1;
+}
+.control-utilities > button:hover {
+  background: var(--tp-wash);
 }

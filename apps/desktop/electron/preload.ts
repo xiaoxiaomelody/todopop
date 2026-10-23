@@ -41,7 +41,8 @@ const api: DesktopApi & {
   resizeEdit: (height) => ipcRenderer.send('edit:resize', height),
   show: () => ipcRenderer.send('panel:show'),
   hide: () => ipcRenderer.send('panel:hide'),
-  resize: (height) => ipcRenderer.send('panel:resize', height),
+  resize: (height, width) => ipcRenderer.send('panel:resize', height, width),
+  dragPanel: (phase, x, y) => ipcRenderer.send('panel:drag', phase, x, y),
   drag: (phase, x, y) => ipcRenderer.send('bubble:drag', phase, x, y),
   hit: (hit) => ipcRenderer.send('bubble:hit', hit),
   onPop: (callback) => {

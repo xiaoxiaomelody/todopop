@@ -105,7 +105,8 @@ export type DesktopApi = {
   reorder(ids: string[]): Promise<void>;
   undo(id: string): Promise<void>;
   hide(): void;
-  resize(height: number): void;
+  resize(height: number, width?: number): void;
+  dragPanel(phase: 'start' | 'move' | 'end', x: number, y: number): void;
   drag(phase: 'start' | 'move' | 'end', x: number, y: number): void;
 };
 export const BUBBLE_SIZE: Record<Urgency, number> = { 1: 118, 2: 192, 3: 298, 4: 446 };

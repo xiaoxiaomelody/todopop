@@ -1,5 +1,5 @@
 
-> @todopop/desktop@0.2.0 package:mac
+> @todopop/desktop@0.2.1 package:mac
 > electron-builder --config electron-builder.json --mac --arm64
 
   • electron-builder  version=26.15.3 os=25.5.0
@@ -18,5 +18,5 @@
   • ad-hoc signing with hardenedRuntime enabled requires the com.apple.security.cs.disable-library-validation entitlement to prevent app launch failures due to library validation. See https://electron.build/code-signing for details.
   • signing         file=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/mac-arm64/TODOPOP.app platform=darwin type=distribution identityName=- identityHash=none provisioningProfile=none
   • skipped macOS notarization  reason=`notarize` options were set explicitly `false`
-  • building        target=DMG arch=arm64 file=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/TODOPOP-0.2.0-arm64-preview.dmg
-  • building block map  blockMapFile=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/TODOPOP-0.2.0-arm64-preview.dmg.blockmap
+  • building        target=DMG arch=arm64 file=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/TODOPOP-0.2.1-arm64-preview.dmg
+  • building block map  blockMapFile=/Users/xiaoxiao/Documents/Codex/2026-10-22/cr-ea/outputs/todopop/release/TODOPOP-0.2.1-arm64-preview.dmg.blockmap

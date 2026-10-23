@@ -1,11 +1,11 @@
 {
   "passed": true,
-  "date": "2026-10-23T19:08:12.312Z",
+  "date": "2026-10-23T19:33:25.196Z",
   "isolatedUserData": true,
   "inspectorRetries": 0,
   "checks": [
     "tutorial rehearses click/double/right click without modifying real tasks; old pause migrated",
-    "first logo O creates tasks from fixed nonmovable control bar",
+    "first logo O creates tasks from movable compact control bar",
     "single click enters Chrome-independent billboard; growth stops; Esc returns without completing",
     "double click edits existing fields without firing first-click URL navigation",
     "linked single click opens URL without completing",

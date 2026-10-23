@@ -19,7 +19,7 @@ To launch from a production build:
 npm start
 ```
 
-The fixed TODOPOP wordmark has three interactive Os: **Blow a bubble**, **Popped**, and **Tint & Group**. Hover or keyboard-focus an O to see its symbol and tooltip.
+The movable TODOPOP wordmark has three interactive Os: **Blow a bubble**, **Popped**, and **Tint & Group**. Hover or keyboard-focus an O to see its symbol and tooltip.
 
 - Single click a linked bubble to open its URL; single click an unlinked bubble to enter a local large-text billboard. Clicks wait 350 ms to distinguish double clicks.
 - Double click a bubble to edit its name, URL, urgency and group; right click to Pop. There are no attached bubble buttons. You can undo completion from the control bar.
@@ -27,7 +27,7 @@ The fixed TODOPOP wordmark has three interactive Os: **Blow a bubble**, **Popped
 - Billboard works offline without Chrome. **Back / Esc** leaves the task unfinished; **Pop · Done** completes it. Browser context cannot close a local session.
 - The **?** button reopens the interactive tutorial. Practice uses temporary examples, not real tasks.
 
-The control bar stays near the top of the primary display. **⌘⇧Space** or the Dock reopens it if needed. Popped tasks can be bubbled again as a fresh round without removing history.
+The compact dock can be dragged by its grip or header space, remembers its position, and expands without returning to the top. **⌘⇧Space** or the Dock reopens it if needed. Popped tasks can be bubbled again as a fresh round without removing history.
 
 ## Connect Chrome
 
@@ -100,7 +100,7 @@ Demo · 60× uses a separate temporary clock and returns to real sizes when disa
 Pause Growing was removed. Local/browser focus, sleep and 95% screen coverage stop growth automatically; legacy snoozed tasks can still be shown again from the task list.
 Tasks do not catch up growth while the app is closed or the system sleeps.
 
-Implemented: conditional click/billboard behavior, double-click editing, right-click Pop with ten original Figma droplet assets, completion/deletion Undo, continuous growth, isolated Demo, contact deformation, clipped polygon-union coverage, fixed logo workspace, ring hue/saturation controls, group selection/movement, new-round Rebubble, and week/month receipt history. At 95% visible coverage, growth stops and resumes when space is freed. Oversized native windows are clipped to the work area rather than displaced by macOS.
+Implemented: conditional click/billboard behavior, double-click editing, right-click Pop with ten original Figma droplet assets, completion/deletion Undo, continuous growth, isolated Demo, contact deformation, clipped polygon-union coverage, movable logo workspace, ring hue/saturation controls, group selection/movement, new-round Rebubble, and week/month receipt history. At 95% visible coverage, growth stops and resumes when space is freed. Oversized native windows are clipped to the work area rather than displaced by macOS.
 
 The shape solver is a bounded radial-contact model, not a volume-preserving fluid simulation. Coverage uses 64-point contours and 1px scanlines, with overlapping areas counted once and screen/UI clipping applied. Primary-display layout is the current supported baseline; Spaces, external displays and extended daily use still need manual review. Phone, backend, Steps, timer bars, sound and URL blocking are excluded. Chrome pairing remains for the hackathon demo; it is not required for local billboard focus.
 

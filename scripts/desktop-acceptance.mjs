@@ -99,14 +99,14 @@ try {
   );
   const nativePanel = await desktop.browserWindow(panel);
   const bar = await nativePanel.evaluate((w) => ({ b: w.getBounds(), movable: w.isMovable() }));
-  assert.equal(bar.movable, false);
+  assert.equal(bar.movable, true);
   await panel.getByRole('button', { name: 'Blow a bubble', exact: true }).click();
   await panel.locator('input[name=title]').fill('Offline reminder');
   await panel.getByRole('button', { name: 'Blow it', exact: true }).click();
   const local = (await snap(panel)).tasks.find((t) => t.title === 'Offline reminder');
   assert.ok(local);
   assert.equal((await nativePanel.evaluate((w) => w.getBounds())).y, bar.b.y);
-  pass('first logo O creates tasks from fixed nonmovable control bar');
+  pass('first logo O creates tasks from movable compact control bar');
   const b = await bubble(local.id);
   assert.equal(await b.locator('.bubble-tools').count(), 0);
   assert.equal(await b.getByRole('button', { name: 'Complete task', exact: true }).count(), 0);

@@ -1,32 +1,32 @@
 
-> todopop@0.2.0 test
+> todopop@0.2.1 test
 > node --test packages/shared/test/*.test.ts
 
-✔ legacy tasks migrate without changing identity and completed history is created once (1.138958ms)
-✔ versioned state round-trips groups, settings, growth, sessions and deleted tasks (1.741459ms)
-✔ rebubble starts a new round and preserves historical completion (0.177083ms)
-✔ complete is idempotent and delete undo retains the same task and history (0.133834ms)
-✔ global pause supports exact durations, tomorrow and indefinite resume (1.145334ms)
-✔ growth is exact at the formal rate, slower per urgency, and ignores paused or hidden tasks (0.214834ms)
-✔ palette colors swap, custom colors survive tint, and deleting a group unassigns tasks (0.226417ms)
-✔ reorder validates the entire active list and persists rank (0.181584ms)
-✔ layout preserves reachable visible bodies and avoids a center panel (0.698459ms)
-✔ history counts completions once and apportions focus across the period boundary (0.243667ms)
-✔ normalizes fragments and trailing slashes (0.673208ms)
-✔ does not match unrelated paths, origins or queries (0.150125ms)
-✔ matches Google Docs IDs across editor routes (0.238333ms)
-✔ invalid URLs never match (0.090083ms)
-✔ focus requires active Chrome and an incomplete matching task (0.12825ms)
-✔ coverage counts union once, clips offscreen and honors nonzero display origins (2.335125ms)
-✔ deformation is localized at contacts, and coverage uses those same points (5.17275ms)
-✔ undo completion retains the same round, URL and waiting time without duplicate history (0.41925ms)
-✔ HSV editing round-trips original presets including neutral colors (0.21075ms)
-✔ large bubble frames clip to the work area without changing logical contour coordinates (1.055792ms)
-✔ trims task inputs and allows URL-free reminders (1.011ms)
-✔ rejects unsafe URLs, credentials, invalid names, and urgency (0.228375ms)
-✔ validates browser messages before they reach focus decisions (0.175042ms)
-✔ completing one shared-URL task keeps focus until all matching tasks complete (0.227958ms)
-✔ does not conflate Google document kinds, IDs, or nested paths (0.226ms)
+✔ legacy tasks migrate without changing identity and completed history is created once (1.503625ms)
+✔ versioned state round-trips groups, settings, growth, sessions and deleted tasks (2.405209ms)
+✔ rebubble starts a new round and preserves historical completion (0.215875ms)
+✔ complete is idempotent and delete undo retains the same task and history (0.145958ms)
+✔ global pause supports exact durations, tomorrow and indefinite resume (1.016125ms)
+✔ growth is exact at the formal rate, slower per urgency, and ignores paused or hidden tasks (0.162917ms)
+✔ palette colors swap, custom colors survive tint, and deleting a group unassigns tasks (0.194042ms)
+✔ reorder validates the entire active list and persists rank (0.162125ms)
+✔ layout preserves reachable visible bodies and avoids a center panel (0.614083ms)
+✔ history counts completions once and apportions focus across the period boundary (0.218875ms)
+✔ normalizes fragments and trailing slashes (0.818625ms)
+✔ does not match unrelated paths, origins or queries (0.183584ms)
+✔ matches Google Docs IDs across editor routes (0.242584ms)
+✔ invalid URLs never match (0.10625ms)
+✔ focus requires active Chrome and an incomplete matching task (0.154792ms)
+✔ coverage counts union once, clips offscreen and honors nonzero display origins (2.473875ms)
+✔ deformation is localized at contacts, and coverage uses those same points (5.913667ms)
+✔ undo completion retains the same round, URL and waiting time without duplicate history (0.611042ms)
+✔ HSV editing round-trips original presets including neutral colors (0.289917ms)
+✔ large bubble frames clip to the work area without changing logical contour coordinates (0.992416ms)
+✔ trims task inputs and allows URL-free reminders (1.098125ms)
+✔ rejects unsafe URLs, credentials, invalid names, and urgency (0.252958ms)
+✔ validates browser messages before they reach focus decisions (0.180542ms)
+✔ completing one shared-URL task keeps focus until all matching tasks complete (0.334458ms)
+✔ does not conflate Google document kinds, IDs, or nested paths (0.320292ms)
 ℹ tests 25
 ℹ suites 0
 ℹ pass 25
@@ -34,4 +34,4 @@
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 115.19225
+ℹ duration_ms 134.280625

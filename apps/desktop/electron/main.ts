@@ -73,6 +73,8 @@ let mode: 'real' | 'demo' = 'real',
 const realGrowth = new Map<string, number>(),
   demoGrowth = new Map<string, number>(),
   positions = new Map<string, LayoutItem>();
+let panelAnchor: { x: number; y: number } | null = null;
+let panelDrag: { x: number; y: number; left: number; top: number } | null = null;
 let billboardId: string | null = null;
 let billboardWindow: BrowserWindow | null = null;
 let selectedGroupId: string | null = null;
@@ -292,16 +294,13 @@ async function save(transform: (state: AppState) => AppState) {
 }
 async function createWindows() {
   const area = screen.getPrimaryDisplay().workArea;
-  const saved = { x: area.x + (area.width - 376) / 2, y: area.y + 12 };
-  const x = Math.round(
-      Math.max(
-        area.x,
-        Math.min(saved?.x ?? area.x + (area.width - 376) / 2, area.x + area.width - 376),
-      ),
-    ),
-    y = Math.round(
-      Math.max(area.y, Math.min(saved?.y ?? area.y + 120, area.y + area.height - 250)),
-    );
+  const saved = repository.state.settings.panelPosition || {
+    x: area.x + (area.width - 300) / 2,
+    y: area.y + 12,
+  };
+  const x = Math.round(Math.max(area.x, Math.min(saved.x, area.x + area.width - 300))),
+    y = Math.round(Math.max(area.y, Math.min(saved.y, area.y + area.height - 80)));
+  panelAnchor = { x, y };
   const webPreferences = {
     preload: join(__dirname, '../preload/preload.cjs'),
     contextIsolation: true,
@@ -311,16 +310,16 @@ async function createWindows() {
   mainWindow = new BrowserWindow({
     x,
     y,
-    width: 376,
-    height: 330,
-    minWidth: 376,
+    width: 300,
+    height: 96,
+    minWidth: 300,
     maxWidth: 376,
     transparent: true,
     frame: false,
     hasShadow: false,
     alwaysOnTop: true,
     resizable: false,
-    movable: false,
+    movable: true,
     backgroundColor: '#00000000',
     show: false,
     title: 'TODOPOP',
@@ -759,16 +758,55 @@ function registerIPC() {
     mainWindow?.hide();
     publish();
   });
-  ipcMain.on('panel:resize', (e, height: number) => {
+  ipcMain.on('panel:resize', (e, height: number, width?: number) => {
     if (!allowed(e, undefined, true) || !Number.isFinite(height) || !mainWindow) return;
     const area = screen.getDisplayMatching(mainWindow.getBounds()).workArea;
-    const h = Math.min(area.height - 20, Math.max(80, Math.ceil(height)));
-    const [x, y] = mainWindow.getPosition();
+    const h = Math.min(area.height - 20, Math.max(68, Math.ceil(height)));
+    const w =
+      width === undefined
+        ? mainWindow.getBounds().width
+        : Math.max(300, Math.min(376, Math.ceil(width)));
+    if (!Number.isFinite(w)) return;
+    const anchor = panelDrag
+      ? { x: mainWindow.getBounds().x, y: mainWindow.getBounds().y }
+      : panelAnchor || mainWindow.getBounds();
     mainWindow.setBounds({
-      x: Math.round(area.x + (area.width - 376) / 2),
-      y: area.y + 12,
+      x: Math.round(Math.max(area.x, Math.min(anchor.x, area.x + area.width - w))),
+      y: Math.round(Math.max(area.y, Math.min(anchor.y, area.y + area.height - h))),
+      width: w,
       height: h,
     });
+  });
+  ipcMain.on('panel:drag', (e, phase, x, y) => {
+    if (!allowed(e, undefined, true) || !mainWindow || !Number.isFinite(x) || !Number.isFinite(y))
+      return;
+    if (phase === 'start') {
+      const b = mainWindow.getBounds();
+      panelDrag = { x, y, left: b.x, top: b.y };
+    } else if (phase === 'move' && panelDrag) {
+      const a = screen.getDisplayNearestPoint({ x: Math.round(x), y: Math.round(y) }).workArea,
+        b = mainWindow.getBounds();
+      mainWindow.setPosition(
+        Math.round(
+          Math.max(a.x, Math.min(panelDrag.left + x - panelDrag.x, a.x + a.width - b.width)),
+        ),
+        Math.round(
+          Math.max(a.y, Math.min(panelDrag.top + y - panelDrag.y, a.y + a.height - b.height)),
+        ),
+        false,
+      );
+      publish();
+    } else if (phase === 'end' && panelDrag) {
+      panelDrag = null;
+      const b = mainWindow.getBounds();
+      panelAnchor = { x: b.x, y: b.y };
+      void repository
+        .mutateState((s) => ({ ...s, settings: { ...s.settings, panelPosition: panelAnchor! } }))
+        .catch(() => {
+          error = 'Could not save dock position';
+          publish();
+        });
+    }
   });
   ipcMain.on('bubble:drag', (e, phase, x, y) => {
     if (allowed(e) && ['start', 'move', 'end'].includes(phase)) bubbles.drag(e.sender, phase, x, y);
