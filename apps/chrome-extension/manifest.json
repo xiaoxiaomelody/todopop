@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "TODOPOP",
+  "version": "0.1.0",
+  "description": "Local browser context companion for TODOPOP. Development scaffold.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  }
+}
