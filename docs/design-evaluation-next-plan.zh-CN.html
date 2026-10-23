@@ -1,0 +1,368 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TODOPOP · 最新设计评估与下一步方案</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:#f3f5fa;color:#263248;font:15px/1.85 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}a{color:#2459b8;text-decoration:none}a:hover{text-decoration:underline}.layout{display:grid;grid-template-columns:245px minmax(0,1150px);gap:36px;max-width:1495px;margin:auto;padding:38px 28px}aside{position:sticky;top:28px;height:calc(100vh - 56px);overflow:auto;padding:4px 12px 20px 0}aside strong{display:block;color:#183e92;font-size:20px;margin-bottom:18px}aside a{display:block;font-size:12px;line-height:1.6;color:#506079;padding:7px 10px;border-left:2px solid #dde4f1}aside a:hover{background:#e6edfb;color:#1a419e}main{min-width:0;background:white;border:1px solid #e1e6f0;border-radius:18px;padding:40px 45px;box-shadow:0 12px 40px #1a419e08}h1{font-size:28px;line-height:1.5;color:#193f94;letter-spacing:-.4px}h2{font-size:22px;line-height:1.5;margin:44px 0 16px;padding-bottom:10px;border-bottom:2px solid #e5ebf8;color:#193f94}h3{font-size:17px;color:#254c98;margin:30px 0 12px}blockquote{margin:20px 0;padding:12px 18px;background:#f1f5ff;border-left:4px solid #5376bd;border-radius:0 8px 8px 0;color:#52627b;font-size:13px}blockquote p{margin:4px 0}p{margin:12px 0}strong{color:#1e3966}ul,ol{padding-left:23px}li{margin:7px 0}.table-scroll{overflow:auto;margin:18px 0 24px;border:1px solid #dce4f2;border-radius:8px}table{border-collapse:collapse;font-size:12px;width:100%;min-width:720px;line-height:1.8}th{text-align:left;background:#edf2fc;color:#224b9a;padding:12px;vertical-align:top}td{padding:12px;vertical-align:top;border-top:1px solid #e5eaf3;overflow-wrap:anywhere}tbody tr:nth-child(even){background:#fafbfd}td:first-child{min-width:64px}code{background:#edf1f8;border-radius:4px;padding:2px 4px;font:11.5px/1.8 ui-monospace,monospace;overflow-wrap:anywhere}img{display:block;max-width:100%;height:auto;border:1px solid #e2e6ef;border-radius:8px;margin:20px auto}header{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#7385a2}.scope{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 24px}.scope span{background:#eef4ff;border-radius:16px;padding:4px 12px;font-size:12px;color:#27539e}footer{border-top:1px solid #e4e9f1;margin-top:35px;padding-top:16px;color:#728099;font-size:12px}@media(max-width:1000px){.layout{display:block;padding:16px}aside{position:static;height:auto;max-height:210px;margin:0 0 16px}main{padding:22px}h1{font-size:24px}}@media print{body{background:white;font-size:10pt}.layout{display:block;padding:0}aside,header,.scope{display:none}main{border:0;box-shadow:none;padding:0}h2{break-after:avoid;page-break-after:avoid}h3{break-after:avoid}table{min-width:0;font-size:8pt}.table-scroll{overflow:visible;border:0}tr{break-inside:avoid}img{max-height:240mm;object-fit:contain}a{color:#222}}input[type=checkbox]{width:16px;height:16px;margin-right:8px;vertical-align:middle;accent-color:#1a419e;cursor:pointer}li:has(input[type=checkbox]){list-style:none}.nav-level-1{font-weight:700;color:#1a419e;margin-top:13px}.review-note{background:#edf5ff;border:1px solid #dce6fa;padding:12px 16px;border-radius:10px;color:#53709a;font-size:12px}main>h1:not(:first-of-type){margin-top:60px;border-top:3px solid #dce6fa;padding-top:30px}main>p>img{max-height:700px;object-fit:contain}header{margin-bottom:15px}@media(max-width:900px){.layout{display:block;padding:16px}aside{position:static;height:auto;max-height:240px;margin-bottom:20px}main{padding:24px 18px}}</style></head><body><div class="layout"><aside><strong>TODOPOP · DESIGN REVIEW</strong><a class="nav-level-1" href="#section-1">TODOPOP 最新设计评估与下一步方案</a><a class="nav-level-2" href="#section-2">1. 评估依据与边界</a><a class="nav-level-2" href="#section-3">2. 对设计方向的判断</a><a class="nav-level-2" href="#section-4">3. Mockup 与会议决定的差异</a><a class="nav-level-2" href="#section-5">4. 建议冻结的交互规则</a><a class="nav-level-2" href="#section-6">5. Billboard 的最小完整版本</a><a class="nav-level-2" href="#section-7">6. 固定控制条、三面板、字体与收据</a><a class="nav-level-2" href="#section-8">7. 分组：先做好颜色，再加入整组移动</a><a class="nav-level-2" href="#section-9">8. Squish 的工程方案</a><a class="nav-level-2" href="#section-10">9. 现有实现能复用多少</a><a class="nav-level-2" href="#section-11">10. 推荐实施顺序与交付标准</a><a class="nav-level-2" href="#section-12">11. 测试与人工复核方案</a><a class="nav-level-2" href="#section-13">12. 开始开发前剩下的四个确认点</a><a class="nav-level-2" href="#section-14">13. 演示与上线形式</a></aside><main><header>DESIGN REVIEW · 2026-10-23</header><div class="scope"><span>最新会议与 mockup</span><span>现有实现复用</span><span>分阶段实施</span></div><p class="review-note">本文件是评估方案，不是完成报告。本轮未修改应用代码；已观察到的原型行为与待确认事项在正文中分别标明。</p><h1 id="section-1">TODOPOP 最新设计评估与下一步方案</h1>
+<p>日期：2026-10-23。当前代码基线：<code>76a6f0a</code>。本文是评估和建议，不代表本轮已实现这些改动，也不自动覆盖现有产品规则文档。</p>
+<p><strong>建议采用这次讨论的新方向：点击进入任务，✓ 才完成；无链接任务进入本地 billboard；控制条固定；分组配色列为核心功能。实施上先打通交互和退出路径，再移植挤压效果，最后完成整组移动。</strong></p>
+<h2 id="section-2">1. 评估依据与边界</h2>
+<p>已打开并检查 <a href="https://claude.ai/artifact/P2FF9rseoYV6S6cfbS5b6h">设计师的 Claude mockup</a> 和 <a href="https://notes.granola.ai/t/b3e31c3f-3281-4442-9eb9-611a9d459264">Granola 会议共享页</a>。会议页可读内容与本次贴出的总结一致；没有拿到额外逐字稿。</p>
+<p>实际操作了字标的三个入口、任务表单、Tint、Popped、新建分组和分组换色。看到了一个 Canvas 气泡场景，以及对应的界面控件。未验证 Canvas 气泡拖动、碰撞手感和 billboard，不把它们当作已验收的功能；没有获取原型源代码，也无法判断其内部物理算法或具体框架。创建的 New group 仅用于原型交互检查，不是生产桌面任务。</p>
+<p>同时复核现有 Electron/React 实现的任务点击、窗口管理、分组、配色、增长和归档代码。本轮只新增方案文档，不更改运行中的应用。</p>
+<h2 id="section-3">2. 对设计方向的判断</h2>
+<h3>值得保留的部分</h3>
+<ul>
+<li><strong>进入与完成分离。</strong> 点击任务是开始处理它，✓ 表达完成。两种行为分开后，有链接和无链接任务都能遵循一致逻辑。</li>
+<li><strong>本地 billboard 有实际用途。</strong> “Feed your pet”这类现实任务需要可见提醒，不需要伪造网页或先配对浏览器。它补上了原先产品只擅长网页任务的缺口。</li>
+<li><strong>固定的字标控制条。</strong> 相比一个可以漂移的大面板，更容易反复找到，也能为气泡布局提供稳定避让区。</li>
+<li><strong>气泡形态、字标与收据统一品牌语言。</strong> 这套视觉比普通待办列表有辨识度，值得保留，不需要再换一套设计。</li>
+<li><strong>长收据合理。</strong> 它表达完成的积累，滚动可以成为有意的体验；不必为了首屏整齐而砍短历史。</li>
+<li><strong>色彩属于核心交互。</strong> 分组颜色帮助识别和组织，色相、饱和度与实时预览应进入核心范围，不能最后再当装饰补上。</li>
+</ul>
+<h3>需要修正的风险</h3>
+<p><strong>“一直存在”不等于“一直移动、一直变大”。</strong> 任务可以持续留在桌面，直到完成；但气泡不应持续漂过鼠标、挡住工作内容，或越长越难点。移除 Pause 是减少一个用户决策，不应取消系统对增长、遮挡和失控的约束。</p>
+<p><strong>极简字标需要入口提示。</strong> 三个 O 是很好的品牌设计，但新用户很难猜出每个 O 的功能。悬停显示图标和短标签，键盘聚焦时同样显示；首次使用只提示一次。不能依靠演示者解释才知道怎么操作。</p>
+<p><strong>普通任务不一定需要全屏。</strong> Billboard 应让任务清楚可见，同时允许用户去现实中完成它。建议第一版做大字号的本地专注窗口，有明确返回与完成按钮，不强制占用 macOS 原生全屏/新 Space，也不锁住其他应用。</p>
+<p><strong>完成仍需可恢复。</strong> 新版把完成放进指定区域后，依然可能误点。现有 Undo 仅服务删除；建议新增“撤销完成”，恢复同一任务和等待时长。它与 Re-bubble 创建新一轮必须分开。</p>
+<h2 id="section-4">3. Mockup 与会议决定的差异</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>这次看到的原型</th>
+<th>建议目标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pause Growing</td>
+<td>新增面板底部仍有按钮</td>
+<td>按会议决定移除，包括旧暂停状态的迁移</td>
+</tr>
+<tr>
+<td>第三个入口</td>
+<td>第三个 O 的可访问名称为 Tint，点击只打开 Tint；切换到新增入口后 Tint 关闭</td>
+<td>“第三个泡泡打开三个面板”尚未在原型体现；先确认具体三块和打开方式</td>
+</tr>
+<tr>
+<td>分组调色</td>
+<td>点击色点由 Lilac 轮换到 Rose</td>
+<td>每组提供显式色相、饱和度、预设/HEX；不靠盲点循环</td>
+</tr>
+<tr>
+<td>全局调色</td>
+<td>Tint 已有色相与饱和度滑杆</td>
+<td>可沿用视觉，但要区分全局主题和分组颜色</td>
+</tr>
+<tr>
+<td>URL 输入</td>
+<td>已查看的新增表单未出现 URL 项</td>
+<td>加一个可选 Link；默认收起也可以，不能丢掉网页任务能力</td>
+</tr>
+<tr>
+<td>增长速度</td>
+<td>Soon 提示约每小时增加 1 cm</td>
+<td>现有实现 Soon 约 8 分钟/逻辑 cm；两者不同，下一版需统一一份速率表</td>
+</tr>
+<tr>
+<td>气泡文字与操作</td>
+<td>Canvas 负责场景；检查到的 Canvas 没有角色、名称或键盘入口</td>
+<td>桌面版继续保留可访问的任务列表、按钮与键盘操作；不能只照搬 Canvas</td>
+</tr>
+<tr>
+<td>日期“23”</td>
+<td>会议解释为当天日期；此次查看的气泡主要显示 TODAY/NOW 等紧急程度</td>
+<td>日期与紧急程度分开表达，跨午夜更新日期，但任务不清空、不重建</td>
+</tr>
+<tr>
+<td>Billboard / squish / 整组移动</td>
+<td>本次没有完成行为验收</td>
+<td>作为待实现/待验证，不能仅根据截图判断已完成</td>
+</tr>
+</tbody></table></div>
+<p>“每小时 1 cm”和“每 2 分钟 1 cm”都只是逻辑像素的产品标尺，不是对不同显示器物理厘米的精确保证。Demo 加速仍需与真实累计增长隔离。</p>
+<h2 id="section-5">4. 建议冻结的交互规则</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>结果</th>
+<th>不应产生的副作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>普通点击有链接气泡</td>
+<td>打开系统默认浏览器中的 URL</td>
+<td>不完成任务；未配对 Chrome 也能打开</td>
+</tr>
+<tr>
+<td>普通点击无链接气泡</td>
+<td>打开该任务的本地 billboard</td>
+<td>不完成任务、不需要 URL 或网络</td>
+</tr>
+<tr>
+<td>点击气泡上的 ✓</td>
+<td>Pop 并记录完成</td>
+<td>不同时触发打开链接或 billboard</td>
+</tr>
+<tr>
+<td>按住气泡主体并拖动</td>
+<td>移动单个气泡</td>
+<td>松手不进入任务、不 Pop</td>
+</tr>
+<tr>
+<td>点击 ··· 或右键</td>
+<td>编辑任务</td>
+<td>不改变完成状态</td>
+</tr>
+<tr>
+<td>Billboard 中按 Esc / 返回</td>
+<td>返回原桌面气泡状态</td>
+<td>不完成、不删除任务</td>
+</tr>
+<tr>
+<td>Billboard 中点击完成</td>
+<td>Pop、记录历史并退出 billboard</td>
+<td>完成只记录一次</td>
+</tr>
+<tr>
+<td>点击组名</td>
+<td>高亮本组、淡化其他组</td>
+<td>不完成任何任务</td>
+</tr>
+<tr>
+<td>拖动选中组的专用移动手柄</td>
+<td>整组移动</td>
+<td>不改变组内相对布局、不打开任务</td>
+</tr>
+<tr>
+<td>点击空白 / Esc</td>
+<td>取消分组选择</td>
+<td>不删除分组或成员</td>
+</tr>
+</tbody></table></div>
+<p>✓ 是“完成任务”的唯一语义入口，但可以在气泡、billboard、列表中有等价按钮。视觉按钮可小巧，实际命中区建议保持 32–40px，初版沿用当前固定 32px；不能随着气泡缩小或变形。WCAG 的指针目标最低要求为 24×24 CSS px，存在规定的例外；这里建议的尺寸是更宽松的产品目标。<a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">W3C 目标尺寸说明</a></p>
+<p>Pop 热区应在悬停/聚焦时清楚显示，并提供短提示。小气泡空间不足时把操作停靠在气泡外侧安全区，不把全部按钮硬塞进小圆。拖拽超过约 6px 才识别为移动，这只是待实测的初始参数。</p>
+<h2 id="section-6">5. Billboard 的最小完整版本</h2>
+<p>窗口只包含任务名、可选组标识、“返回”和“完成”。先不增加步骤、倒计时、计时条、白噪音或 URL blocking。</p>
+<ul>
+<li>大字居中；短标题建议 48–72px 起步，长标题自动换行并设置最小可读字号。中文使用可覆盖中文的 Sans 回退字体。</li>
+<li>同时只保留一个本地专注任务。其他气泡暂时隐藏，固定控制条/退出入口保持可找，退出后恢复位置。</li>
+<li>切换到其他应用不会自动完成，也不自动结束本地会话；现实任务不能依赖浏览器前后台。</li>
+<li>进入 billboard 后该任务停止增长，建议其他气泡也暂停增长；这是专注态内部规则，不重新放回 Pause 按钮。</li>
+<li>关闭窗口等同返回；程序重启默认回桌面，不强制恢复一个覆盖屏幕的 billboard。</li>
+<li>保留历史专注时长时，在退出、完成、删除或应用退出时正确结束会话。期间睡眠不应被当成有效专注时长。</li>
+</ul>
+<p>现有 <code>NORMAL / FOCUS</code> 只有自动浏览器语义，不足以承载新版。建议拆出本地会话状态 <code>idle / billboard(taskId)</code>，浏览器匹配单独保留。Demo 期间，本地会话优先，Chrome 的失焦、断开或不匹配 URL 不能把 billboard 关掉。操作 TODOPOP 自己也不结束本地会话。</p>
+<p>有链接任务在正式版仍可直接打开 URL。如以后也需要本地专注，在编辑层提供显式“专注此任务”，不要让同一次普通点击偷偷触发两套不同会话。</p>
+<h2 id="section-7">6. 固定控制条、三面板、字体与收据</h2>
+<p>建议控制条默认固定在主屏上边缘中部，避开菜单栏。它不随气泡碰撞漂移；设置里可切换停靠边，窗口边界变化时重新夹紧。最终位置由设计师确认，先不要开放自由拖拽。</p>
+<p>“第三个泡泡”有歧义：可能是字标第三个 O，也可能指另一个设计里的气泡入口。会议还没有在共享页列出“三个面板”的名称。<strong>本方案暂以“新增任务 / 已完成收据 / 分组与配色”作为排期假设，不能据此直接编码成已确认设计。</strong></p>
+<p>如果目标确实是第三个 O 一次展开三块：控制条固定，三块组成同一个工作区；只维持一个组编辑浮层。宽屏可并排，小屏按可用工作区叠放或折成标签页。关闭工作区用 Esc，关闭子浮层先退一层。展开区域要加入布局避让，不把底下任务盖住。</p>
+<p>Unbounded 已符合圆润、玩乐的品牌方向，建议继续用于字标、标题与短任务名。表单、辅助说明与长文本要单独检查字宽、行高和中文回退，优先增大阅读字号，避免通过整体缩放把控件压成很小的字。调色后普通正文对背景建议至少 4.5:1，大号文字至少 3:1；任意组色可以保留在色点/浅填充，文字自动选安全深浅色。<a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html">W3C 对比度说明</a></p>
+<p>Popped 保留长收据造型、日期分隔和滚动条。外部面板高度受工作区约束，内部收据可以很长；不要让原生窗口一路长出屏幕。先保障 100 条记录流畅，再考虑更多记录的按批加载。任务创建后跨天仍存在；按日/周/月看已完成历史与“不按日重置任务”并不冲突。</p>
+<p>日期徽标建议悬停显示完整日期，避免“23”被误解为剩余数量、优先级或截止日。TODAY 则需要辅助说明是紧急程度，而非当天自动到期。</p>
+<h2 id="section-8">7. 分组：先做好颜色，再加入整组移动</h2>
+<p>现有数据已经支持稳定组 ID、自定义 HEX、组名、增删和侧边位置，应该沿用。</p>
+<p>建议组编辑面板提供：名字、位置、色相、饱和度、预设色、HEX、删除。亮度可由设计 token 控制以保证可读性；若开放亮度，也应保留对比度检查。全局 Tint 影响品牌界面，组色影响成员气泡，两者不能无提示地互相覆盖。改色即时预览，拖滑杆时节流保存，放手后提交最终值。</p>
+<p>选中组时，成员显示清楚的描边/标签，其他组降低到约 35%–50% 可见度，数值以真实壁纸测试为准；不能只靠颜色区分。提供组边界或专用移动手柄。普通气泡点击仍进入任务，整组移动只由该手柄触发，避免同一主体点击因隐藏模式而改变意义。</p>
+<p>移动时临时暂停相关布局自动重排；松手后保存整组锚点和成员偏移，再让碰撞缓和收敛。现有 <code>side</code> 只能表达贴边，不能表达任意二维组位置，因此需要补组布局数据。移除组只解除归组，成员任务留在桌面；如果要连任务一起删，必须另设明确操作。</p>
+<h2 id="section-9">8. Squish 的工程方案</h2>
+<p>框架不同不等于算法不能复用。应从另一版本提取气泡的受力、边界形变、拖拽阻尼和参数，再接入当前 React/Electron；没有源码前，不承诺精确复刻，也不按 zip 能否直接运行判断可行性。</p>
+<p>当前版本是每颗气泡一个透明原生窗口，内部 SVG + Motion，布局采用圆形排斥。Mockup 的场景包含 Canvas。两者主要差异是绘制和窗口/事件模型，不一定需要重写任务、历史、存储或 IPC。</p>
+<p>建议先做一个小型移植验证，比较两种路径：</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>路径</th>
+<th>收益</th>
+<th>代价与门槛</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>延用独立气泡窗口，加入局部边缘形变和拖拽回弹</td>
+<td>保留已测过的点击穿透、生命周期、编辑层和 Focus</td>
+<td>窗口裁切、变形留白、跨窗口接触与同步要验证；更适合先做有限形变</td>
+</tr>
+<tr>
+<td>每个显示器一个透明场景窗口，统一 Canvas/SVG 绘制</td>
+<td>群体碰撞、软体挤压和组移动更自然</td>
+<td>必须重新解决空白区点击穿透、鼠标捕获、层级、多屏、Dock/Spaces；不能仅因网页视觉好看就直接采用</td>
+</tr>
+</tbody></table></div>
+<p><strong>优先验证第一条路径；若独立窗口无法达到目标手感，再用第二条路径替换气泡显示层。</strong> 任务数据与交互状态应独立于绘制方式，避免之后重复重写业务逻辑。</p>
+<p>不论选哪条路径，都遵守：</p>
+<ol>
+<li>空闲只有小幅形变/呼吸，气泡中心不持续游走；鼠标接近时目标稳定。</li>
+<li>拖拽、碰撞、成长才触发明显挤压，松手后逐渐收敛，不持续震荡。</li>
+<li>文字和 ✓ 不跟着软体边缘被挤成不可读形状。</li>
+<li>视觉轮廓与命中区域要一致，不能可见处点不到、透明处挡住其他应用。</li>
+<li>固定控制条和展开面板是障碍区，气泡绕开它们。</li>
+<li>限制单泡可见直径，建议从可用屏幕短边的约 70% 开始实测；接近上限改用有限形变/拥挤表达。任务继续存在，不再无限长出屏幕。</li>
+<li>达到容量时停止增加几何尺寸，但仍能完成、编辑、退出和在列表中定位任务。不要用“屏幕满了”让所有操作失效。</li>
+<li>减少动态效果设置使用稳定位置和轻量过渡；记录真实设备性能后再设数量上限。</li>
+</ol>
+<p>透明窗口的鼠标事件忽略/转发由 Electron 提供，但仍需真实桌面测试；网页预览通过不代表桌面穿透正确。<a href="https://www.electronjs.org/docs/latest/api/browser-window#winsetignoremouseeventsignore-options">Electron BrowserWindow 文档</a></p>
+<h2 id="section-10">9. 现有实现能复用多少</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>模块</th>
+<th>当前情况</th>
+<th>下一版动作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>任务、链接、完成历史、Re-bubble</td>
+<td>已有</td>
+<td>保留；补撤销完成</td>
+</tr>
+<tr>
+<td>点击有链接任务</td>
+<td>已打开 URL</td>
+<td>沿用</td>
+</tr>
+<tr>
+<td>点击无链接任务</td>
+<td>仍直接完成</td>
+<td>改为 billboard，更新旧测试预期</td>
+</tr>
+<tr>
+<td>专用 ✓</td>
+<td>已有固定 32px、工作区夹紧和四边专项测试</td>
+<td>沿用，再验证形变与小泡场景</td>
+</tr>
+<tr>
+<td>自动 Focus</td>
+<td>依赖 Chrome context</td>
+<td>Demo 隔离保留，不作为本地 billboard 前提</td>
+</tr>
+<tr>
+<td>固定字标/三面板</td>
+<td>当前仍是可拖动大 Panel 与 Launcher</td>
+<td>拆分固定控制条和展开工作区，保留可靠的列表入口</td>
+</tr>
+<tr>
+<td>配色/分组</td>
+<td>已支持 HEX、预设、增删、贴边</td>
+<td>补显式 H/S UI、选择高亮、组布局数据</td>
+</tr>
+<tr>
+<td>Squish</td>
+<td>圆形布局 + 局部缩放动画</td>
+<td>做绘制层技术验证，不声称已具备软体物理</td>
+</tr>
+<tr>
+<td>暂停增长</td>
+<td>UI 和持久化状态都在</td>
+<td>移除入口；迁移旧暂停字段，不能让旧用户隐性永久停长</td>
+</tr>
+<tr>
+<td>归档与字体</td>
+<td>已有</td>
+<td>沿用，调整收据和可读性</td>
+</tr>
+<tr>
+<td>Chrome 扩展</td>
+<td>已有独立连接窗口</td>
+<td>Hackathon 保留；正式发行配置排除入口和浏览器桥接</td>
+</tr>
+</tbody></table></div>
+<p>若移除扩展，现有自动 URL Focus 也会失去浏览器上下文来源。建议首发明确提供“点击链接打开 + 本地 billboard”，不承诺浏览器自动匹配。若坚持保留自动匹配，就需要另立功能方案和权限评估，不能只隐藏 Connect 后假装能力还在。</p>
+<h2 id="section-11">10. 推荐实施顺序与交付标准</h2>
+<p>阶段次序基于依赖和可验收性，不是已承诺工期；拿到另一版源码并完成技术验证后再估时。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>工作</th>
+<th>阶段完成标准</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0 · 冻结交互稿</td>
+<td>确认三面板、billboard 出口、分组高亮/移动、色控、增长速率；列出截图状态</td>
+<td>无链接点击不再有“进入/完成”两套说法；设计和测试采用同一规则表</td>
+</tr>
+<tr>
+<td>1 · 完成交互闭环</td>
+<td>新点击路由、本地 billboard、固定 ✓、Esc/返回、撤销完成；与浏览器 Focus 分离</td>
+<td>完全离线、未装扩展仍能从新建到专注再完成；拖拽不误触</td>
+</tr>
+<tr>
+<td>2 · 固定 UI 与必需色控</td>
+<td>固定字标、三面板适配、组色 H/S、移除 Pause、旧状态迁移、日期/收据</td>
+<td>小屏不出界，任意组色文字仍清楚，重启后设置/历史不丢</td>
+</tr>
+<tr>
+<td>3 · Squish 移植验证与实现</td>
+<td>选绘制路径，适配碰撞/形变/阻尼、稳定命中和工作区避让</td>
+<td>1/10/30 个气泡、拖拽和成长均可控；不吞底下应用点击；操作始终可达</td>
+</tr>
+<tr>
+<td>4 · 分组空间交互</td>
+<td>选中淡化、整组手柄拖动、锚点/偏移保存</td>
+<td>移动一组不带走其他组，松手不弹回，重启恢复位置</td>
+</tr>
+<tr>
+<td>5 · 整体验收与 Demo</td>
+<td>回归、Demo fixture、安装包、明确 Demo 与首发差异、演示脚本</td>
+<td>用新安装环境从零完成主流程，失败时可回到固定控制条恢复</td>
+</tr>
+</tbody></table></div>
+<p>色彩控件安排在 Squish 之前，是因为它已经被明确列为 must-have；不能用动效占满时间后再把它推迟。整组移动依赖稳定布局，放在物理/布局方案选定后。展示稿在阶段 5 收敛，营销网站、手机、后端和同步保持延期。</p>
+<h2 id="section-12">11. 测试与人工复核方案</h2>
+<p>这份是下一版应执行的验收计划，<strong>不是已经通过的测试报告</strong>。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>关键用例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>点击隔离</td>
+<td>主体打开/专注；✓ 只完成一次；拖后不打开；右键不完成；小泡与巨泡都能点到</td>
+</tr>
+<tr>
+<td>本地专注</td>
+<td>无网、无 Chrome、无扩展；返回不完成；完成后正确归档；切换应用不误退；Esc 可用</td>
+</tr>
+<tr>
+<td>状态竞争</td>
+<td>billboard 期间 Chrome 匹配/不匹配/断线、任务被编辑或删除、应用退出；不会留下孤立窗口</td>
+</tr>
+<tr>
+<td>数据兼容</td>
+<td>原来设了永久 Pause 的数据升级后按新规则运行；保留任务 ID、增长、历史、组色；回滚不静默破坏数据</td>
+</tr>
+<tr>
+<td>窗口与布局</td>
+<td>13 英寸工作区、缩放、外接屏插拔、Dock 自动隐藏、Spaces、其他应用全屏、控制条展开收起</td>
+</tr>
+<tr>
+<td>物理与输入</td>
+<td>连续拖动、连点、重叠/巨泡、10/30 泡、鼠标接近稳定、减少动态效果、键盘和列表替代入口</td>
+</tr>
+<tr>
+<td>分组与配色</td>
+<td>选择/取消、整组移动、贴边切换、删除组保留任务、极浅/极深/低饱和色、长中文名、重启恢复</td>
+</tr>
+<tr>
+<td>日期与收据</td>
+<td>午夜与时区变更、跨日未完成任务仍在、100 条历史内部滚动、Undo 与 Re-bubble 含义不同</td>
+</tr>
+<tr>
+<td>产品版本</td>
+<td>Demo 包可配对；首发包离线使用且不出现 Connect；双方都能新建、进入、完成和恢复任务</td>
+</tr>
+</tbody></table></div>
+<p>建议邀请 3 位没看过设计的人做一次短测试：找到新增入口，建一个无链接任务，进入再返回，完成它，把一个组移到左边，再找回历史。观察第一次是否误 Pop、能否理解 ✓、能否找到退出；若需要口头解释，优先改入口和反馈，不继续堆动效。该样本只用于发现问题，不代表统计验证。</p>
+<h2 id="section-13">12. 开始开发前剩下的四个确认点</h2>
+<ol>
+<li>“第三个泡泡”的具体入口，以及同时展开的三块内容是什么？现有原型是三个 O 各开一块。</li>
+<li>Billboard 的初始视觉范围：建议可退出的大字窗口；若要覆盖整块屏幕，需提供对应设计状态。</li>
+<li>正式增长速率采用会议前方案，还是 mockup 的较慢速度？先统一一份表，Demo 倍速另算。</li>
+<li>能否取得另一版本的相关源代码/导出，或至少给出拖拽、接触、成长三个状态的参考录屏？当前链接足以评估外观，不能据此承诺准确移植物理参数。</li>
+</ol>
+<p>这些确认不妨碍先整理状态和测试，但会影响对应界面及 Squish 的最终实现。没有确认时，三面板排列与物理框架选择都应保持可替换。</p>
+<h2 id="section-14">13. 演示与上线形式</h2>
+<p>Hackathon 演示建议围绕一条主线：创建任务 → 气泡持续提醒并挤压 → 点击无链接任务进入 billboard → 返回 → 用 ✓ Pop → 收据出现完成记录 → 改组色并整组移动。网页链接与 Chrome 配对放在次要支线，避免让安装扩展成为理解产品的前提。</p>
+<p>真实主流程稳定后，再安排可复位的演示样例。Demo 增长使用独立预览数据，避免演示加速污染用户任务；不要用无法复现的假前台切换冒充自动 Focus。扩展发布是独立交付项，有审核和分发前置条件，不能保证与演示当天同步完成；需准备清楚标注的开发者加载或录屏备选。</p>
+<p>首发维持本地桌面应用，不需要账号和后端。先做 macOS 安装包，补开发者签名、公证、更新/版本区分与干净机器安装验收；按你们的决定，首发去除扩展依赖。手机遥控、云同步、URL blocking 与营销网站继续后置。</p>
+<footer>依据：用户讨论记录、共享原型、当前本地代码。网页观察不等于桌面性能或交互验收。</footer></main></div></body></html>
