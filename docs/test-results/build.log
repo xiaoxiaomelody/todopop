@@ -1,5 +1,5 @@
 
-> todopop@0.4.2 build
+> todopop@0.4.3 build
 > npm run build --workspaces --if-present
 
 
@@ -7,21 +7,21 @@
 > node build.mjs
 
 
-> @todopop/desktop@0.4.2 build
+> @todopop/desktop@0.4.3 build
 > electron-vite build
 
 vite v7.3.7 building ssr environment for production...
 transforming...
 ✓ 17 modules transformed.
 rendering chunks...
-dist-electron/main/main.cjs  65.97 kB
-✓ built in 1.16s
+dist-electron/main/main.cjs  66.05 kB
+✓ built in 412ms
 vite v7.3.7 building ssr environment for production...
 transforming...
 ✓ 1 modules transformed.
 rendering chunks...
 dist-electron/preload/preload.cjs  2.61 kB
-✓ built in 15ms
+✓ built in 9ms
 vite v7.3.7 building client environment for production...
 transforming...
 ✓ 475 modules transformed.
@@ -33,4 +33,4 @@ dist/assets/unbounded-latin-wght-normal-D5afBTBx.woff2          50.90 kB
 dist/assets/unbounded-latin-ext-wght-normal-D6H-S6MW.woff2     118.35 kB
 dist/assets/index-Cg9Q8qdq.css                                  52.81 kB
 dist/assets/index-k1i-y1wC.js                                1,005.89 kB
-✓ built in 1.49s
+✓ built in 1.75s

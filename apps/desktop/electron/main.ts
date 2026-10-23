@@ -358,6 +358,7 @@ async function createWindows() {
     webPreferences,
   });
   mainWindow.setAlwaysOnTop(true, 'pop-up-menu');
+  mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   lockNavigation(mainWindow);
   mainWindow.on('close', (e) => {
     if (!quitting) {

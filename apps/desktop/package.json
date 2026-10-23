@@ -1,6 +1,6 @@
 {
   "name": "@todopop/desktop",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "type": "module",
   "main": "dist-electron/main/main.cjs",
