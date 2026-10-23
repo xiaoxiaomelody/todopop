@@ -13,7 +13,7 @@ export function RingColorPicker({
   label: string;
   mode?: 'tint' | 'group';
   wheel?: { h: number; s: number };
-  onWheelChange?: (v: { h: number; s: number }) => void;
+  onWheelChange?: (v: { h: number; s: number }) => void | Promise<unknown>;
 }) {
   const infer = () =>
     wheel ||
@@ -21,9 +21,34 @@ export function RingColorPicker({
   const [color, setColor] = useState(infer),
     [hex, setHex] = useState(value),
     current = useRef(color),
-    drag = useRef(false);
+    drag = useRef(false),
+    pending = useRef<{ h: number; s: number } | null>(null),
+    sending = useRef(false),
+    frame = useRef(0),
+    emit = useRef(onWheelChange);
+  emit.current = onWheelChange;
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(frame.current);
+      void flush();
+    },
+    [],
+  );
+  async function flush() {
+    if (sending.current || !pending.current) return;
+    const c = pending.current;
+    pending.current = null;
+    sending.current = true;
+    try {
+      if (emit.current) await emit.current(c);
+      else onChange(at(c.h, c.s));
+    } finally {
+      sending.current = false;
+      if (pending.current) frame.current = requestAnimationFrame(() => void flush());
+    }
+  }
   useEffect(() => {
-    if (!drag.current) {
+    if (!drag.current && !sending.current && !pending.current) {
       const next = infer();
       current.current = next;
       setColor(next);
@@ -37,20 +62,24 @@ export function RingColorPicker({
     setColor(c);
     setHex(at(c.h, c.s));
     if (commit) {
-      if (onWheelChange) onWheelChange(c);
-      else onChange(at(c.h, c.s));
+      pending.current = c;
+      cancelAnimationFrame(frame.current);
+      frame.current = requestAnimationFrame(() => void flush());
     }
   }
   function pick(e: PointerEvent<HTMLElement>, sat = false) {
     const r = e.currentTarget.getBoundingClientRect();
-    if (sat) update({ ...current.current, s: 1 - (e.clientY - r.y) / r.height });
+    if (sat) update({ ...current.current, s: 1 - (e.clientY - r.y) / r.height }, true);
     else
-      update({
-        ...current.current,
-        h:
-          (Math.atan2(e.clientX - r.x - r.width / 2, -(e.clientY - r.y - r.height / 2)) * 180) /
-          Math.PI,
-      });
+      update(
+        {
+          ...current.current,
+          h:
+            (Math.atan2(e.clientX - r.x - r.width / 2, -(e.clientY - r.y - r.height / 2)) * 180) /
+            Math.PI,
+        },
+        true,
+      );
   }
   function start(e: PointerEvent<HTMLElement>, sat = false) {
     if (e.button !== 0) return;

@@ -1232,3 +1232,75 @@ body.bubble-window {
   padding-top: 10px;
   font-size: 9px;
 }
+
+/* Consistent icon geometry and a single opaque panel below the dock. */
+.logo-o-button {
+  display: grid;
+  place-items: center;
+  height: 21.77px;
+  line-height: 0;
+}
+.logo-o-button > span {
+  line-height: 0;
+}
+.logo-o-button svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+.control-utilities > button,
+.group-remove,
+.billboard header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+  flex-shrink: 0;
+}
+.control-utilities svg,
+.group-remove svg,
+.billboard header svg,
+.side-buttons svg {
+  display: block;
+  flex-shrink: 0;
+}
+.grp-top .text-button,
+.group-color-card .field-line .text-button,
+.tutorial .field-line .text-button {
+  margin: 0 0 0 auto;
+  flex-shrink: 0;
+}
+.control-content > .tutorial {
+  border-top: 0;
+}
+.generated-ring:before {
+  left: 22.5%;
+  top: 22.5%;
+  width: 55%;
+  height: 55%;
+}
+.billboard {
+  --ink: #fff;
+  --soft: #ffffffbf;
+  --rule: #ffffff59;
+  background: color-mix(in srgb, var(--tint, #1a419e) 68%, #101827);
+  color: white;
+}
+.billboard .tp-button:hover {
+  background: #ffffff18;
+}
+.billboard .tp-button--filled {
+  background: white;
+  color: #182541;
+}
+.billboard .tp-button--filled:hover {
+  background: #e8edf7;
+}
+.tutorial-billboard {
+  --ink: #fff;
+  --soft: #ffffffbf;
+  background: color-mix(in srgb, var(--tint, #1a419e) 68%, #101827);
+  color: white;
+  border-radius: 18px;
+}

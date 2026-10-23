@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-23T20:37:04.825Z",
+  "date": "2026-10-23T20:50:20.500Z",
   "passed": true,
   "results": [
     {
@@ -7,84 +7,91 @@
       "command": "npm run typecheck",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 3394
+      "durationMs": 3554
     },
     {
       "name": "unit",
       "command": "npm test",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 300
+      "durationMs": 285
     },
     {
       "name": "format",
       "command": "npm run format:check",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1325
+      "durationMs": 1278
     },
     {
       "name": "build",
       "command": "npm run build",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1904
+      "durationMs": 1871
     },
     {
       "name": "extension-ui",
       "command": "node scripts/extension-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 2823
+      "durationMs": 2920
     },
     {
       "name": "color-picker-ui",
       "command": "node scripts/color-picker-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1779
+      "durationMs": 2499
     },
     {
       "name": "dock-ui",
       "command": "node scripts/dock-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1823
+      "durationMs": 1906
+    },
+    {
+      "name": "ui-polish",
+      "command": "node scripts/ui-polish.mjs",
+      "exitCode": 0,
+      "passed": true,
+      "durationMs": 2268
     },
     {
       "name": "designer-iteration",
       "command": "node scripts/designer-iteration.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 3195
+      "durationMs": 3044
     },
     {
       "name": "desktop-acceptance",
       "command": "node scripts/desktop-acceptance.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 8080
+      "durationMs": 8238
     },
     {
       "name": "giant-reachability",
       "command": "node scripts/bubble-reachability.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 2728
+      "durationMs": 2965
     },
     {
       "name": "layout-pressure",
       "command": "node scripts/layout-pressure.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 4753
+      "durationMs": 5825
     },
     {
       "name": "integration",
       "command": "node scripts/e2e.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 18097
+      "durationMs": 19113
     }
   ]
 }

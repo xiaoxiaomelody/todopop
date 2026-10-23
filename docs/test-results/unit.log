@@ -1,36 +1,36 @@
 
-> todopop@0.3.0 test
+> todopop@0.3.1 test
 > node --test packages/shared/test/*.test.ts
 
-✔ designer tint and group colors stay valid, with independent custom wheel colors (8.327958ms)
-✔ edge queues wrap into additional lanes and preserve group/global side precedence (1.336459ms)
-✔ ported membrane responds to pressure and remains finite with smooth curves (6.503875ms)
-✔ legacy tasks migrate without changing identity and completed history is created once (2.140291ms)
-✔ versioned state round-trips groups, settings, growth, sessions and deleted tasks (1.110625ms)
-✔ rebubble starts a new round and preserves historical completion (0.180875ms)
-✔ complete is idempotent and delete undo retains the same task and history (0.134459ms)
-✔ global pause supports exact durations, tomorrow and indefinite resume (0.985667ms)
-✔ growth is exact at the formal rate, slower per urgency, and ignores paused or hidden tasks (0.163166ms)
-✔ palette colors swap, custom colors survive tint, and deleting a group unassigns tasks (0.317833ms)
-✔ reorder validates the entire active list and persists rank (0.248208ms)
-✔ layout preserves reachable visible bodies and avoids a center panel (0.747958ms)
-✔ history counts completions once and apportions focus across the period boundary (0.218792ms)
-✔ normalizes fragments and trailing slashes (0.761708ms)
-✔ does not match unrelated paths, origins or queries (0.163792ms)
-✔ matches Google Docs IDs across editor routes (0.251334ms)
-✔ invalid URLs never match (0.098792ms)
-✔ focus requires active Chrome and an incomplete matching task (0.134417ms)
-✔ coverage counts union once, clips offscreen and honors nonzero display origins (2.788834ms)
-✔ deformation is localized at contacts, and coverage uses those same points (5.301084ms)
-✔ undo completion retains the same round, URL and waiting time without duplicate history (0.451167ms)
-✔ HSV editing round-trips original presets including neutral colors (0.302833ms)
-✔ large bubble frames clip to the work area without changing logical contour coordinates (1.153125ms)
-✔ every tinted preset stays valid hex for the picker and SVG (0.697125ms)
-✔ trims task inputs and allows URL-free reminders (1.096875ms)
-✔ rejects unsafe URLs, credentials, invalid names, and urgency (0.330333ms)
-✔ validates browser messages before they reach focus decisions (0.217208ms)
-✔ completing one shared-URL task keeps focus until all matching tasks complete (0.256916ms)
-✔ does not conflate Google document kinds, IDs, or nested paths (0.241375ms)
+✔ designer tint and group colors stay valid, with independent custom wheel colors (11.993958ms)
+✔ edge queues wrap into additional lanes and preserve group/global side precedence (1.283667ms)
+✔ ported membrane responds to pressure and remains finite with smooth curves (7.149125ms)
+✔ legacy tasks migrate without changing identity and completed history is created once (1.815041ms)
+✔ versioned state round-trips groups, settings, growth, sessions and deleted tasks (1.085042ms)
+✔ rebubble starts a new round and preserves historical completion (0.182875ms)
+✔ complete is idempotent and delete undo retains the same task and history (0.1335ms)
+✔ global pause supports exact durations, tomorrow and indefinite resume (1.084334ms)
+✔ growth is exact at the formal rate, slower per urgency, and ignores paused or hidden tasks (0.316416ms)
+✔ palette colors swap, custom colors survive tint, and deleting a group unassigns tasks (0.227166ms)
+✔ reorder validates the entire active list and persists rank (0.193459ms)
+✔ layout preserves reachable visible bodies and avoids a center panel (0.765917ms)
+✔ history counts completions once and apportions focus across the period boundary (0.226042ms)
+✔ normalizes fragments and trailing slashes (0.710042ms)
+✔ does not match unrelated paths, origins or queries (0.152458ms)
+✔ matches Google Docs IDs across editor routes (0.2265ms)
+✔ invalid URLs never match (0.0925ms)
+✔ focus requires active Chrome and an incomplete matching task (0.128875ms)
+✔ coverage counts union once, clips offscreen and honors nonzero display origins (3.478458ms)
+✔ deformation is localized at contacts, and coverage uses those same points (5.744042ms)
+✔ undo completion retains the same round, URL and waiting time without duplicate history (0.447458ms)
+✔ HSV editing round-trips original presets including neutral colors (0.245167ms)
+✔ large bubble frames clip to the work area without changing logical contour coordinates (1.0595ms)
+✔ every tinted preset stays valid hex for the picker and SVG (0.6695ms)
+✔ trims task inputs and allows URL-free reminders (1.391625ms)
+✔ rejects unsafe URLs, credentials, invalid names, and urgency (0.447292ms)
+✔ validates browser messages before they reach focus decisions (0.204375ms)
+✔ completing one shared-URL task keeps focus until all matching tasks complete (0.2465ms)
+✔ does not conflate Google document kinds, IDs, or nested paths (0.237084ms)
 ℹ tests 29
 ℹ suites 0
 ℹ pass 29
@@ -38,4 +38,4 @@
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 128.924542
+ℹ duration_ms 118.851792

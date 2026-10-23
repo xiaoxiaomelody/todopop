@@ -1,6 +1,39 @@
 /// <reference path="./assets.d.ts" />
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
 import logoO from './assets/logo-o.svg';
+export function ActionGlyph({ name }: { name: 'add' | 'close' | 'receipt' | 'tint' | 'help' }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {name === 'add' ? (
+        <path d="M12 5v14M5 12h14" />
+      ) : name === 'close' ? (
+        <path d="m6 6 12 12M18 6 6 18" />
+      ) : name === 'receipt' ? (
+        <circle cx="12" cy="12" r="7" strokeDasharray="2 4" />
+      ) : name === 'tint' ? (
+        <>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor" stroke="none" />
+        </>
+      ) : (
+        <>
+          <path d="M8.5 8a3.5 3.5 0 0 1 7 0c0 2.5-3.5 2.5-3.5 5" />
+          <circle cx="12" cy="18" r=".8" fill="currentColor" stroke="none" />
+        </>
+      )}
+    </svg>
+  );
+}
 export function BrandLogo({
   actions,
 }: { actions?: { name: string; symbol: string; active?: boolean; onClick(): void }[] } = {}) {
@@ -19,7 +52,9 @@ export function BrandLogo({
               onClick={actions[(index - 1) / 2].onClick}
             >
               <img src={logoO} alt="" width="24.08" height="21.77" />
-              <span aria-hidden="true">{actions[(index - 1) / 2].symbol}</span>
+              <span aria-hidden="true">
+                <ActionGlyph name={(['add', 'receipt', 'tint'] as const)[(index - 1) / 2]} />
+              </span>
             </button>
           ) : (
             <img key={index} src={logoO} alt="" width="24.08" height="21.77" />

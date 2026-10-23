@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import { BrandLogo, Button, StatusDot } from '@todopop/ui';
+import { ActionGlyph, BrandLogo, Button, StatusDot } from '@todopop/ui';
 import { TaskForm } from '../components/TaskForm';
 import { TaskList } from '../components/TaskList';
 import { GrowthControls } from '../components/GrowthControls';
@@ -12,7 +12,6 @@ export function Landing() {
     panel = useRef<HTMLDivElement>(null),
     offered = useRef(false);
   const [section, setSection] = useState<string | null>(null),
-    [tour, setTour] = useState(false),
     [pairing, setPairing] = useState<{ token: string; port: number } | null>(null),
     [copied, setCopied] = useState(false);
   const floating = s.tasks.filter((t) => !t.completed && !t.deletedAt);
@@ -20,12 +19,11 @@ export function Landing() {
   useEffect(() => {
     if (!s.loading && !offered.current) {
       offered.current = true;
-      if (!s.settings.tutorialDone) setTour(true);
+      if (!s.settings.tutorialDone) setSection('tour');
     }
   }, [s.loading, s.settings.tutorialDone]);
   useEffect(() => {
     const open = () => {
-      setTour(false);
       setSection('appearance');
     };
     window.addEventListener('manage-groups', open);
@@ -53,7 +51,7 @@ export function Landing() {
     return () => window.removeEventListener('keydown', key);
   }, [s.selectedGroupId]);
   const done = () => {
-    setTour(false);
+    setSection(null);
     void s.run(() => window.todopop.setSettings({ tutorialDone: true }));
   };
   function dragStart(e: PointerEvent<HTMLElement>) {
@@ -74,7 +72,7 @@ export function Landing() {
     }
   }
   return (
-    <div className={`control-shell ${!section && !tour ? 'is-compact' : ''}`} ref={panel}>
+    <div className={`control-shell ${!section ? 'is-compact' : ''}`} ref={panel}>
       <div className="control-panel">
         <header
           className="control-bar"
@@ -134,8 +132,8 @@ export function Landing() {
             ]}
           />
           <div className="control-utilities">
-            <button aria-label="Open tutorial" title="Quick tour" onClick={() => setTour(!tour)}>
-              ?
+            <button aria-label="Open tutorial" title="Quick tour" onClick={() => toggle('tour')}>
+              <ActionGlyph name="help" />
             </button>
             <button
               aria-label="Chrome connection"
@@ -149,8 +147,8 @@ export function Landing() {
             </button>
           </div>
         </header>
-        {tour && <Tutorial onDone={done} />}
-        <div className="control-content">
+        <div className="control-content" key={section}>
+          {section === 'tour' && <Tutorial onDone={done} />}
           {section === 'new' && (
             <section className="prototype-create" aria-label="Create a bubble">
               <h2>Blow a bubble</h2>

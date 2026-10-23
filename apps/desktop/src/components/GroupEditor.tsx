@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { ActionGlyph } from '@todopop/ui';
 import { groupColor, slotHue, defaultWheelSat, type Side } from '@todopop/shared';
 import { useTaskStore } from '../store/taskStore';
 import { RingColorPicker } from './RingColorPicker';
@@ -160,7 +161,7 @@ export function GroupEditor({
                 aria-label={`Remove group ${g.name}`}
                 onClick={() => void s.run(() => window.todopop.groups('delete', { id: g.id }))}
               >
-                ×
+                <ActionGlyph name="close" />
               </button>
             </li>
           ))}
@@ -245,7 +246,7 @@ export function GroupEditor({
                     )
                   }
                   onWheelChange={(v) =>
-                    void s.run(() =>
+                    s.run(() =>
                       window.todopop.groups('update', {
                         id: g.id,
                         color: { kind: 'wheel', h: v.h, saturation: v.s },

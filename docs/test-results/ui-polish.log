@@ -1,0 +1,5 @@
+PASS All three O glyphs centered within 0.5 CSS px of the ellipse
+PASS Tutorial and all four dock panels replace each other; tutorial has opaque card surface
+PASS Tint updates twice before pointer release, live theme changes; ring hole matches original 55% diameter
+PASS Custom group color updates while pointer is still held
+PASS Billboard uses dark themed background, white text and readable controls; return works

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Button } from '@todopop/ui';
+import { ActionGlyph, Button } from '@todopop/ui';
 import { useTaskStore } from '../store/taskStore';
 export function Billboard({ id }: { id: string }) {
   const s = useTaskStore(),
@@ -26,7 +26,7 @@ export function Billboard({ id }: { id: string }) {
           aria-label="Return to bubbles"
           onClick={() => void s.run(() => window.todopop.exitFocus())}
         >
-          ×
+          <ActionGlyph name="close" />
         </button>
       </header>
       <h1>{task?.title || 'Your task'}</h1>

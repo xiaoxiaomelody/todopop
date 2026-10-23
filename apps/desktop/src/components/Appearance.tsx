@@ -25,7 +25,7 @@ export function Appearance() {
         value={s.settings.tint}
         wheel={s.settings.tintWheel}
         onChange={(tint) => void s.run(() => window.todopop.setSettings({ tint }))}
-        onWheelChange={(tintWheel) => void s.run(() => window.todopop.setSettings({ tintWheel }))}
+        onWheelChange={(tintWheel) => s.run(() => window.todopop.setSettings({ tintWheel }))}
       />
       <GroupEditor selected={s.selectedGroupId} initialEdit onSelect={() => {}} />
     </div>
