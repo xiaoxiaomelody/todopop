@@ -35,12 +35,12 @@ try {
   await popup.evaluate(() => document.fonts.ready);
   assert.match(
     await popup.locator('body').evaluate((el) => getComputedStyle(el).fontFamily),
-    /DM Sans/,
+    /Unbounded/,
   );
   assert.ok(
     await popup.evaluate(() =>
       Array.from(document.fonts).some(
-        (font) => font.family.includes('DM Sans') && font.status === 'loaded',
+        (font) => font.family.includes('Unbounded') && font.status === 'loaded',
       ),
     ),
   );
@@ -112,7 +112,7 @@ try {
         passed: true,
         date: new Date().toISOString(),
         checks: [
-          'local DM Sans and Figma logo',
+          'local Unbounded and Figma logo',
           'help accordion',
           'invalid input',
           'rejected token',

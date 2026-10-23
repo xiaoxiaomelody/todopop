@@ -1,8 +1,8 @@
 {
   "passed": true,
-  "date": "2026-10-23T15:18:20.117Z",
+  "date": "2026-10-23T15:24:41.429Z",
   "checks": [
-    "local DM Sans and Figma logo",
+    "local Unbounded and Figma logo",
     "help accordion",
     "invalid input",
     "rejected token",

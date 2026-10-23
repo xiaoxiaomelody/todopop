@@ -53,7 +53,7 @@ apps/
   chrome-extension/ Manifest V3 worker, reconnect manager, pairing popup
 packages/
   shared/           Task/context types, validation, growth, layout, history, domain commands
-  ui/               Shared Figma logo, DM Sans, theme tokens and React controls
+  ui/               Shared Figma logo, Unbounded, theme tokens and React controls
 docs/
   technical-plan.md Original supplied plan
   design-reference.md Design decisions and source nodes

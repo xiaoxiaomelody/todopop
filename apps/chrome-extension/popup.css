@@ -73,7 +73,7 @@ button:focus-visible {
 }
 .section-head h1 {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
 }
 .connection-status {
   display: inline-flex;
@@ -94,7 +94,7 @@ button:focus-visible {
 }
 .connection-body h2 {
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.25;
   letter-spacing: -0.45px;
   margin-bottom: 10px;
@@ -185,7 +185,7 @@ button:focus-visible {
   background: none;
   border: 0;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   text-align: left;
 }
 .help-toggle:hover {
@@ -234,7 +234,7 @@ button:focus-visible {
   color: var(--ink);
 }
 .help-steps strong {
-  font-weight: 500;
+  font-weight: 400;
   color: var(--ink);
 }
 .privacy {
