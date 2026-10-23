@@ -89,16 +89,31 @@ async function createPanel() {
   await loadRenderer(mainWindow);
 }
 function registerIPC() {
+  function isAuthorized(
+    event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent,
+    id?: string,
+    panelOnly = false,
+  ): boolean {
+    // Native mouse messages can arrive after their bubble has been removed.
+    // Reject stale senders without throwing from fire-and-forget IPC listeners.
+    if (
+      quitting ||
+      event.sender.isDestroyed() ||
+      !event.senderFrame ||
+      event.senderFrame !== event.sender.mainFrame
+    )
+      return false;
+    if (mainWindow && !mainWindow.isDestroyed() && event.sender.id === mainWindow.webContents.id)
+      return true;
+    const taskId = bubbles.taskFor(event.sender);
+    return !panelOnly && Boolean(taskId) && (id === undefined || taskId === id);
+  }
   function authorized(
     event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent,
     id?: string,
     panelOnly = false,
   ) {
-    if (!event.senderFrame || event.senderFrame !== event.sender.mainFrame)
-      throw new Error('Untrusted frame.');
-    if (event.sender.id === mainWindow?.webContents.id) return;
-    if (panelOnly || !bubbles.taskFor(event.sender) || (id && bubbles.taskFor(event.sender) !== id))
-      throw new Error('Untrusted window.');
+    if (!isAuthorized(event, id, panelOnly)) throw new Error('Untrusted window.');
   }
   const save = async (update: Parameters<TaskRepository['mutate']>[0]) => {
     try {
@@ -171,11 +186,11 @@ function registerIPC() {
     return { token, port: BRIDGE_PORT };
   });
   ipcMain.on('panel:hide', (e) => {
-    authorized(e, undefined, true);
+    if (!isAuthorized(e, undefined, true)) return;
     mainWindow?.hide();
   });
   ipcMain.on('panel:resize', (e, height: number) => {
-    authorized(e, undefined, true);
+    if (!isAuthorized(e, undefined, true)) return;
     if (!Number.isFinite(height) || !mainWindow) return;
     const area = screen.getDisplayMatching(mainWindow.getBounds()).workArea;
     const h = Math.min(area.height - 20, Math.max(200, Math.ceil(height)));
@@ -187,11 +202,11 @@ function registerIPC() {
     });
   });
   ipcMain.on('bubble:drag', (e, phase: string, x: number, y: number) => {
-    authorized(e);
+    if (!isAuthorized(e)) return;
     if (['start', 'move', 'end'].includes(phase)) bubbles.drag(e.sender, phase, x, y);
   });
   ipcMain.on('bubble:hit', (e, hit: boolean) => {
-    authorized(e);
+    if (!isAuthorized(e)) return;
     const win = BrowserWindow.fromWebContents(e.sender);
     if (bubbles.taskFor(e.sender) && typeof hit === 'boolean')
       win?.setIgnoreMouseEvents(!hit, { forward: true });

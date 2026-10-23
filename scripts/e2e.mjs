@@ -40,6 +40,11 @@ async function launch() {
   const page = await desktop.firstWindow();
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.waitForSelector('.panel');
+  await until(
+    async () => !(await snap(page)).error?.includes('Chrome connection unavailable'),
+    'Close the running TODOPOP app before starting the integration test',
+    1500,
+  );
   return page;
 }
 const snap = (page) => page.evaluate(() => window.todopop.snapshot());
@@ -58,6 +63,19 @@ const bubbleWindows = () =>
 try {
   let page = await launch();
   assert.equal((await snap(page)).tasks.length, 0);
+  // Unregistered/stale mouse and panel messages must be ignored, not throw in main.
+  await desktop.evaluate(({ BrowserWindow, ipcMain }) => {
+    const stale = new BrowserWindow({ show: false });
+    const event = { sender: stale.webContents, senderFrame: stale.webContents.mainFrame };
+    ipcMain.emit('bubble:hit', event, true);
+    ipcMain.emit('bubble:drag', event, 'move', 100, 100);
+    ipcMain.emit('panel:resize', event, 500);
+    ipcMain.emit('panel:hide', event);
+    stale.destroy();
+    ipcMain.emit('bubble:hit', event, false);
+  });
+  console.log('PASS stale/unregistered window events are rejected without uncaught exceptions');
+
   await page.getByRole('button', { name: 'Blow a bubble' }).click();
   await page.locator('input[name=title]').fill('Problem set 4');
   await page.locator('input[name=url]').fill(`${origin}/work`);
@@ -138,7 +156,7 @@ try {
     origin: `chrome-extension://${'a'.repeat(32)}`,
   });
   await once(socket, 'open');
-  const auth = once(socket, 'message');
+  const auth = once(socket, 'message', { signal: AbortSignal.timeout(5000) });
   socket.send(JSON.stringify({ type: 'AUTH', token: pairing.token }));
   await auth;
   const context = (url, isFocused = true) =>

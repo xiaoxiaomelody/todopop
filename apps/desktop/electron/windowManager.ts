@@ -19,7 +19,10 @@ export class BubbleWindows {
   private dragState = new Map<number, { x: number; y: number; left: number; top: number }>();
   constructor(private persistPosition: (id: string, position: { x: number; y: number }) => void) {}
   taskFor(sender: WebContents) {
-    return [...this.windows].find(([, w]) => w.webContents.id === sender.id)?.[0];
+    if (sender.isDestroyed()) return undefined;
+    return [...this.windows].find(
+      ([, w]) => !w.isDestroyed() && w.webContents.id === sender.id,
+    )?.[0];
   }
   sync(tasks: Task[], focus: FocusState) {
     this.visible = focus === 'NORMAL';
