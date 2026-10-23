@@ -1,14 +1,14 @@
 {
   "passed": true,
-  "date": "2026-10-23T22:06:56.678Z",
+  "date": "2026-10-23T22:41:57.902Z",
   "checks": [
     "Actual right-click editor selects, creates and renames groups then saves without Untrusted window",
     "Editor cannot edit another task or settings; bubble renderer cannot mutate groups",
-    "Selection message has opaque white surface and notification text contrast meets 4.5:1",
+    "Selection banner removed, Esc clears highlight and toast contrast meets 4.5:1",
     "Chrome connection demo line removed; bubble group autofill is more translucent (14–28%)",
     "Repeated snapshots with unchanged geometry never move bubbles",
     "Crowded 60x growing bubbles move locally without teleporting or snapshot-induced oscillation"
   ],
-  "maxStep": 21.9658826364888,
+  "maxStep": 22.192341021172147,
   "errors": []
 }

@@ -38,9 +38,7 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
   const size = task.size || BUBBLE_SIZE[task.urgency];
   const group = state.groups.find((g) => g.id === task.groupId);
   const color = group ? groupColor(group.color, state.settings.tint) : state.settings.tint;
-  const peers = state.tasks.filter(
-    (t) => !t.completed && !t.deletedAt && !(t.snoozedUntil && t.snoozedUntil > Date.now()),
-  );
+  const peers = state.tasks.filter((t) => !t.completed && !t.deletedAt);
   // The membrane owns these DOM paths after mounting. React must not reset
   // them to the static outline on every growth/state broadcast.
   const [initialShape] = useState(() => {

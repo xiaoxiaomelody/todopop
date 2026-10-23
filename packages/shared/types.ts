@@ -27,7 +27,6 @@ export type Task = TaskInput & {
   createdAt?: number;
   completedAt?: number;
   position?: { x: number; y: number };
-  snoozedUntil?: number;
   deletedAt?: number;
   growthMs?: number;
   focusMs?: number;
@@ -89,7 +88,7 @@ export type Snapshot = {
   growthMode: 'real' | 'demo';
   toast: { message: string; undoId?: string } | null;
 };
-export type TaskAction = 'complete' | 'restore' | 'delete' | 'snooze' | 'wake';
+export type TaskAction = 'complete' | 'restore' | 'delete';
 export type GroupChange = { id?: string; name?: string; side?: Side; color?: ColorSource };
 export type DesktopApi = {
   snapshot(): Promise<Snapshot>;

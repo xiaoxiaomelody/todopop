@@ -15,8 +15,6 @@ export function grow(
 ): Task[] {
   const dt = Math.max(0, Math.min(5000, elapsed));
   return tasks.map((t) =>
-    stopped || t.completed || t.deletedAt || (t.snoozedUntil && t.snoozedUntil > now)
-      ? t
-      : { ...t, growthMs: (t.growthMs || 0) + dt },
+    stopped || t.completed || t.deletedAt ? t : { ...t, growthMs: (t.growthMs || 0) + dt },
   );
 }

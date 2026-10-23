@@ -34,8 +34,7 @@ export function TaskList({
   return (
     <ul className="task-list">
       {ordered.map((task) => {
-        const group = state.groups.find((g) => g.id === task.groupId),
-          snoozed = Boolean(task.snoozedUntil && task.snoozedUntil > Date.now());
+        const group = state.groups.find((g) => g.id === task.groupId);
         return (
           <li key={task.id} onDragOver={(e) => e.preventDefault()} onDrop={(e) => drop(e, task.id)}>
             <button
@@ -73,21 +72,9 @@ export function TaskList({
             <button className="task-name" onClick={() => onEdit(task.id)}>
               <span>{task.title}</span>
               <small>
-                {snoozed
-                  ? 'Snoozed · 10 min'
-                  : `${URGENCY_LABEL[task.urgency]} · ${Math.floor((task.growthMs || 0) / 60000)}m · ⌀ ${(((task.size || 118) * 0.61) / 37.8).toFixed(1)} cm`}
+                {`${URGENCY_LABEL[task.urgency]} · ${Math.floor((task.growthMs || 0) / 60000)}m · ⌀ ${(((task.size || 118) * 0.61) / 37.8).toFixed(1)} cm`}
               </small>
             </button>
-            {snoozed && (
-              <button
-                className="row-resume"
-                onClick={() => {
-                  void state.run(() => window.todopop.act(task.id, 'wake'));
-                }}
-              >
-                Show now
-              </button>
-            )}
             <button
               className="icon-button row-action"
               disabled={busy === task.id}

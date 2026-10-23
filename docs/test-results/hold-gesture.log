@@ -1,8 +1,15 @@
-PASS Single click opens URL promptly; double click opens at most once, never pops or edits
-PASS Right click edits without completing
-PASS Holding inflates and continuously distorts the membrane; early release rebounds without Pop or navigation
-PASS Escape cancels a hold without accidental navigation
-PASS Window blur cancellation boundary leaves task untouched
-PASS Dragging beyond 6px cancels charging and never completes
-PASS Reduced motion limits inflation and removes high frequency sizzle
-PASS 850ms hold produces one Pop and ten droplets; release never navigates; Undo restores the same task
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: 183.42442321777344 vs 182.24537658691406
+    at file:///Users/xiaoxiao/Documents/ChatGPT/TODOPOP/scripts/hold-gesture.mjs:97:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.18.0

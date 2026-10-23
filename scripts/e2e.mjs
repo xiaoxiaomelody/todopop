@@ -278,10 +278,10 @@ try {
     async () => !(await snap(page)).connected && (await snap(page)).focus === 'NORMAL',
     'Chrome disconnect did not settle',
   );
-  await page.evaluate((id) => window.todopop.act(id, 'snooze'), task.id);
-  await until(async () => (await bubbleWindows()).length === 0, 'Snooze did not remove bubble');
-  await page.evaluate((id) => window.todopop.act(id, 'wake'), task.id);
-  await until(async () => (await bubbleWindows()).length === 1, 'Unsnooze did not restore bubble');
+  await until(
+    async () => (await bubbleWindows()).length === 1,
+    'Bubble did not remain visible after Focus',
+  );
   bubble = desktop.windows().find((p) => !p.isClosed() && p.url().includes('#bubble='));
   await bubble.waitForFunction(
     async () =>
@@ -307,7 +307,7 @@ try {
       (await snap(page)).tasks.some((t) => !t.completed && t.sourceTaskId === task.id),
     'Archive restore failed',
   );
-  console.log('PASS snooze, completion pop, restart persistence, and archive restore');
+  console.log('PASS completion pop, restart persistence, and archive restore');
   await page.getByRole('button', { name: 'Blow a bubble', exact: true }).click();
   await page.locator('.floating-details summary').click();
   await page.locator('.task-name').click();
@@ -383,7 +383,6 @@ try {
           'focus transitions',
           'real MV3 extension',
           'navigation and foreground changes',
-          'snooze',
           'restart persistence',
           'archive restore',
           'Figma assets',

@@ -41,9 +41,7 @@ export class BubbleWindows {
   }
   sync(tasks: Task[], focus: FocusState) {
     this.visible = focus === 'NORMAL';
-    const wanted = tasks.filter(
-      (t) => !t.completed && !t.deletedAt && !(t.snoozedUntil && t.snoozedUntil > Date.now()),
-    );
+    const wanted = tasks.filter((t) => !t.completed && !t.deletedAt);
     for (const [id, win] of this.windows)
       if (!wanted.some((t) => t.id === id) && !this.closing.has(id)) {
         this.closing.add(id);

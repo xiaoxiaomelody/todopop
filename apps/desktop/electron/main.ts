@@ -188,9 +188,7 @@ function snapshot(): Snapshot {
       width: 190,
       height: 72,
     });
-  const visible = tasks
-    .filter((t) => !t.completed && !(t.snoozedUntil && t.snoozedUntil > now))
-    .map((t) => ({ ...t, size: bubbleSize(t) }));
+  const visible = tasks.filter((t) => !t.completed).map((t) => ({ ...t, size: bubbleSize(t) }));
   const sideFor = (t: Task) =>
     state.settings.layoutSide !== 'any'
       ? state.settings.layoutSide
@@ -252,7 +250,7 @@ function snapshot(): Snapshot {
       key: coverageKey,
       at: now,
       value: visibleCoverage(
-        viewed.filter((t) => !t.completed && !(t.snoozedUntil && t.snoozedUntil > now)),
+        viewed.filter((t) => !t.completed),
         area,
         obstacles,
       ),
@@ -665,13 +663,7 @@ function registerIPC() {
     } else {
       await save((s) => taskAction(s, id, action, Date.now(), randomUUID()));
       notify(
-        action === 'delete'
-          ? 'Bubble deleted.'
-          : action === 'wake'
-            ? 'Bubble is back.'
-            : action === 'snooze'
-              ? 'Snoozed for 10 minutes.'
-              : 'Popped. Nice work!',
+        action === 'delete' ? 'Bubble deleted.' : 'Popped. Nice work!',
         action === 'delete' || action === 'complete' ? id : undefined,
       );
     }
@@ -985,7 +977,7 @@ if (locked)
           full;
         if (!stopped)
           for (const t of repository.tasks)
-            if (!t.completed && !t.deletedAt && !(t.snoozedUntil && t.snoozedUntil > now)) {
+            if (!t.completed && !t.deletedAt) {
               const map = mode === 'demo' ? demoGrowth : realGrowth;
               map.set(
                 t.id,

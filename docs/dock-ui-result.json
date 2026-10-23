@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "version": "0.4.1",
-  "date": "2026-10-23T22:06:44.670Z",
+  "version": "0.4.2",
+  "date": "2026-10-23T22:41:35.635Z",
   "checks": [
     "plain white oval without sticker outline",
     "compact 300px dock with visible controls and movable native window",

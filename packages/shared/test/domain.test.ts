@@ -98,7 +98,6 @@ test('growth is exact at the formal rate, slower per urgency, and ignores paused
   assert.equal(bubbleSize({ ...t, urgency: 1 }, 99999999), 118);
   const paused = grow([t], 1000, now, true);
   assert.equal(paused[0].growthMs, 0);
-  assert.equal(grow([{ ...t, snoozedUntil: now + 1000 }], 1000, now, false)[0].growthMs, 0);
   assert.equal(grow([t], 1000, now, false)[0].growthMs, 1000);
   assert.equal(grow([t], 90000000, now, false)[0].growthMs, 5000);
 });
@@ -166,4 +165,20 @@ test('history counts completions once and apportions focus across the period bou
   );
   assert.equal(summary.completed, 1);
   assert.equal(summary.focusMs, 2000);
+});
+
+test('legacy snoozed tasks return as active tasks and obsolete actions are rejected', () => {
+  const state = populated();
+  const restored = hydrate(
+    { ...state, tasks: state.tasks.map((t) => ({ ...t, snoozedUntil: now + 600000 })) },
+    now,
+  );
+  assert.equal('snoozedUntil' in restored.tasks[0], false);
+  assert.equal(grow(restored.tasks, 1000, now, false)[0].growthMs, 1000);
+  for (const action of ['snooze', 'wake']) {
+    assert.throws(
+      () => taskAction(restored, restored.tasks[0].id, action as never, now, 'event'),
+      /Invalid action/,
+    );
+  }
 });

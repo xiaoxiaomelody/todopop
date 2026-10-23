@@ -74,7 +74,6 @@ export function hydrate(value: unknown, now = Date.now()): AppState {
       createdAt: finite(t.createdAt, now),
       completedAt: t.completedAt === undefined ? undefined : finite(t.completedAt),
       deletedAt: t.deletedAt === undefined ? undefined : finite(t.deletedAt),
-      snoozedUntil: t.snoozedUntil === undefined ? undefined : finite(t.snoozedUntil),
       growthMs: finite(t.growthMs),
       focusMs: finite(t.focusMs),
       rank: finite(t.rank, index),
@@ -229,16 +228,6 @@ export function taskAction(
   const task = state.tasks.find((t) => t.id === id);
   if (!task || task.deletedAt) throw new Error('Task no longer exists');
   if (action === 'restore') return rebubble(state, id, eventId, now);
-  if (action === 'wake')
-    return {
-      ...state,
-      tasks: state.tasks.map((t) => (t.id === id ? { ...t, snoozedUntil: undefined } : t)),
-    };
-  if (action === 'snooze')
-    return {
-      ...state,
-      tasks: state.tasks.map((t) => (t.id === id ? { ...t, snoozedUntil: now + 600000 } : t)),
-    };
   if (!['complete', 'delete'].includes(action)) throw new Error('Invalid action');
   if (action === 'complete' && task.completed) return state;
   const event: HistoryEvent = {
@@ -258,7 +247,7 @@ export function taskAction(
         ? t
         : action === 'delete'
           ? { ...t, deletedAt: now }
-          : { ...t, completed: true, completedAt: now, snoozedUntil: undefined },
+          : { ...t, completed: true, completedAt: now },
     ),
     history: [...state.history, event],
   };

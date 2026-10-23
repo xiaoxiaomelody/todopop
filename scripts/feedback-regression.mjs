@@ -11,6 +11,7 @@ await writeFile(
     tasks: [0, 1, 2, 3].map((i) => ({
       id: String(i),
       title: 'Growing ' + i,
+      snoozedUntil: i === 0 ? Date.now() + 600000 : undefined,
       url: i === 0 ? 'https://example.com/work' : undefined,
       urgency: i === 3 ? 1 : 4,
       growthMs: i === 3 ? 0 : 220000 + i * 160000,
@@ -120,19 +121,15 @@ try {
   );
   await edit.getByRole('button', { name: 'Close edit', exact: true }).click();
   checks.push('Editor cannot edit another task or settings; bubble renderer cannot mutate groups');
-  const notification = await p.locator('.clear-selection').evaluate((el) => ({
-    fg: getComputedStyle(el).color,
-    bg: getComputedStyle(el).backgroundColor,
-  }));
-  assert.ok(contrast(notification.fg, notification.bg) >= 4.5);
+  assert.equal(await p.locator('.clear-selection').count(), 0);
+  await p.keyboard.press('Escape');
+  assert.equal((await snap()).selectedGroupId, null);
   const toast = await p.getByRole('status').evaluate((el) => ({
     fg: getComputedStyle(el).color,
     bg: getComputedStyle(el).backgroundColor,
   }));
   assert.ok(contrast(toast.fg, toast.bg) >= 4.5);
-  checks.push(
-    'Selection message has opaque white surface and notification text contrast meets 4.5:1',
-  );
+  checks.push('Selection banner removed, Esc clears highlight and toast contrast meets 4.5:1');
   await p.getByRole('button', { name: 'Chrome connection', exact: true }).click();
   assert.equal(
     await p.getByText('Demo only · copy this code into the extension.', { exact: true }).count(),

@@ -78,10 +78,7 @@
 .row-grip-button:active {
   cursor: grabbing;
 }
-.row-resume {
-  font-size: 9px;
-  text-decoration: underline;
-}
+
 .appearance-content {
   display: flex;
   flex-direction: column;
@@ -523,11 +520,7 @@
 .control-content .archive-row {
   padding: 12px 4px;
 }
-.clear-selection {
-  font-size: 10px;
-  padding: 12px 24px;
-  color: var(--soft);
-}
+
 .pairing-code {
   width: 100%;
   font-size: 10px;
@@ -1365,18 +1358,7 @@ body.bubble-window {
 }
 
 /* Messages need their own surface over arbitrary desktop wallpaper. */
-.clear-selection {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  padding: 10px 14px;
-  background: #fff;
-  color: var(--ink);
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  text-align: center;
-  line-height: 1.5;
-}
+
 .control-panel > .error {
   padding: 10px 14px;
   margin-top: 8px;

@@ -214,14 +214,6 @@ export function Landing() {
           </p>
         )}
         {s.loading && <p className="empty">Loading…</p>}
-        {s.selectedGroupId && (
-          <button
-            className="clear-selection"
-            onClick={() => void s.run(() => window.todopop.selectGroup(null))}
-          >
-            Clear group selection · Esc
-          </button>
-        )}
       </div>
       {s.toast && (
         <div className="toast" role="status">

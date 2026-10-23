@@ -1,113 +1,85 @@
 {
-  "date": "2026-10-23T22:19:34.062Z",
+  "date": "2026-10-23T22:48:25.253Z",
   "resumed": true,
   "foregroundFixture": true,
-  "passed": true,
+  "passed": false,
   "results": [
     {
       "name": "typecheck",
       "command": "npm run typecheck",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 3540
+      "durationMs": 6030
     },
     {
       "name": "unit",
       "command": "npm test",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 354
+      "durationMs": 592
     },
     {
       "name": "format",
       "command": "npm run format:check",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1358
+      "durationMs": 2252
     },
     {
       "name": "build",
       "command": "npm run build",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1899
+      "durationMs": 6043
     },
     {
       "name": "extension-ui",
       "command": "node scripts/extension-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 2707
+      "durationMs": 6301
     },
     {
       "name": "color-picker-ui",
       "command": "node scripts/color-picker-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 2082
+      "durationMs": 9875
     },
     {
       "name": "dock-ui",
       "command": "node scripts/dock-ui.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 1937
+      "durationMs": 3151
     },
     {
       "name": "ui-polish",
       "command": "node scripts/ui-polish.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 2447
+      "durationMs": 6949
     },
     {
       "name": "designer-iteration",
       "command": "node scripts/designer-iteration.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 3090
+      "durationMs": 6318
     },
     {
       "name": "feedback-regression",
       "command": "node scripts/feedback-regression.mjs",
       "exitCode": 0,
       "passed": true,
-      "durationMs": 6495
+      "durationMs": 9591
     },
     {
       "name": "hold-gesture",
       "command": "node scripts/hold-gesture.mjs",
-      "exitCode": 0,
-      "passed": true,
-      "durationMs": 7736
-    },
-    {
-      "name": "desktop-acceptance",
-      "command": "node scripts/desktop-acceptance.mjs",
-      "exitCode": 0,
-      "passed": true,
-      "durationMs": 8507
-    },
-    {
-      "name": "giant-reachability",
-      "command": "node scripts/bubble-reachability.mjs",
-      "exitCode": 0,
-      "passed": true,
-      "durationMs": 4348
-    },
-    {
-      "name": "layout-pressure",
-      "command": "node scripts/layout-pressure.mjs",
-      "exitCode": 0,
-      "passed": true,
-      "durationMs": 6621
-    },
-    {
-      "name": "integration",
-      "command": "node scripts/e2e.mjs",
-      "exitCode": 0,
-      "passed": true,
-      "durationMs": 19618
+      "exitCode": 1,
+      "passed": false,
+      "durationMs": 4102
     }
   ]
 }
