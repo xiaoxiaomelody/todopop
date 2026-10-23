@@ -54,6 +54,12 @@
   flex-wrap: wrap;
 }
 .side-buttons button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+  flex-shrink: 0;
   border: 1px solid var(--rule);
   border-radius: 50%;
   width: 24px;

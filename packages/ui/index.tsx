@@ -1,7 +1,11 @@
 /// <reference path="./assets.d.ts" />
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
 import logoO from './assets/logo-o.svg';
-export function ActionGlyph({ name }: { name: 'add' | 'close' | 'receipt' | 'tint' | 'help' }) {
+export function ActionGlyph({
+  name,
+}: {
+  name: 'add' | 'close' | 'receipt' | 'tint' | 'help' | 'shuffle';
+}) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -25,6 +29,8 @@ export function ActionGlyph({ name }: { name: 'add' | 'close' | 'receipt' | 'tin
           <circle cx="12" cy="12" r="8" />
           <path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor" stroke="none" />
         </>
+      ) : name === 'shuffle' ? (
+        <path d="M4 6h3c4 0 6 12 10 12h3m-3-3 3 3-3 3M4 18h3c4 0 6-12 10-12h3m-3-3 3 3-3 3" />
       ) : (
         <>
           <path d="M8.5 8a3.5 3.5 0 0 1 7 0c0 2.5-3.5 2.5-3.5 5" />

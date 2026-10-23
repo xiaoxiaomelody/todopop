@@ -32,6 +32,28 @@ async function until(fn) {
   }
   throw new Error('UI did not settle');
 }
+async function centered(p, selector) {
+  const positions = await p.locator(selector).evaluateAll((nodes) =>
+    nodes.map((svg) => {
+      const box = svg.getBBox(),
+        matrix = svg.getScreenCTM();
+      const center = new DOMPoint(box.x + box.width / 2, box.y + box.height / 2).matrixTransform(
+        matrix,
+      );
+      const button = svg.closest('button').getBoundingClientRect();
+      return {
+        label: svg.closest('button').getAttribute('aria-label'),
+        x: Math.abs(center.x - button.x - button.width / 2),
+        y: Math.abs(center.y - button.y - button.height / 2),
+      };
+    }),
+  );
+  assert.ok(positions.length > 0);
+  assert.ok(
+    positions.every((v) => v.x < 0.6 && v.y < 0.6),
+    JSON.stringify(positions),
+  );
+}
 try {
   app = await electron.launch({
     args: [resolve('apps/desktop')],
@@ -52,6 +74,9 @@ try {
   );
   assert.ok(buttons.every((b) => b.x < 0.5 && b.y < 0.5));
   checks.push('All three O glyphs centered within 0.5 CSS px of the ellipse');
+  await p.getByRole('button', { name: 'Blow a bubble', exact: true }).click();
+  await centered(p, '.prototype-strip .side-buttons svg');
+
   await p.getByRole('button', { name: 'Open tutorial', exact: true }).click();
   await p.getByRole('region', { name: 'TODOPOP tutorial' }).waitFor();
   assert.equal(await p.locator('.control-content > section').count(), 1);
@@ -116,6 +141,12 @@ try {
   await p.mouse.up();
   checks.push('Custom group color updates while pointer is still held');
   const card = p.locator('.group-color-card');
+  await centered(p, '.group-color-card .side-buttons svg');
+  await centered(p, '.group-side-icon svg');
+  checks.push(
+    'Drawn SVG bounds centered within 0.6px in all five palette directions, group rows and six global controls',
+  );
+
   assert.equal(await card.locator('.group-move-handle').count(), 0);
   const alignment = await card.evaluate((el) => {
     const header = el.querySelector('.field-line').getBoundingClientRect();

@@ -13,7 +13,7 @@ export function SideGlyph({ side }: { side: Side }) {
   return (
     <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
       {side === 'any' ? (
-        <g fill="currentColor">
+        <g fill="currentColor" transform="translate(-0.3 0.2)">
           {[
             [4, 5],
             [11.5, 3.8],

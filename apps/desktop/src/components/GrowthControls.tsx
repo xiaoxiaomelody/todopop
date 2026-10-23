@@ -1,3 +1,4 @@
+import { ActionGlyph } from '@todopop/ui';
 import { SideGlyph } from './GroupEditor';
 import { useTaskStore } from '../store/taskStore';
 import type { Side } from '@todopop/shared';
@@ -11,7 +12,7 @@ export function GrowthControls() {
           aria-label="Shuffle bubbles"
           onClick={() => void s.run(() => window.todopop.arrange('shuffle'))}
         >
-          ⤨
+          <ActionGlyph name="shuffle" />
         </button>
         {(['any', 'left', 'top', 'bottom', 'right'] as Side[]).map((side) => (
           <button
