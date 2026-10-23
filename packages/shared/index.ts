@@ -8,3 +8,5 @@ export * from './layoutEngine.ts';
 export * from './history.ts';
 export * from './bubbleGeometry.ts';
 export * from './color.ts';
+export * from './designerColor.ts';
+export * from './membrane.ts';

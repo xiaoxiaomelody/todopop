@@ -14,36 +14,54 @@ const descriptions = [
 ];
 export function UrgencyPicker({ value, onChange }: { value: Urgency; onChange(v: Urgency): void }) {
   return (
-    <fieldset className="urgency">
+    <fieldset className="urgency prototype-urgency">
       <legend className="sr-only">Urgency</legend>
       <div className="field-line">
         <span className="eyebrow">Urgency</span>
         <span>{['Just a reminder', 'Soon', 'Today', 'Super urgent'][value - 1]}</span>
       </div>
-      <div className="urgency-track" role="radiogroup" aria-label="Urgency">
+      <div className="real-slider">
+        <div className="real-track" />
+        {[0, 1, 2, 3].map((i) => (
+          <i key={i} className="real-tick" style={{ left: `${(i / 3) * 100}%` }} />
+        ))}
+        <span
+          className="real-knob"
+          style={{
+            left: `${((value - 1) / 3) * 100}%`,
+            width: dimensions[value],
+            height: dimensions[value],
+          }}
+        />
+        <input
+          aria-label="Urgency, 1 to 4"
+          type="range"
+          min="1"
+          max="4"
+          step="1"
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value) as Urgency)}
+        />
+      </div>
+      <div className="real-stops" role="radiogroup" aria-label="Urgency">
         {([1, 2, 3, 4] as Urgency[]).map((n) => (
           <button
             key={n}
             type="button"
             role="radio"
-            aria-checked={n === value}
             aria-label={URGENCY_LABEL[n]}
+            aria-checked={value === n}
             onClick={() => onChange(n)}
-            className={n === value ? 'selected' : ''}
           >
-            <span className="stop-slot">
-              <img
-                src={n === value ? knobs[n] : tick}
-                width={n === value ? dimensions[n] : 4.8}
-                height={n === value ? dimensions[n] : 4.8}
-                alt=""
-              />
-            </span>
-            <span>{URGENCY_LABEL[n]}</span>
+            {URGENCY_LABEL[n]}
           </button>
         ))}
       </div>
-      <p className="hint">{descriptions[value - 1]}</p>
+      <p className="urgency-description">
+        {value === 1
+          ? 'Stays small. A little reminder.'
+          : `Grows about 1 logical cm every ${value === 4 ? 2 : value === 3 ? 4 : 8} minutes.`}
+      </p>
     </fieldset>
   );
 }

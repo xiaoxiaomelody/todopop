@@ -1,5 +1,5 @@
 
-> todopop@0.2.2 build
+> todopop@0.3.0 build
 > npm run build --workspaces --if-present
 
 
@@ -7,31 +7,30 @@
 > node build.mjs
 
 
-> @todopop/desktop@0.2.2 build
+> @todopop/desktop@0.3.0 build
 > electron-vite build
 
 vite v7.3.7 building ssr environment for production...
 transforming...
-✓ 15 modules transformed.
+✓ 17 modules transformed.
 rendering chunks...
-dist-electron/main/main.cjs  60.41 kB
-✓ built in 198ms
+dist-electron/main/main.cjs  65.12 kB
+✓ built in 172ms
 vite v7.3.7 building ssr environment for production...
 transforming...
 ✓ 1 modules transformed.
 rendering chunks...
-dist-electron/preload/preload.cjs  2.52 kB
-✓ built in 9ms
+dist-electron/preload/preload.cjs  2.61 kB
+✓ built in 7ms
 vite v7.3.7 building client environment for production...
 transforming...
-✓ 473 modules transformed.
+✓ 474 modules transformed.
 rendering chunks...
-dist/index.html                                                0.73 kB
-dist/assets/unbounded-vietnamese-wght-normal-rat7GD3o.woff2   13.88 kB
-dist/assets/unbounded-cyrillic-wght-normal-C627f1f8.woff2     31.42 kB
-dist/assets/unbounded-latin-wght-normal-D5afBTBx.woff2        50.90 kB
-dist/assets/hue-ring-BCEYTmKS.png                             60.40 kB
-dist/assets/unbounded-latin-ext-wght-normal-D6H-S6MW.woff2   118.35 kB
-dist/assets/index-CSM4LloL.css                                42.31 kB
-dist/assets/index-LpqQwAxW.js                                994.51 kB
-✓ built in 967ms
+dist/index.html                                                  0.73 kB
+dist/assets/unbounded-vietnamese-wght-normal-rat7GD3o.woff2     13.88 kB
+dist/assets/unbounded-cyrillic-wght-normal-C627f1f8.woff2       31.42 kB
+dist/assets/unbounded-latin-wght-normal-D5afBTBx.woff2          50.90 kB
+dist/assets/unbounded-latin-ext-wght-normal-D6H-S6MW.woff2     118.35 kB
+dist/assets/index-DTE7OJD5.css                                  49.62 kB
+dist/assets/index-BW67B4_6.js                                1,002.95 kB
+✓ built in 928ms

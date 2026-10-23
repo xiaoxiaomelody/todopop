@@ -9,6 +9,7 @@ import {
   type Task,
 } from '@todopop/shared';
 import { useTaskStore } from '../store/taskStore';
+import { useMembrane } from './useMembrane';
 import { PopDrops } from './PopDrops';
 export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
   const state = useTaskStore(),
@@ -24,6 +25,14 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
   );
   const points = bubbleOutline(task, peers),
     path = polygonPath(points);
+  const membrane = useMembrane(
+    task,
+    peers,
+    state.obstacles,
+    !popping && state.focus === 'NORMAL',
+    Boolean(reduced),
+    () => Boolean(drag.current?.moved),
+  );
   const faded = state.selectedGroupId && task.groupId !== state.selectedGroupId;
   const cancelClick = () => {
     if (click.current) clearTimeout(click.current);
@@ -86,43 +95,41 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
           style={{ transformOrigin: '50% 50%' }}
           transition={{ duration: reduced ? 0.1 : 0.2 }}
         >
-          <motion.path
+          <path
+            ref={membrane.body}
             d={path}
-            animate={{ d: path, strokeWidth: hover ? 1.8 : 1.5 }}
-            transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 180, damping: 16 }}
-            fill={color}
-            fillOpacity={0.095}
+            fill="#fafaf8"
+            fillOpacity={
+              task.urgency === 1 ? 0.55 : Math.min(0.94, 0.62 + (size * 0.305 - 42) / 420)
+            }
             stroke="var(--ink)"
-            strokeWidth={1.5}
+            strokeWidth={hover ? 1.8 : 1.4}
             vectorEffect="non-scaling-stroke"
           />
-          {task.urgency >= 3 && (
+          {(group || task.urgency >= 3) && (
             <g
-              transform={`translate(${size / 2} ${size / 2}) scale(.925) translate(${-size / 2} ${-size / 2})`}
+              transform={`translate(${size / 2} ${size / 2}) scale(${group ? 0.965 : 0.925}) translate(${-size / 2} ${-size / 2})`}
             >
-              <motion.path
+              <path
+                ref={membrane.inner}
                 d={path}
-                animate={{ d: path }}
-                transition={
-                  reduced ? { duration: 0 } : { type: 'spring', stiffness: 180, damping: 16 }
-                }
                 fill="none"
-                stroke="var(--soft)"
-                strokeWidth={1}
-                strokeDasharray={task.urgency === 3 ? '3 7' : undefined}
-                opacity={0.65}
+                stroke={group ? color : 'var(--soft)'}
+                strokeWidth={group ? 2 : 0.9}
+                strokeDasharray={!group && task.urgency === 3 ? '2 4' : undefined}
+                opacity={group ? 0.67 : 0.28}
                 vectorEffect="non-scaling-stroke"
               />
             </g>
           )}
         </motion.g>
       </svg>
-      <motion.button
+      <button
+        ref={membrane.hit}
         className="organic-hit"
         aria-label={`Open ${task.title}`}
         aria-description="Click to open. Double-click to edit. Right-click to pop."
-        transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 180, damping: 16 }}
-        animate={{
+        style={{
           clipPath: `polygon(${points.map((p) => `${(p.x / size) * 100}% ${(p.y / size) * 100}%`).join(',')})`,
         }}
         onPointerDown={down}
@@ -158,6 +165,7 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
         }}
       >
         <span
+          ref={membrane.label}
           className="organic-label"
           style={{
             fontSize: Math.max(10, Math.min(38, size * 0.052)),
@@ -171,7 +179,7 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
             {new Date().getDate()}
           </span>
         </span>
-      </motion.button>
+      </button>
       {popping && !reduced && <PopDrops size={size} />}
     </div>
   );

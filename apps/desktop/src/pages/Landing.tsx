@@ -152,12 +152,15 @@ export function Landing() {
         {tour && <Tutorial onDone={done} />}
         <div className="control-content">
           {section === 'new' && (
-            <section aria-label="Create a bubble">
+            <section className="prototype-create" aria-label="Create a bubble">
               <h2>Blow a bubble</h2>
               <TaskForm onDone={() => setSection(null)} />
+              <div className="prototype-strip">
+                <GrowthControls />
+              </div>
               <details className="floating-details">
                 <summary>Floating · {floating.length}</summary>
-                <GrowthControls />
+
                 <TaskList
                   tasks={floating}
                   onEdit={(id) => void s.run(() => window.todopop.edit(id))}

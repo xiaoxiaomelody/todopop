@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "date": "2026-10-23T20:36:31.072Z",
+  "checks": [
+    "designer form: real slider, inline editable groups, add, optional Link and plain oval dock",
+    "per-group School left / Work right applies independently",
+    "global overrides all groups and new tasks, then by-group restores saved sides",
+    "designer dynamic Tint + OKLCH group wheel, custom group unaffected by theme",
+    "live membrane has smooth changing curves, matching path hit area and reported coverage contour",
+    "restart retains group sides and custom designer color"
+  ],
+  "errors": []
+}

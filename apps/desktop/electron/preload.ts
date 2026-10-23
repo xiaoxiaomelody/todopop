@@ -44,6 +44,7 @@ const api: DesktopApi & {
   resize: (height, width) => ipcRenderer.send('panel:resize', height, width),
   dragPanel: (phase, x, y) => ipcRenderer.send('panel:drag', phase, x, y),
   drag: (phase, x, y) => ipcRenderer.send('bubble:drag', phase, x, y),
+  contour: (size, points) => ipcRenderer.send('bubble:contour', size, points),
   hit: (hit) => ipcRenderer.send('bubble:hit', hit),
   onPop: (callback) => {
     const listener = () => callback();

@@ -1,4 +1,4 @@
-import { hslToHex } from './color.ts';
+import { designerInk, slotColor, vividColor } from './designerColor.ts';
 import { validateTaskInput } from './validation.ts';
 import type {
   AppState,
@@ -126,6 +126,7 @@ export function applySettings(settings: Settings, input: Partial<Settings>): Set
   if (input.tint !== undefined) {
     if (!/^#[a-fA-F0-9]{6}$/.test(input.tint)) throw new Error('Choose a six-digit color');
     next.tint = input.tint.toLowerCase();
+    next.tintWheel = undefined;
   }
   if (input.layoutSide !== undefined) {
     if (!SIDES.includes(input.layoutSide)) throw new Error('Invalid side');
@@ -139,6 +140,13 @@ export function applySettings(settings: Settings, input: Partial<Settings>): Set
   if (input.pauseIndefinite !== undefined) {
     if (typeof input.pauseIndefinite !== 'boolean') throw new Error('Invalid pause');
     next.pauseIndefinite = input.pauseIndefinite;
+  }
+  if (input.tintWheel !== undefined) {
+    const { h, s } = input.tintWheel;
+    if (!Number.isFinite(h) || !Number.isFinite(s) || h < 0 || h >= 360 || s < 0 || s > 1)
+      throw new Error('Invalid tint wheel');
+    next.tintWheel = { h, s };
+    next.tint = designerInk(h, s);
   }
   if (input.tutorialDone !== undefined) {
     if (typeof input.tutorialDone !== 'boolean') throw new Error('Invalid tutorial state');
@@ -299,6 +307,16 @@ function validateGroup(input: GroupChange) {
     if (c.kind === 'palette') {
       if (!Number.isInteger(c.slot) || c.slot < 0 || c.slot > 5)
         throw new Error('Invalid color slot');
+    } else if (c.kind === 'wheel') {
+      if (
+        !Number.isFinite(c.h) ||
+        c.h < 0 ||
+        c.h >= 360 ||
+        !Number.isFinite(c.saturation) ||
+        c.saturation < 0 ||
+        c.saturation > 1
+      )
+        throw new Error('Invalid wheel color');
     } else if (c.kind !== 'custom' || !/^#[a-fA-F0-9]{6}$/.test(c.hex))
       throw new Error('Invalid custom color');
   }
@@ -379,10 +397,8 @@ export function reorder(state: AppState, ids: string[]): AppState {
 }
 export function groupColor(color: ColorSource, tint = '#1a419e'): string {
   if (color.kind === 'custom') return color.hex;
-  // The default palette stays stable; other tints rotate the preset palette coherently.
-  if (tint.toLowerCase() === '#1a419e') return PALETTE[color.slot];
-  const hue = (hexHue(tint) - hexHue('#1a419e') + hexHue(PALETTE[color.slot]) + 360) % 360;
-  return hslToHex(Math.round(hue), 0.66, 0.76);
+  if (color.kind === 'wheel') return vividColor(color.h, color.saturation);
+  return slotColor(color.slot, tint);
 }
 export function hexHue(hex: string) {
   const r = parseInt(hex.slice(1, 3), 16) / 255,

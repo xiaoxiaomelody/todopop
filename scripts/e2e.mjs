@@ -90,6 +90,7 @@ try {
 
   await page.getByRole('button', { name: 'Blow a bubble' }).click();
   await page.locator('input[name=title]').fill('Problem set 4');
+  await page.locator('.link-details summary').click();
   await page.locator('input[name=url]').fill(`${origin}/work`);
   await page.getByRole('radio', { name: 'NOW!', exact: true }).click();
   await page.getByRole('button', { name: 'School', exact: true }).click();

@@ -3,7 +3,10 @@ export type Urgency = 1 | 2 | 3 | 4;
 export type Group = 'None' | 'School' | 'Work' | 'Life';
 export type Side = 'any' | 'left' | 'top' | 'bottom' | 'right';
 export type PauseChoice = '30m' | '1h' | 'tomorrow' | 'manual' | 'resume';
-export type ColorSource = { kind: 'palette'; slot: number } | { kind: 'custom'; hex: string };
+export type ColorSource =
+  | { kind: 'palette'; slot: number }
+  | { kind: 'custom'; hex: string }
+  | { kind: 'wheel'; h: number; saturation: number };
 export type TaskGroup = {
   id: string;
   name: string;
@@ -31,6 +34,7 @@ export type Task = TaskInput & {
   rank?: number;
   sourceTaskId?: string;
   size?: number;
+  contour?: { x: number; y: number }[];
   renderOffset?: { x: number; y: number };
 };
 export type HistoryEvent = {
@@ -45,6 +49,7 @@ export type HistoryEvent = {
 };
 export type Settings = {
   tint: string;
+  tintWheel?: { h: number; s: number };
   interactionVersion?: number;
   tutorialDone?: boolean;
   pauseUntil: number | null;
@@ -78,6 +83,7 @@ export type Snapshot = {
   billboardId: string | null;
   selectedGroupId: string | null;
   coverage: number;
+  obstacles: { x: number; y: number; width: number; height: number }[];
   paused: boolean;
   full: boolean;
   growthMode: 'real' | 'demo';
@@ -106,6 +112,7 @@ export type DesktopApi = {
   undo(id: string): Promise<void>;
   hide(): void;
   resize(height: number, width?: number): void;
+  contour(size: number, points: { x: number; y: number }[]): void;
   dragPanel(phase: 'start' | 'move' | 'end', x: number, y: number): void;
   drag(phase: 'start' | 'move' | 'end', x: number, y: number): void;
 };

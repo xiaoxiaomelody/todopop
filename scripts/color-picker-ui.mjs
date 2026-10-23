@@ -96,13 +96,14 @@ try {
         computed: getComputedStyle(p).fill,
       }));
     assert.match(paint.fill, /^#[0-9a-f]{6}$/i);
-    assert.ok(paint.opacity > 0 && paint.opacity < 0.2);
+    assert.ok(paint.opacity >= 0.55 && paint.opacity <= 0.95);
     assert.notEqual(paint.computed, 'rgb(0, 0, 0)');
   }
   checks.push(
     'slightly changed blue and Berry/Teal/Graphite tints all render valid translucent group colors, never fallback black',
   );
-  await panel.getByRole('button', { name: /School Anywhere/ }).click();
+  await panel.getByRole('button', { name: 'Change color School', exact: true }).click();
+  await panel.getByRole('button', { name: 'Custom group color', exact: true }).click();
   const groupHue = panel.getByRole('slider', { name: 'School hue', exact: true });
   assert.ok(Number.isFinite(Number(await groupHue.getAttribute('aria-valuenow'))));
   await groupHue.focus();
@@ -110,12 +111,13 @@ try {
   await until(
     async () =>
       (await panel.evaluate(() => window.todopop.snapshot())).groups.find((g) => g.id === 'School')
-        .color.kind === 'custom',
+        .color.kind === 'wheel',
   );
-  assert.match(
-    (await panel.evaluate(() => window.todopop.snapshot())).groups.find((g) => g.id === 'School')
-      .color.hex,
-    /^#[0-9a-f]{6}$/i,
+  assert.ok(
+    Number.isFinite(
+      (await panel.evaluate(() => window.todopop.snapshot())).groups.find((g) => g.id === 'School')
+        .color.h,
+    ),
   );
   checks.push(
     'preset groups remain editable by ring after changing global Tint, without NaN colors',

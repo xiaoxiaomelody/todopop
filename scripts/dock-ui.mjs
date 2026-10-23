@@ -47,6 +47,13 @@ try {
     }),
   );
   assert.ok(items.every((b) => b.x >= 0 && b.right <= 300));
+  const style = await page.locator('.control-bar').evaluate((el) => ({
+    radius: getComputedStyle(el).borderRadius,
+    background: getComputedStyle(el).backgroundColor,
+  }));
+  assert.equal(style.radius, '999px');
+  assert.equal(await page.locator('.dock-sticker').count(), 0);
+  checks.push('plain white oval without sticker outline');
   checks.push('compact 300px dock with visible controls and movable native window');
   const grip = await page.getByRole('button', { name: 'Move TODOPOP', exact: true }).boundingBox();
   await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
@@ -61,7 +68,7 @@ try {
   assert.ok(Math.abs(moved.y - initial.bounds.y) > 20);
   checks.push('actual grip pointer drag changes native position and saves it');
   await page.getByRole('button', { name: 'Blow a bubble', exact: true }).click();
-  await until(async () => (await win.evaluate((w) => w.getBounds())).width === 376);
+  await until(async () => (await win.evaluate((w) => w.getBounds())).width === 340);
   const open = await win.evaluate((w) => w.getBounds());
   assert.equal(open.x, moved.x);
   assert.equal(open.y, moved.y);

@@ -14,6 +14,7 @@ export const useTaskStore = create<State>((set) => ({
   billboardId: null,
   selectedGroupId: null,
   coverage: 0,
+  obstacles: [],
   full: false,
   growthMode: 'real',
   toast: null,

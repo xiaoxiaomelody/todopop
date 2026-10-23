@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, TextInput } from '@todopop/ui';
 import { groupColor, type Task, type Urgency } from '@todopop/shared';
+import { GroupEditor } from './GroupEditor';
 import { UrgencyPicker } from './UrgencyPicker';
 import { useTaskStore } from '../store/taskStore';
 export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
@@ -48,59 +49,29 @@ export function TaskForm({ task, onDone }: { task?: Task; onDone(): void }) {
           autoFocus
           required
           maxLength={120}
-          placeholder="What’s on your mind?"
+          placeholder="e.g. Send Melody the Figma link"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
       </label>
-      <label>
-        <span className="eyebrow">
-          Work URL <span className="optional">Optional</span>
-        </span>
-        <TextInput
-          name="url"
-          type="url"
-          maxLength={4096}
-          placeholder="https://your-work-page.com"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-        />
-      </label>
+      <details className="link-details" open={task?.url ? true : undefined}>
+        <summary>Add a link · optional</summary>{' '}
+        <label>
+          <span className="eyebrow">
+            Work URL <span className="optional">Optional</span>
+          </span>
+          <TextInput
+            name="url"
+            type="url"
+            maxLength={4096}
+            placeholder="https://your-work-page.com"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+        </label>
+      </details>
       <UrgencyPicker value={urgency} onChange={setUrgency} />
-      <fieldset className="group-picker">
-        <legend className="eyebrow">Group</legend>
-        <div className="chips">
-          <button
-            type="button"
-            aria-pressed={!groupId}
-            className={!groupId ? 'selected' : ''}
-            onClick={() => setGroupId(null)}
-          >
-            <i />
-            No group
-          </button>
-          {groups.map((g) => (
-            <button
-              type="button"
-              key={g.id}
-              aria-pressed={groupId === g.id}
-              className={groupId === g.id ? 'selected' : ''}
-              onClick={() => setGroupId(g.id)}
-            >
-              <i style={{ background: groupColor(g.color, tint) }} />
-              {g.name}
-            </button>
-          ))}
-          <button
-            hidden={Boolean(task)}
-            type="button"
-            className="new-group"
-            onClick={() => window.dispatchEvent(new CustomEvent('manage-groups'))}
-          >
-            + New
-          </button>
-        </div>
-      </fieldset>
+      <GroupEditor selected={groupId} onSelect={setGroupId} />
       {task && (
         <button
           type="button"

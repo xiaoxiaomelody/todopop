@@ -1,0 +1,6 @@
+PASS designer form: real slider, inline editable groups, add, optional Link and plain oval dock
+PASS per-group School left / Work right applies independently
+PASS global overrides all groups and new tasks, then by-group restores saved sides
+PASS designer dynamic Tint + OKLCH group wheel, custom group unaffected by theme
+PASS live membrane has smooth changing curves, matching path hit area and reported coverage contour
+PASS restart retains group sides and custom designer color

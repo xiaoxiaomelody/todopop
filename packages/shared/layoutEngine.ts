@@ -104,6 +104,77 @@ export function layoutBubbles(
       if (c.side === 'top') c.cy = area.y + ry + inset;
       if (c.side === 'bottom') c.cy = area.y + area.height - ry - inset;
     }
+  // Designer's edge queue: retain order along the edge; overflow moves into a second lane.
+  for (const side of ['left', 'right', 'top', 'bottom'] as Side[]) {
+    const vertical = side === 'left' || side === 'right',
+      along = vertical ? area.height : area.width,
+      across = vertical ? area.width : area.height,
+      m = 16,
+      gap = 8;
+    const list = circles.filter((c) => c.side === side && !pinned.has(c.id));
+    const giants = list.filter((c) => c.r > Math.min(along, across) / 2 - m);
+    for (const c of giants) {
+      c.cx = area.x + area.width / 2;
+      c.cy = area.y + area.height / 2;
+    }
+    const normal = list
+      .filter((c) => !giants.includes(c))
+      .sort((a, b) => (vertical ? a.cy - b.cy : a.cx - b.cx));
+    const need = normal.reduce((sum, c) => sum + 2 * c.r + gap, -gap);
+    if (need > along - 2 * m) {
+      let pos = m,
+        lane = m,
+        laneWidth = 0;
+      for (const c of normal) {
+        const d = 2 * c.r;
+        if (pos + d > along - m && pos > m) {
+          lane += laneWidth + gap;
+          pos = m;
+          laneWidth = 0;
+        }
+        const cross = Math.min(across - m - c.r, lane + c.r),
+          axis = pos + c.r;
+        const x = side === 'right' ? across - cross : cross,
+          y = side === 'bottom' ? across - cross : cross;
+        if (vertical) {
+          c.cx = area.x + x;
+          c.cy = area.y + axis;
+        } else {
+          c.cx = area.x + axis;
+          c.cy = area.y + y;
+        }
+        pos += d + gap;
+        laneWidth = Math.max(laneWidth, d);
+      }
+    } else {
+      const items = normal.map((c) => ({
+        c,
+        a: Math.max(m + c.r, Math.min(vertical ? c.cy - area.y : c.cx - area.x, along - m - c.r)),
+      }));
+      for (let pass = 0; pass < 3; pass++) {
+        let end = m;
+        for (const it of items) {
+          it.a = Math.max(it.a, end + it.c.r);
+          end = it.a + it.c.r + gap;
+        }
+        let limit = along - m;
+        for (let i = items.length - 1; i >= 0; i--) {
+          const it = items[i];
+          it.a = Math.min(it.a, limit - it.c.r);
+          limit = it.a - it.c.r - gap;
+        }
+      }
+      for (const { c, a } of items) {
+        if (vertical) {
+          c.cx = side === 'left' ? area.x + m + c.r : area.x + area.width - m - c.r;
+          c.cy = area.y + a;
+        } else {
+          c.cx = area.x + a;
+          c.cy = side === 'top' ? area.y + m + c.r : area.y + area.height - m - c.r;
+        }
+      }
+    }
+  }
   return {
     items: circles.map((c) => ({
       id: c.id,

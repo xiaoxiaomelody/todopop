@@ -75,6 +75,8 @@ const realGrowth = new Map<string, number>(),
   positions = new Map<string, LayoutItem>();
 let panelAnchor: { x: number; y: number } | null = null;
 let panelDrag: { x: number; y: number; left: number; top: number } | null = null;
+let coverageCache = { key: '', at: 0, value: 0 };
+const contours = new Map<string, { size: number; points: { x: number; y: number }[] }>();
 let billboardId: string | null = null;
 let billboardWindow: BrowserWindow | null = null;
 let selectedGroupId: string | null = null;
@@ -199,6 +201,7 @@ function snapshot(): Snapshot {
       ...visible
         .filter(
           (t) =>
+            state.settings.layoutSide === 'any' &&
             state.groups.some((g) => g.id === t.groupId && g.positionLocked) &&
             (t.position || positions.has(t.id)),
         )
@@ -216,19 +219,32 @@ function snapshot(): Snapshot {
       size: p.size,
       position: { x: p.x, y: p.y },
       renderOffset: { x: p.x - frame.x, y: p.y - frame.y },
+      contour: contours.get(t.id)?.size === p.size ? contours.get(t.id)?.points : undefined,
     };
   });
-  const coverage =
-    focus === 'FOCUS'
-      ? 0
-      : visibleCoverage(
-          viewed.filter((t) => !t.completed && !(t.snoozedUntil && t.snoozedUntil > now)),
-          area,
-          obstacles,
-        );
+  const coverageKey =
+    viewed
+      .filter((t) => !t.completed)
+      .map((t) => `${t.id}:${t.size}`)
+      .join('|') +
+    state.settings.layoutSide +
+    JSON.stringify(obstacles.map((b) => [b.width, b.height])) +
+    JSON.stringify(area);
+  if (focus !== 'FOCUS' && (coverageCache.key !== coverageKey || now - coverageCache.at > 250))
+    coverageCache = {
+      key: coverageKey,
+      at: now,
+      value: visibleCoverage(
+        viewed.filter((t) => !t.completed && !(t.snoozedUntil && t.snoozedUntil > now)),
+        area,
+        obstacles,
+      ),
+    };
+  const coverage = focus === 'FOCUS' ? 0 : coverageCache.value;
   full = coverage >= COVERAGE_LIMIT;
   return {
     billboardId,
+    obstacles,
     selectedGroupId,
     coverage,
     tasks: viewed,
@@ -810,6 +826,32 @@ function registerIPC() {
   });
   ipcMain.on('bubble:drag', (e, phase, x, y) => {
     if (allowed(e) && ['start', 'move', 'end'].includes(phase)) bubbles.drag(e.sender, phase, x, y);
+  });
+  ipcMain.on('bubble:contour', (e, size, points) => {
+    if (!allowed(e)) return;
+    const id = bubbles.taskFor(e.sender);
+    if (
+      !id ||
+      !Number.isFinite(size) ||
+      size < 1 ||
+      size > 20000 ||
+      !Array.isArray(points) ||
+      points.length < 20 ||
+      points.length > 200
+    )
+      return;
+    if (
+      points.some(
+        (p) =>
+          !p ||
+          !Number.isFinite(p.x) ||
+          !Number.isFinite(p.y) ||
+          Math.abs(p.x) > size * 2 ||
+          Math.abs(p.y) > size * 2,
+      )
+    )
+      return;
+    contours.set(id, { size, points });
   });
   ipcMain.on('bubble:hit', (e, hit: boolean) => {
     if (!allowed(e)) return;

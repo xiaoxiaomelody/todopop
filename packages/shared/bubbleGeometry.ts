@@ -106,7 +106,7 @@ export function visibleCoverage(
 ) {
   return unionCoverage(
     tasks.map((t) =>
-      bubbleOutline(t, tasks).map((p) => ({
+      (t.contour || bubbleOutline(t, tasks)).map((p) => ({
         x: p.x + (t.position?.x || 0),
         y: p.y + (t.position?.y || 0),
       })),

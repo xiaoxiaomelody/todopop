@@ -185,7 +185,6 @@ try {
   await hue.focus();
   await hue.press('ArrowRight');
   await until(async () => (await snap(panel)).settings.tint !== '#1a419e', 'hue not saved');
-  await panel.getByRole('slider', { name: 'Tint saturation', exact: true }).fill('55');
   await panel.getByRole('slider', { name: 'Tint saturation', exact: true }).press('ArrowRight');
   await panel.getByRole('textbox', { name: 'Tint HEX', exact: true }).fill('#FFFFFF');
   await panel.getByRole('textbox', { name: 'Tint HEX', exact: true }).press('Enter');
@@ -200,7 +199,8 @@ try {
     '#ffffff',
   );
   await panel.getByRole('button', { name: 'Tint Ink Blue', exact: true }).click();
-  await panel.getByRole('button', { name: /School Anywhere/ }).click();
+  await panel.getByRole('button', { name: 'Change color School', exact: true }).click();
+  await panel.getByRole('button', { name: 'Custom group color', exact: true }).click();
   await panel.getByRole('textbox', { name: 'School HEX', exact: true }).fill('#123456');
   await panel.getByRole('textbox', { name: 'School HEX', exact: true }).press('Enter');
   await until(
@@ -278,8 +278,9 @@ try {
   );
   await panel.getByRole('button', { name: 'Blow a bubble', exact: true }).click();
   await panel.locator('input[name=title]').fill('Draft to keep');
-  await panel.getByRole('button', { name: '+ New', exact: true }).click();
-  await panel.getByRole('button', { name: 'Blow a bubble', exact: true }).click();
+  await panel.getByRole('button', { name: 'Edit groups', exact: true }).click();
+  await panel.getByRole('button', { name: '+ Add a group', exact: true }).click();
+  await panel.getByRole('button', { name: 'Done', exact: true }).click();
   assert.equal(await panel.locator('input[name=title]').inputValue(), 'Draft to keep');
   assert.deepEqual(errors, []);
   await panel.screenshot({

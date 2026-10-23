@@ -1,5 +1,5 @@
 
-> todopop@0.2.2 typecheck
+> todopop@0.3.0 typecheck
 > npm run typecheck --workspaces --if-present
 
 
@@ -7,7 +7,7 @@
 > tsc --noEmit
 
 
-> @todopop/desktop@0.2.2 typecheck
+> @todopop/desktop@0.3.0 typecheck
 > tsc --noEmit
 
 
