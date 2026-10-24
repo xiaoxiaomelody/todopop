@@ -5,6 +5,8 @@ import { TaskList } from '../components/TaskList';
 import { GrowthControls } from '../components/GrowthControls';
 import { Appearance } from '../components/Appearance';
 import { Archive } from '../components/Archive';
+import appPackage from '../../package.json';
+import { PopAudio } from '../components/PopAudio';
 import { Tutorial } from '../components/Tutorial';
 import { useTaskStore } from '../store/taskStore';
 export function Landing() {
@@ -73,6 +75,7 @@ export function Landing() {
   }
   return (
     <div className={`control-shell ${!section ? 'is-compact' : ''}`} ref={panel}>
+      <PopAudio />
       <div className="control-panel">
         <header
           className="control-bar"
@@ -132,7 +135,11 @@ export function Landing() {
             ]}
           />
           <div className="control-utilities">
-            <button aria-label="Open tutorial" title="Quick tour" onClick={() => toggle('tour')}>
+            <button
+              aria-label="Open tutorial"
+              title={`Quick tour · v${appPackage.version}`}
+              onClick={() => toggle('tour')}
+            >
               <ActionGlyph name="help" />
             </button>
             <button

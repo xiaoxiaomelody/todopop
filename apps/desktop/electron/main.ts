@@ -192,22 +192,8 @@ function snapshot(): Snapshot {
       height: 72,
     });
   const visible = tasks.filter((t) => !t.completed).map((t) => ({ ...t, size: bubbleSize(t) }));
-  const sideFor = (t: Task) =>
-    state.settings.layoutSide !== 'any'
-      ? state.settings.layoutSide
-      : state.groups.find((g) => g.id === t.groupId)?.side || 'any';
-  const pinned = new Set([
-    ...(groupDrag?.origins.keys() || []),
-    ...bubbles.draggingIds(),
-    ...visible
-      .filter(
-        (t) =>
-          state.settings.layoutSide === 'any' &&
-          state.groups.some((g) => g.id === t.groupId && g.positionLocked) &&
-          (t.position || positions.has(t.id)),
-      )
-      .map((t) => t.id),
-  ]);
+  const sideFor = (_t: Task) => state.settings.layoutSide;
+  const pinned = new Set(bubbles.draggingIds());
   const layoutKey = JSON.stringify([
     area,
     obstacles,
@@ -311,10 +297,7 @@ function publish() {
     !state.tasks.some((t) => t.id === editingId && !t.completed)
   )
     editor.close();
-  if (state.focus === 'FOCUS' && !billboardId) {
-    mainWindow?.hide();
-    launcher?.hide();
-  } else if (panelHidden) {
+  if (panelHidden) {
     if (!launcher?.isVisible()) launcher?.showInactive();
   } else {
     launcher?.hide();
@@ -358,6 +341,7 @@ async function createWindows() {
     contextIsolation: true,
     nodeIntegration: false,
     sandbox: true,
+    autoplayPolicy: 'no-user-gesture-required' as const,
   };
   mainWindow = new BrowserWindow({
     x,
@@ -375,6 +359,9 @@ async function createWindows() {
     backgroundColor: '#00000000',
     show: false,
     title: 'TODOPOP',
+    type: process.platform === 'darwin' ? 'panel' : undefined,
+    acceptFirstMouse: true,
+    fullscreenable: false,
     webPreferences,
   });
   mainWindow.setAlwaysOnTop(true, 'pop-up-menu');
@@ -403,6 +390,9 @@ async function createWindows() {
     skipTaskbar: true,
     resizable: false,
     show: false,
+    type: process.platform === 'darwin' ? 'panel' : undefined,
+    acceptFirstMouse: true,
+    fullscreenable: false,
     backgroundColor: '#00000000',
     webPreferences,
   });
@@ -682,7 +672,15 @@ function registerIPC() {
       await save((s) => rebubble(s, id, randomUUID(), Date.now()));
       notify('A fresh round. Your history stays.');
     } else {
-      await save((s) => taskAction(s, id, action, Date.now(), randomUUID()));
+      let playPop = false;
+      await save((s) => {
+        playPop =
+          action === 'complete' &&
+          Boolean(s.tasks.find((t) => t.id === id && !t.completed && !t.deletedAt));
+        return taskAction(s, id, action, Date.now(), randomUUID());
+      });
+      if (playPop && mainWindow && !mainWindow.isDestroyed())
+        mainWindow.webContents.send('audio:pop');
       notify(
         action === 'delete' ? 'Bubble deleted.' : 'Popped. Nice work!',
         action === 'delete' || action === 'complete' ? id : undefined,

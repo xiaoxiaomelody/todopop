@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useHoldGesture } from './useHoldGesture';
+import { playPopSound } from './PopAudio';
 import { PopDrops } from './PopDrops';
 import { Button, TextInput } from '@todopop/ui';
 export function Tutorial({ onDone }: { onDone(): void }) {
@@ -15,7 +16,10 @@ export function Tutorial({ onDone }: { onDone(): void }) {
       if (step === 2) setEdited(true);
     },
     pop: () => {
-      if (step === 3) setPopped(true);
+      if (step === 3) {
+        setPopped(true);
+        playPopSound();
+      }
     },
   });
   const instructions = [

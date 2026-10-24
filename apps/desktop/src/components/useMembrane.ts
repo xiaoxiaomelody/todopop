@@ -16,6 +16,7 @@ export function useMembrane(
   pressure: () => number,
 ) {
   const body = useRef<SVGPathElement>(null),
+    surface = useRef<SVGPathElement>(null),
     hit = useRef<HTMLButtonElement>(null),
     label = useRef<HTMLSpanElement>(null),
     latest = useRef({ task, peers, obstacles, reduced, dragging, pressure }),
@@ -95,6 +96,7 @@ export function useMembrane(
             )
           : base;
       body.current?.setAttribute('d', curve.path);
+      surface.current?.setAttribute('d', curve.path);
       if (hit.current) hit.current.style.clipPath = `path('${curve.path}')`;
       if (label.current) label.current.style.transform = 'translate(-50%,-50%)';
       mouse.current.vx *= 0.82;
@@ -111,5 +113,5 @@ export function useMembrane(
       window.removeEventListener('mousemove', move);
     };
   }, [task.id, active]);
-  return { body, hit, label };
+  return { body, surface, hit, label };
 }

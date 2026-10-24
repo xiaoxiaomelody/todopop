@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useHoldGesture } from './useHoldGesture';
 import { motion } from 'motion/react';
 import {
@@ -14,6 +14,7 @@ import { useMembrane } from './useMembrane';
 import { PopDrops } from './PopDrops';
 export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
   const state = useTaskStore();
+  const paintId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const [reduced, setReduced] = useState(
     () => matchMedia('(prefers-reduced-motion: reduce)').matches,
   );
@@ -57,7 +58,6 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
     gesture.moving,
     () => gesture.pressure.current,
   );
-  const faded = state.selectedGroupId && task.groupId !== state.selectedGroupId;
   return (
     <div
       className="organic-bubble"
@@ -66,7 +66,7 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
       style={{
         width: size,
         height: size,
-        opacity: faded ? 0.38 : 1,
+        opacity: 1,
         transform: `translate(${task.renderOffset?.x || 0}px,${task.renderOffset?.y || 0}px)`,
       }}
     >
@@ -92,10 +92,55 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
                 : Math.min(0.28, 0.18 + Math.max(0, size * 0.305 - 42) / 1800)
             }
             stroke="var(--ink)"
-            strokeWidth={hover ? 1.8 : 1.4}
+            strokeOpacity={hover ? 0.65 : 0.3}
+            strokeWidth={hover ? 1.5 : 1}
+            vectorEffect="non-scaling-stroke"
+          />
+          <use href={`#${paintId}-surface`} fill={`url(#${paintId}-depth)`} stroke="none" />
+          <use href={`#${paintId}-surface`} fill={`url(#${paintId}-shell)`} stroke="none" />
+          <use href={`#${paintId}-surface`} fill={`url(#${paintId}-gloss)`} stroke="none" />
+          <use
+            href={`#${paintId}-surface`}
+            fill="none"
+            stroke={`url(#${paintId}-rim)`}
+            strokeWidth={Math.max(1.2, Math.min(3.5, size * 0.007))}
             vectorEffect="non-scaling-stroke"
           />
         </motion.g>
+        <defs>
+          <path id={`${paintId}-surface`} ref={membrane.surface} d={initialShape.path} />
+          <radialGradient id={`${paintId}-depth`} cx="42%" cy="30%" r="72%">
+            <stop offset="0" stopColor="white" stopOpacity="0.03" />
+            <stop offset="0.52" stopColor={color} stopOpacity="0" />
+            <stop offset="0.8" stopColor="#1b3045" stopOpacity="0.07" />
+            <stop offset="1" stopColor="#102338" stopOpacity="0.18" />
+          </radialGradient>
+          <radialGradient id={`${paintId}-shell`} cx="50%" cy="49%" r="51%">
+            <stop offset="0" stopColor="white" stopOpacity="0" />
+            <stop offset="0.67" stopColor="white" stopOpacity="0" />
+            <stop offset="0.86" stopColor="white" stopOpacity="0.035" />
+            <stop offset="0.96" stopColor="white" stopOpacity="0.17" />
+            <stop offset="1" stopColor="white" stopOpacity="0.32" />
+          </radialGradient>
+          <radialGradient
+            id={`${paintId}-gloss`}
+            cx="0"
+            cy="0"
+            r="1"
+            gradientTransform="translate(0.38 0.15) rotate(-25) scale(0.4 0.10)"
+          >
+            <stop offset="0" stopColor="white" stopOpacity="0.6" />
+            <stop offset="0.55" stopColor="white" stopOpacity="0.24" />
+            <stop offset="1" stopColor="white" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id={`${paintId}-rim`} x1="18%" y1="0" x2="82%" y2="100%">
+            <stop offset="0" stopColor="white" stopOpacity="0.85" />
+            <stop offset="0.28" stopColor="white" stopOpacity="0.42" />
+            <stop offset="0.5" stopColor={color} stopOpacity="0.15" />
+            <stop offset="0.74" stopColor="white" stopOpacity="0.12" />
+            <stop offset="1" stopColor="white" stopOpacity="0.55" />
+          </linearGradient>
+        </defs>
       </svg>
       <button
         ref={membrane.hit}
@@ -131,10 +176,17 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
             {task.title}
           </span>
           {!task.label?.compact && task.urgency > 1 && <small>{URGENCY_LABEL[task.urgency]}</small>}
-          {!task.label?.compact && (
-            <span className="bubble-date" title={new Date().toLocaleDateString()}>
-              {new Date().getDate()}
+          {group ? (
+            <span className="bubble-group-tag">
+              <i style={{ background: color }} />
+              <span>{group.name}</span>
             </span>
+          ) : (
+            !task.label?.compact && (
+              <span className="bubble-date" title={new Date().toLocaleDateString()}>
+                {new Date().getDate()}
+              </span>
+            )
           )}
         </span>
       </button>

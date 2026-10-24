@@ -18,8 +18,8 @@ export function GrowthControls() {
           <button
             type="button"
             key={side}
-            aria-label={side === 'any' ? 'Arrange by group' : `Line up all ${side}`}
-            title={side === 'any' ? 'By group' : `All bubbles: ${side}`}
+            aria-label={side === 'any' ? 'Float all bubbles' : `Line up all ${side}`}
+            title={side === 'any' ? 'All bubbles · floating' : `All bubbles: ${side}`}
             aria-pressed={s.settings.layoutSide === side}
             onClick={() => void s.run(() => window.todopop.arrange(side))}
           >
@@ -31,7 +31,7 @@ export function GrowthControls() {
         {s.full
           ? '95% covered · growth stopped'
           : s.settings.layoutSide === 'any'
-            ? 'By group'
+            ? 'All bubbles · floating'
             : `All bubbles · ${s.settings.layoutSide}`}
       </p>
       <details className="growth-mode-details">

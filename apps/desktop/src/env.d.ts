@@ -7,6 +7,7 @@ declare global {
       resizeEdit(height: number): void;
       hit(hit: boolean): void;
       onPop(callback: () => void): () => void;
+      onPopSound(callback: () => void): () => void;
     };
   }
 }

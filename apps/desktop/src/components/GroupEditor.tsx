@@ -36,7 +36,6 @@ export function SideGlyph({ side }: { side: Side }) {
     </svg>
   );
 }
-const sides: Side[] = ['any', 'left', 'top', 'bottom', 'right'];
 export function GroupEditor({
   selected,
   onSelect,
@@ -53,7 +52,6 @@ export function GroupEditor({
     [problem, setProblem] = useState('');
   const choose = (id: string | null) => {
     onSelect?.(id);
-    void s.run(() => window.todopop.selectGroup(id));
   };
   async function add() {
     setEditing(true);
@@ -143,18 +141,6 @@ export function GroupEditor({
                 }}
               />
               <button
-                className="group-side-icon"
-                type="button"
-                aria-label={`Position ${g.name}: ${g.side}`}
-                title={`Position: ${g.side}. Click to change.`}
-                onClick={() => {
-                  const side = sides[(sides.indexOf(g.side) + 1) % sides.length];
-                  void s.run(() => window.todopop.groups('update', { id: g.id, side }));
-                }}
-              >
-                <SideGlyph side={g.side} />
-              </button>
-              <button
                 type="button"
                 className="group-remove"
                 aria-label={`Remove group ${g.name}`}
@@ -217,21 +203,6 @@ export function GroupEditor({
                   aria-label="Custom group color"
                   onClick={() => setCustom(!custom)}
                 />
-              </div>
-              <div className="side-buttons">
-                {sides.map((side) => (
-                  <button
-                    key={side}
-                    type="button"
-                    aria-label={`Set ${g.name} ${side}`}
-                    aria-pressed={g.side === side}
-                    onClick={() =>
-                      void s.run(() => window.todopop.groups('update', { id: g.id, side }))
-                    }
-                  >
-                    <SideGlyph side={side} />
-                  </button>
-                ))}
               </div>
               {custom && (
                 <RingColorPicker

@@ -6,6 +6,7 @@ const api: DesktopApi & {
   resizeEdit(height: number): void;
   hit(hit: boolean): void;
   onPop(callback: () => void): () => void;
+  onPopSound(callback: () => void): () => void;
 } = {
   snapshot: () => ipcRenderer.invoke('state:get'),
   subscribe: (callback) => {
@@ -46,6 +47,11 @@ const api: DesktopApi & {
   drag: (phase, x, y) => ipcRenderer.send('bubble:drag', phase, x, y),
   contour: (size, points) => ipcRenderer.send('bubble:contour', size, points),
   hit: (hit) => ipcRenderer.send('bubble:hit', hit),
+  onPopSound: (callback) => {
+    const listener = () => callback();
+    ipcRenderer.on('audio:pop', listener);
+    return () => ipcRenderer.removeListener('audio:pop', listener);
+  },
   onPop: (callback) => {
     const listener = () => callback();
     ipcRenderer.on('bubble:pop', listener);

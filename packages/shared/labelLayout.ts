@@ -39,7 +39,7 @@ export function layoutBubbleLabels(
         ),
       );
       const height = Math.ceil(
-        lines * fontSize * 1.25 + (compact ? 4 : task.urgency > 1 ? 42 : 22),
+        lines * fontSize * 1.25 + (compact ? (task.groupId ? 22 : 4) : task.urgency > 1 ? 42 : 22),
       );
       const extent = Math.max(0, r * 0.68 - Math.min(Math.hypot(width, height) / 2, r * 0.4));
       const candidates = [...(old ? [{ x: old.x, y: old.y }] : []), { x: cx, y: cy }];
