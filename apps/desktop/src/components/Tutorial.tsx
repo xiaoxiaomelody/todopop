@@ -84,9 +84,7 @@ export function Tutorial({ onDone }: { onDone(): void }) {
           Feed your pet
         </button>
       )}
-      <p className="hint">
-        Click to focus or open a link. Right-click to edit. Hold for a bigger Pop.
-      </p>
+      <p className="hint">Click to focus or open a link. Right-click to edit. Hold to pop.</p>
     </section>
   );
 }

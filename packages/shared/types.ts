@@ -21,7 +21,16 @@ export type TaskInput = {
   group?: Group;
   groupId?: string | null;
 };
+export type BubbleLabel = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontSize: number;
+  compact: boolean;
+};
 export type Task = TaskInput & {
+  label?: BubbleLabel;
   id: string;
   completed: boolean;
   createdAt?: number;

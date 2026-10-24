@@ -28,6 +28,8 @@ import {
   reorder,
   bubbleSize,
   layoutBubbles,
+  layoutBubbleLabels,
+  type BubbleLabel,
   DEMO_SPEED,
   type AppState,
   type Task,
@@ -77,6 +79,7 @@ let panelAnchor: { x: number; y: number } | null = null;
 let panelDrag: { x: number; y: number; left: number; top: number } | null = null;
 let coverageCache = { key: '', at: 0, value: 0 };
 let layoutCache: { key: string; items: LayoutItem[] } = { key: '', items: [] };
+let labelCache: { key: string; labels: Map<string, BubbleLabel> } = { key: '', labels: new Map() };
 function resetLayout() {
   positions.clear();
   layoutCache.key = '';
@@ -225,7 +228,7 @@ function snapshot(): Snapshot {
   const layout = layoutCache;
 
   for (const p of layout.items) positions.set(p.id, p);
-  const viewed = tasks.map((t) => {
+  const viewed: Task[] = tasks.map((t) => {
     const p = layout.items.find((p) => p.id === t.id);
     if (!p) return t;
     const frame = clippedBubbleFrame(p.size, p, area);
@@ -237,6 +240,23 @@ function snapshot(): Snapshot {
       contour: contours.get(t.id)?.size === p.size ? contours.get(t.id)?.points : undefined,
     };
   });
+  const labelKey = JSON.stringify([
+    layout.items,
+    obstacles,
+    visible.map((t) => [t.id, t.title, t.urgency]),
+  ]);
+  if (labelCache.key !== labelKey) {
+    labelCache = {
+      key: labelKey,
+      labels: layoutBubbleLabels(
+        viewed.filter((t) => !t.completed),
+        area,
+        obstacles,
+        labelCache.labels,
+      ),
+    };
+  }
+  for (const task of viewed) task.label = labelCache.labels.get(task.id);
   const coverageKey =
     viewed
       .filter((t) => !t.completed)

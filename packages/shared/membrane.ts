@@ -115,13 +115,13 @@ export function membraneStep(
           half = limit(Math.cos(a), Math.sin(a));
         if (half < Infinity) l = Math.min(l, (half + r) / Math.cos(Math.PI / N) - r);
       }
-      lim[i] = Math.min(lim[i], Math.max(-r * 0.94, l));
+      lim[i] = Math.min(lim[i], Math.max(-r * 0.32, l));
     }
   }
   for (const b of obstacles)
     for (let i = 0; i < N; i++) {
       const distance = boxRay(cx, cy, cos[i], sin[i], b);
-      if (Number.isFinite(distance)) lim[i] = Math.min(lim[i], Math.max(-r * 0.94, distance - r));
+      if (Number.isFinite(distance)) lim[i] = Math.min(lim[i], Math.max(-r * 0.32, distance - r));
     }
   if (mouse && !reduced)
     for (let i = 0; i < N; i++) {
@@ -140,7 +140,7 @@ export function membraneStep(
         420 * (t[i] - m.d[i]) +
         300 * (m.d[(i + N - 1) % N] + m.d[(i + 1) % N] - 2 * m.d[i]) -
         9 * m.v[i];
-      m.v[i] += a * h;
+      m.v[i] = Math.max(-r * 3, Math.min(r * 3, m.v[i] + a * h));
     }
     for (let i = 0; i < N; i++) {
       m.d[i] += m.v[i] * h;
@@ -148,8 +148,8 @@ export function membraneStep(
         m.d[i] = lim[i];
         if (m.v[i] > 0) m.v[i] = 0;
       }
-      if (m.d[i] < -r * 0.94) {
-        m.d[i] = -r * 0.94;
+      if (m.d[i] < -r * 0.32) {
+        m.d[i] = -r * 0.32;
         m.v[i] = 0;
       }
     }

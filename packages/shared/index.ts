@@ -10,3 +10,4 @@ export * from './bubbleGeometry.ts';
 export * from './color.ts';
 export * from './designerColor.ts';
 export * from './membrane.ts';
+export * from './labelLayout.ts';

@@ -1267,27 +1267,23 @@ body.bubble-window {
   height: 55%;
 }
 .billboard {
-  --ink: #fff;
-  --soft: #ffffffbf;
-  --rule: #ffffff59;
-  background: color-mix(in srgb, var(--tint, #1a419e) 68%, #101827);
-  color: white;
+  background: rgba(255, 255, 255, 0.98);
+  color: var(--ink);
 }
 .billboard .tp-button:hover {
-  background: #ffffff18;
+  background: var(--tp-wash);
 }
 .billboard .tp-button--filled {
-  background: white;
-  color: #182541;
+  background: var(--ink);
+  color: white;
 }
 .billboard .tp-button--filled:hover {
-  background: #e8edf7;
+  background: var(--ink);
+  filter: brightness(0.94);
 }
 .tutorial-billboard {
-  --ink: #fff;
-  --soft: #ffffffbf;
-  background: color-mix(in srgb, var(--tint, #1a419e) 68%, #101827);
-  color: white;
+  background: #f5f7fc;
+  color: var(--ink);
   border-radius: 18px;
 }
 
@@ -1325,26 +1321,17 @@ body.bubble-window {
   animation: practice-charge 850ms linear forwards;
 }
 @keyframes practice-charge {
-  0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.16) rotate(0.5deg);
-    border-radius: 46% 54% 50% 50%;
-  }
-  65% {
-    transform: scale(1.28) rotate(-1deg);
-    border-radius: 52% 48% 44% 56%;
-  }
-  80% {
-    transform: scale(1.35) translate(1px, -1px) rotate(1deg);
-  }
-  90% {
-    transform: scale(1.39) translate(-2px, 1px) rotate(-1deg);
-  }
+  0%,
   100% {
-    transform: scale(1.42);
-    border-radius: 44% 56% 52% 48%;
+    transform: none;
+  }
+  40%,
+  80% {
+    transform: translate(0.5px, -0.5px);
+  }
+  65%,
+  90% {
+    transform: translate(-0.5px, 0.5px);
   }
 }
 .organic-bubble[data-holding='true'] .organic-hit {
@@ -1353,7 +1340,7 @@ body.bubble-window {
 @media (prefers-reduced-motion: reduce) {
   .practice-bubble[data-holding='true'] {
     animation: none;
-    transform: scale(1.05);
+    transform: none;
   }
 }
 
@@ -1373,4 +1360,26 @@ body.bubble-window {
 }
 .edit-shell .edit-panel {
   background: #fff;
+}
+
+.dock-grip:focus,
+.dock-grip:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.organic-label {
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.25;
+  text-shadow: 0 1px 3px #ffffff99;
+}
+.organic-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  max-width: 100%;
+}
+.organic-label[data-compact='true'] .organic-title {
+  -webkit-line-clamp: 2;
 }

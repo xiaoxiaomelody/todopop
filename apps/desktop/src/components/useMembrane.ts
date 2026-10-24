@@ -75,8 +75,8 @@ export function useMembrane(
       charge += (p.pressure() - charge) * Math.min(1, dt * 18);
       const size = p.task.size || 118,
         center = size / 2;
-      const scale = 1 + charge * (p.reduced ? 0.1 : 0.42);
-      const shake = p.reduced ? 0 : charge * charge * Math.min(4, size * 0.008);
+      const scale = 1;
+      const shake = p.reduced ? 0 : charge * charge * Math.min(1.5, size * 0.004);
       const dx = Math.sin(now * 0.075) * shake,
         dy = Math.cos(now * 0.091) * shake;
       const curve =
@@ -86,7 +86,7 @@ export function useMembrane(
                 const angle = Math.atan2(point.y - center, point.x - center);
                 const wave = p.reduced
                   ? 0
-                  : Math.sin(i * 1.8 + now * 0.065) * charge * charge * Math.min(7, size * 0.016);
+                  : Math.sin(i * 1.8 + now * 0.065) * charge * charge * Math.min(2, size * 0.004);
                 return {
                   x: center + (point.x - center) * scale + Math.cos(angle) * wave + dx,
                   y: center + (point.y - center) * scale + Math.sin(angle) * wave + dy,
@@ -96,8 +96,7 @@ export function useMembrane(
           : base;
       body.current?.setAttribute('d', curve.path);
       if (hit.current) hit.current.style.clipPath = `path('${curve.path}')`;
-      if (label.current)
-        label.current.style.transform = `translate(-50%,-50%) translate(${shape.dx + dx}px,${shape.dy + dy}px) scale(${1 + charge * 0.1})`;
+      if (label.current) label.current.style.transform = 'translate(-50%,-50%)';
       mouse.current.vx *= 0.82;
       mouse.current.vy *= 0.82;
       if (now - sent > 250) {

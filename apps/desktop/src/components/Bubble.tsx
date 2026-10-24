@@ -78,7 +78,7 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
         className="organic-art"
       >
         <motion.g
-          animate={popping ? { opacity: 0, scale: reduced ? 1 : 1.35 } : { opacity: 1, scale: 1 }}
+          animate={popping ? { opacity: 0, scale: 1 } : { opacity: 1, scale: 1 }}
           style={{ transformOrigin: '50% 50%' }}
           transition={{ duration: reduced ? 0.1 : 0.2 }}
         >
@@ -118,17 +118,24 @@ export function Bubble({ task, popping }: { task: Task; popping: boolean }) {
         <span
           ref={membrane.label}
           className="organic-label"
+          data-compact={task.label?.compact || false}
           style={{
-            fontSize: Math.max(10, Math.min(38, size * 0.052)),
-            width: size * 0.46,
+            fontSize: task.label?.fontSize || Math.max(10, Math.min(24, size * 0.052)),
+            width: task.label?.width || Math.min(300, size * 0.42),
+            left: task.label ? task.label.x - (task.position?.x || 0) : '50%',
+            top: task.label ? task.label.y - (task.position?.y || 0) : '50%',
             opacity: popping ? 0 : 1,
           }}
         >
-          <span>{task.title}</span>
-          {task.urgency > 1 && <small>{URGENCY_LABEL[task.urgency]}</small>}
-          <span className="bubble-date" title={new Date().toLocaleDateString()}>
-            {new Date().getDate()}
+          <span className="organic-title" title={task.title}>
+            {task.title}
           </span>
+          {!task.label?.compact && task.urgency > 1 && <small>{URGENCY_LABEL[task.urgency]}</small>}
+          {!task.label?.compact && (
+            <span className="bubble-date" title={new Date().toLocaleDateString()}>
+              {new Date().getDate()}
+            </span>
+          )}
         </span>
       </button>
       {popping && !reduced && <PopDrops size={size} />}
