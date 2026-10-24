@@ -77,8 +77,8 @@ try {
   await p.getByRole('button', { name: 'Blow a bubble', exact: true }).click();
   await centered(p, '.prototype-strip .side-buttons svg');
 
-  await p.getByRole('button', { name: 'Open tutorial', exact: true }).click();
-  await p.getByRole('region', { name: 'TODOPOP tutorial' }).waitFor();
+  await p.getByRole('button', { name: 'Open shortcuts', exact: true }).click();
+  await p.getByRole('region', { name: 'TODOPOP shortcuts' }).waitFor();
   assert.equal(await p.locator('.control-content > section').count(), 1);
   const surface = await p
     .locator('.control-content')
@@ -89,8 +89,8 @@ try {
     ['Tint and groups', 'Tint and group settings'],
     ['Blow a bubble', 'Create a bubble'],
     ['Popped bubbles', 'Popped receipt'],
-    ['Chrome connection', 'Chrome demo connection'],
-    ['Open tutorial', 'TODOPOP tutorial'],
+    ['Chrome connection', 'Chrome connection settings'],
+    ['Open shortcuts', 'TODOPOP shortcuts'],
   ]) {
     await p.getByRole('button', { name: button, exact: true }).click();
     await p.getByRole('region', { name: section, exact: true }).waitFor();
@@ -141,12 +141,8 @@ try {
   await p.mouse.up();
   checks.push('Custom group color updates while pointer is still held');
   const card = p.locator('.group-color-card');
-  await centered(p, '.group-color-card .side-buttons svg');
-  await centered(p, '.group-side-icon svg');
-  checks.push(
-    'Drawn SVG bounds centered within 0.6px in all five palette directions, group rows and six global controls',
-  );
-
+  assert.equal(await p.locator('.group-side-icon, .group-color-card .side-buttons').count(),0);
+  checks.push('Directions exist only in global controls, not in groups');
   assert.equal(await card.locator('.group-move-handle').count(), 0);
   const alignment = await card.evaluate((el) => {
     const header = el.querySelector('.field-line').getBoundingClientRect();
@@ -182,13 +178,13 @@ try {
     bg: getComputedStyle(el).backgroundColor,
     button: getComputedStyle(el.querySelector('.tp-button')).color,
   }));
-  assert.equal(colors.text, 'rgb(255, 255, 255)');
-  assert.equal(colors.button, 'rgb(255, 255, 255)');
-  assert.notEqual(colors.bg, 'rgba(255, 255, 255, 0.98)');
-  await billboard.screenshot({ path: 'docs/screenshots/dark-billboard.png', omitBackground: true });
+  assert.notEqual(colors.text, 'rgb(255, 255, 255)');
+  assert.equal(colors.button, colors.text);
+  assert.equal(colors.bg, 'rgba(255, 255, 255, 0.98)');
+  await billboard.screenshot({ path: 'docs/screenshots/light-billboard.png', omitBackground: true });
   await billboard.getByRole('button', { name: 'Return to bubbles', exact: true }).click();
   checks.push(
-    'Billboard uses dark themed background, white text and readable controls; return works',
+    'Billboard uses a light background, dark text and readable controls; return works',
   );
   assert.deepEqual(errors, []);
   await writeFile(

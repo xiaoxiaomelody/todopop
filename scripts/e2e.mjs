@@ -55,8 +55,8 @@ async function launch() {
     'Close the running TODOPOP app before starting the integration test',
     1500,
   );
-  if (await page.getByRole('button', { name: 'Skip tour', exact: true }).count())
-    await page.getByRole('button', { name: 'Skip tour', exact: true }).click();
+  if (await page.getByRole('button', { name: 'Close shortcuts', exact: true }).count())
+    await page.getByRole('button', { name: 'Close shortcuts', exact: true }).click();
   return page;
 }
 const snap = (page) => page.evaluate(() => window.todopop.snapshot());

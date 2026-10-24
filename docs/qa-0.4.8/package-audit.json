@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-24T02:30:50.739Z",
+  "isolatedData": true,
+  "results": [
+    {
+      "version": "0.4.7",
+      "packaged": true,
+      "path": "/private/tmp/todopop-qa047/TODOPOP.app/Contents/MacOS/TODOPOP",
+      "groupSelected": {
+        "pressed": "true",
+        "bg": "rgb(26, 65, 158)",
+        "fg": "rgb(255, 255, 255)"
+      },
+      "clearBanner": false,
+      "groupDirections": false,
+      "legacyTour": true,
+      "shortcutRows": 0,
+      "connectionPlaceholder": false
+    },
+    {
+      "version": "0.4.8",
+      "packaged": true,
+      "path": "/private/tmp/todopop-qa048/TODOPOP.app/Contents/MacOS/TODOPOP",
+      "groupSelected": {
+        "pressed": "true",
+        "bg": "rgb(26, 65, 158)",
+        "fg": "rgb(255, 255, 255)"
+      },
+      "clearBanner": false,
+      "groupDirections": false,
+      "legacyTour": false,
+      "shortcutRows": 6,
+      "connectionPlaceholder": true
+    }
+  ]
+}

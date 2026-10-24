@@ -65,7 +65,8 @@ try {
   await until(() => Boolean((edit = app.windows().find((w) => w.url().includes('#edit=0')))));
   await edit.locator('input[name=title]').waitFor();
   await edit.getByRole('button', { name: 'Work', exact: true }).click();
-  await until(async () => (await snap()).selectedGroupId === 'Work');
+  assert.equal(await edit.getByRole('button',{name:'Work',exact:true}).getAttribute('aria-pressed'),'true');
+  assert.equal((await snap()).selectedGroupId,null);
   assert.equal(await edit.getByRole('alert').count(), 0);
   await edit.getByRole('button', { name: 'Edit groups', exact: true }).click();
   await edit.getByRole('button', { name: '+ Add a group', exact: true }).click();

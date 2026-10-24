@@ -81,22 +81,14 @@ const windowFor = (route) =>
   desktop.windows().find((p) => !p.isClosed() && p.url().includes(route));
 try {
   let panel = await launch();
-  await panel.getByRole('button', { name: 'Try it', exact: true }).click();
-  await panel.getByRole('button', { name: 'Practice bubble', exact: true }).click();
-  await panel.getByRole('button', { name: 'Back · task stays', exact: true }).click();
-  await panel
-    .getByRole('button', { name: 'Practice bubble', exact: true })
-    .click({ button: 'right' });
-  await panel.getByRole('button', { name: 'Save practice edit', exact: true }).click();
-  await panel.getByRole('button', { name: 'Practice bubble', exact: true }).click({ delay: 950 });
-  await panel.getByRole('button', { name: 'Start bubbling', exact: true }).click();
+  await panel.getByRole('heading', { name: 'Shortcuts', exact: true }).waitFor();
+  assert.equal(await panel.locator('.shortcut-list > div').count(), 6);
+  assert.equal(await panel.locator('.practice-bubble').count(), 0);
+  await panel.getByRole('button', { name: 'Close shortcuts', exact: true }).click();
   assert.equal((await snap(panel)).tasks.length, 2);
   assert.equal((await snap(panel)).settings.tutorialDone, true);
   assert.equal((await snap(panel)).settings.pauseIndefinite, false);
-  assert.equal(await panel.getByRole('button', { name: /Pause growing/ }).count(), 0);
-  pass(
-    'tutorial rehearses click/right-click/hold without modifying real tasks; old pause migrated',
-  );
+  pass('single-page shortcuts replace the practice tour; legacy pause migration retains tasks');
   const nativePanel = await desktop.browserWindow(panel);
   const bar = await nativePanel.evaluate((w) => ({ b: w.getBounds(), movable: w.isMovable() }));
   assert.equal(bar.movable, true);
@@ -209,10 +201,12 @@ try {
     async () => (await snap(panel)).groups.find((g) => g.id === 'School').color.hex === '#123456',
     'group color failed',
   );
-  assert.equal((await snap(panel)).selectedGroupId, 'School');
+  assert.equal((await snap(panel)).selectedGroupId, null);
+  assert.equal(await panel.locator('.clear-selection').count(), 0);
+  assert.equal(await panel.locator('.group-side-icon, .group-color-card .side-buttons').count(), 0);
   const unselected = await bubble('linked');
   await unselected.waitForFunction(
-    () => Number(getComputedStyle(document.querySelector('.organic-bubble')).opacity) <= 0.39,
+    () => Number(getComputedStyle(document.querySelector('.organic-bubble')).opacity) === 1,
   );
   await panel.screenshot({
     path: 'docs/screenshots/ring-group-picker.png',
@@ -220,7 +214,7 @@ try {
     animations: 'disabled',
   });
   pass(
-    'third O exposes original ring/saturation controls; custom group colors persist and other groups fade',
+    'third O exposes original ring/saturation controls; custom group colors persist and other groups stay fully visible',
   );
   assert.equal(await panel.locator('.group-move-handle').count(), 0);
   await panel.keyboard.press('Escape');

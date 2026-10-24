@@ -129,11 +129,12 @@ try {
     async () =>
       (await bubble.locator('.organic-art path').first().getAttribute('fill')) === '#c875db',
   );
-  assert.equal(await bubble.locator('.organic-art path').count(), 1);
+  assert.equal(await bubble.locator('.organic-art > g > path').count(), 1);
+  assert.equal(await bubble.locator('.organic-art > g > use').count(), 4);
   await panel.evaluate(() => window.todopop.setSettings({ tint: '#1a419e' }));
   assert.equal(await bubble.locator('.organic-art path').first().getAttribute('fill'), '#c875db');
   checks.push(
-    'Group HEX directly autofills bubble body at 14–28% opacity, no inner line; custom fill survives Tint changes',
+    'Group HEX directly autofills bubble body at 14–28% opacity, glass layers follow the body; custom fill survives Tint changes',
   );
 
   await bubble.screenshot({

@@ -1,0 +1,13 @@
+{
+  "events": 1,
+  "audio": [
+    {
+      "src": "file:///private/tmp/todopop-qa048/TODOPOP.app/Contents/Resources/app.asar/dist/assets/bubble-pop-BOycs8V_.mp3",
+      "volume": 0.6,
+      "event": "ended",
+      "time": 1.08
+    }
+  ],
+  "consoleErrors": [],
+  "passed": true
+}
