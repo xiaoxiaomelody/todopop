@@ -5,18 +5,25 @@
   "directories": {
     "output": "../../release"
   },
-  "files": ["dist/**/*", "dist-electron/**/*", "package.json"],
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*",
+    "package.json"
+  ],
   "mac": {
     "category": "public.app-category.productivity",
     "target": [
       {
         "target": "dmg",
-        "arch": ["arm64"]
+        "arch": [
+          "arm64"
+        ]
       }
     ],
     "identity": "-",
     "hardenedRuntime": true,
-    "notarize": false
+    "notarize": false,
+    "icon": "build/icon.icns"
   },
   "dmg": {
     "title": "TODOPOP \u00b7 Local Preview"
