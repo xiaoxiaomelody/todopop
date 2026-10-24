@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActionGlyph } from '@todopop/ui';
 import { groupColor, slotHue, defaultWheelSat, type Side } from '@todopop/shared';
 import { useTaskStore } from '../store/taskStore';
@@ -47,10 +47,16 @@ export function GroupEditor({
 }) {
   const s = useTaskStore(),
     [editing, setEditing] = useState(initialEdit),
+    [localSelected, setLocalSelected] = useState<string | null>(null),
     [picker, setPicker] = useState<string | null>(null),
     [custom, setCustom] = useState(false),
     [problem, setProblem] = useState('');
+  const chosen = selected === undefined ? localSelected : selected;
+  useEffect(() => {
+    if (localSelected && !s.groups.some((g) => g.id === localSelected)) setLocalSelected(null);
+  }, [s.groups, localSelected]);
   const choose = (id: string | null) => {
+    setLocalSelected(id);
     onSelect?.(id);
   };
   async function add() {
@@ -75,7 +81,7 @@ export function GroupEditor({
       </div>
       {!editing ? (
         <div className="chips prototype-group-chips">
-          <button type="button" aria-pressed={!selected} onClick={() => choose(null)}>
+          <button type="button" aria-pressed={!chosen} onClick={() => choose(null)}>
             No group
           </button>
           {s.groups.map((g) => (
@@ -83,7 +89,7 @@ export function GroupEditor({
               key={g.id}
               type="button"
               aria-label={g.name}
-              aria-pressed={selected === g.id}
+              aria-pressed={chosen === g.id}
               onClick={() => choose(g.id)}
               onContextMenu={(e) => {
                 e.preventDefault();
@@ -105,7 +111,7 @@ export function GroupEditor({
             <li
               key={g.id}
               data-group-row={g.id}
-              className={selected === g.id ? 'selected-group' : ''}
+              className={chosen === g.id ? 'selected-group' : ''}
               onContextMenu={(e) => {
                 e.preventDefault();
                 setPicker(g.id);

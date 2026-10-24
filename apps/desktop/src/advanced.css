@@ -1407,3 +1407,25 @@ body.bubble-window {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* Selection belongs to the group control, never to desktop bubble opacity. */
+.prototype-group-chips button[aria-pressed='true'] {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.prototype-group-chips button[aria-pressed='true'] i {
+  border-color: #fff;
+}
+.prototype-group-chips button:not(.add):not([aria-pressed='true']):hover {
+  background: color-mix(in srgb, var(--ink) 7%, white);
+}
+.prototype-group-rows > li.selected-group input {
+  border-bottom-color: var(--ink);
+  font-weight: 450;
+}
+.prototype-group-rows > li.selected-group .group-color-dot {
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 3px var(--ink);
+}
