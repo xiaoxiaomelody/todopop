@@ -1429,3 +1429,130 @@ body.bubble-window {
     0 0 0 2px white,
     0 0 0 3px var(--ink);
 }
+
+.shortcut-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.control-content .shortcut-heading h2 {
+  margin: 0;
+}
+.shortcut-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+}
+.shortcut-list {
+  margin: 0;
+}
+.shortcut-list > div {
+  display: grid;
+  grid-template-columns: 102px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 10px;
+  line-height: 1.65;
+}
+.shortcut-list dt {
+  font-weight: 450;
+}
+.shortcut-list dd {
+  margin: 0;
+  font-weight: 300;
+}
+.shortcut-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  font-size: 9px;
+  color: var(--soft);
+}
+.connection-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.control-content .connection-heading h2 {
+  margin: 0;
+}
+.connection-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: var(--ink);
+  background: #f6f8fc;
+}
+.connection-status[data-connected='true'] {
+  color: #11734f;
+  background: #eef8f3;
+  border-color: #b9dfcd;
+}
+.connection-instruction {
+  font-size: 10px;
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+.connection-code-label {
+  display: block;
+}
+.chrome-connection .pairing-code {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 76px;
+  margin: 8px 0 12px;
+  padding: 12px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: #f5f7fc;
+  color: var(--ink);
+  font:
+    12px/1.7 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  resize: none;
+  user-select: text;
+}
+.connection-copy {
+  width: 100%;
+}
+.connection-extension {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+.connection-extension a {
+  font-size: 10px;
+  line-height: 1.7;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.connection-extension > span {
+  font-size: 9px;
+  color: var(--soft);
+}

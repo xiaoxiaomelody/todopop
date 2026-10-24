@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import { ActionGlyph, BrandLogo, Button, StatusDot } from '@todopop/ui';
+import { ActionGlyph, BrandLogo, StatusDot } from '@todopop/ui';
 import { TaskForm } from '../components/TaskForm';
 import { TaskList } from '../components/TaskList';
 import { GrowthControls } from '../components/GrowthControls';
@@ -7,15 +7,14 @@ import { Appearance } from '../components/Appearance';
 import { Archive } from '../components/Archive';
 import appPackage from '../../package.json';
 import { PopAudio } from '../components/PopAudio';
+import { ChromeConnection } from '../components/ChromeConnection';
 import { Tutorial } from '../components/Tutorial';
 import { useTaskStore } from '../store/taskStore';
 export function Landing() {
   const s = useTaskStore(),
     panel = useRef<HTMLDivElement>(null),
     offered = useRef(false);
-  const [section, setSection] = useState<string | null>(null),
-    [pairing, setPairing] = useState<{ token: string; port: number } | null>(null),
-    [copied, setCopied] = useState(false);
+  const [section, setSection] = useState<string | null>(null);
   const floating = s.tasks.filter((t) => !t.completed && !t.deletedAt);
   const toggle = (id: string) => setSection((current) => (current === id ? null : id));
   useEffect(() => {
@@ -46,12 +45,14 @@ export function Landing() {
     const key = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setSection(null);
+        if (section === 'tour')
+          void s.run(() => window.todopop.setSettings({ tutorialDone: true }));
         if (s.selectedGroupId) void s.run(() => window.todopop.selectGroup(null));
       }
     };
     window.addEventListener('keydown', key);
     return () => window.removeEventListener('keydown', key);
-  }, [s.selectedGroupId]);
+  }, [s.selectedGroupId, section]);
   const done = () => {
     setSection(null);
     void s.run(() => window.todopop.setSettings({ tutorialDone: true }));
@@ -136,8 +137,8 @@ export function Landing() {
           />
           <div className="control-utilities">
             <button
-              aria-label="Open tutorial"
-              title={`Quick tour · v${appPackage.version}`}
+              aria-label="Open shortcuts"
+              title={`Shortcuts · v${appPackage.version}`}
               onClick={() => toggle('tour')}
             >
               <ActionGlyph name="help" />
@@ -145,10 +146,7 @@ export function Landing() {
             <button
               aria-label="Chrome connection"
               title="Chrome connection"
-              onClick={async () => {
-                toggle('connection');
-                if (!pairing) await s.run(async () => setPairing(await window.todopop.pairing()));
-              }}
+              onClick={() => toggle('connection')}
             >
               <StatusDot state={s.connected ? 'connected' : 'idle'} />
             </button>
@@ -185,35 +183,7 @@ export function Landing() {
               <Appearance />
             </section>
           )}
-          {section === 'connection' && (
-            <section aria-label="Chrome demo connection">
-              <h2>Connect Chrome</h2>
-
-              {pairing && (
-                <>
-                  <input
-                    className="pairing-code"
-                    readOnly
-                    aria-label="Pairing code"
-                    value={pairing.token}
-                  />
-                  <Button
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(pairing.token);
-                        setCopied(true);
-                      } catch {
-                        useTaskStore.setState({ problem: 'Select the code and copy it manually.' });
-                      }
-                    }}
-                  >
-                    {copied ? 'Copied' : 'Copy code'}
-                  </Button>
-                </>
-              )}
-              <p className="hint">{s.connected ? 'Connected' : 'Waiting for Chrome'}</p>
-            </section>
-          )}
+          {section === 'connection' && <ChromeConnection />}
         </div>
         {(s.problem || s.error) && (
           <p className="error" role="alert">
