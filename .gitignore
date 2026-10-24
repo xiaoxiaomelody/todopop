@@ -11,3 +11,4 @@ coverage/
 *.tsbuildinfo
 
 !docs/test-results/*.log
+/work/
