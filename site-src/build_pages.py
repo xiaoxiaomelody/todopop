@@ -70,3 +70,4 @@ for fn, (key, parts) in PAGES.items():
     out = out.replace('href="#privacy"', 'href="%s"' % ('#privacy' if key == 'how' else 'how.html#privacy'))
     open(fn, 'w', encoding='utf-8').write(out)
     print('built', fn, len(out))
+# TODOPOP: touched 2026-11-08

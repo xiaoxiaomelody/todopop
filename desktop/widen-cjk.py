@@ -20,3 +20,4 @@ for path in sorted(glob.glob(os.path.join(SRC, 'wdxl-*.woff2'))):
         gl.recalcBounds(glyf); hmtx[g] = (adv + gap, gl.xMin); total += 1
     f.flavor = 'woff2'; f.save(os.path.join(OUT, os.path.basename(path)))
 print('widened', total, 'glyphs')
+# TODOPOP: touched 2026-11-08

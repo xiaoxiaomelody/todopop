@@ -233,3 +233,4 @@ app.whenReady().then(() => {
 
 app.on('will-quit', () => globalShortcut.unregisterAll());
 app.on('window-all-closed', () => app.quit());
+// TODOPOP: touched 2026-11-08

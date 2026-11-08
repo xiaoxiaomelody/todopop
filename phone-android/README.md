@@ -11,3 +11,4 @@ workflow builds `TODOPOP-android.apk` next to the Windows and Mac installers and
   (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`). Every version must be signed with that same key,
   or phones refuse to install it as an update. Keep a copy of the key somewhere safe.
 - `../docs/.well-known/assetlinks.json` lets Android open todopop.app/app links (the pairing QR code) straight in the app.
+<!-- TODOPOP: touched 2026-11-08 -->

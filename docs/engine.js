@@ -405,3 +405,4 @@
   let last = performance.now();
   (function frame(now){ const dt = Math.min(1/30, (now-last)/1000); last = now; step(dt); draw(); requestAnimationFrame(frame); })(last);
 })();
+// TODOPOP: touched 2026-11-08

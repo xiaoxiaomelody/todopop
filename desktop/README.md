@@ -68,3 +68,4 @@ The builds are not code-signed. On a Mac the first time you open the app, right-
 ## Language
 
 TODOPOP speaks English and 简体中文. Pick one in the third O (under your color); the app reloads in that language and remembers it. A computer set to Chinese starts in Chinese. The tray menu follows the app's language.
+<!-- TODOPOP: touched 2026-11-08 -->

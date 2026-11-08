@@ -206,3 +206,4 @@
     catch(e){ const ta = document.createElement('textarea'); ta.value = text; el.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('Copied.'); }
   }
 })();
+// TODOPOP: touched 2026-11-08

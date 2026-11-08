@@ -149,3 +149,4 @@
   if(want === 'zh') apply('zh'); else document.documentElement.lang = 'en';
   document.getElementById('lang')?.addEventListener('click', () => window.I18N.set(lang === 'zh' ? 'en' : 'zh'));
 })();
+// TODOPOP: touched 2026-11-08

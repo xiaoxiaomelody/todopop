@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://todopop.app/sitemap.xml
+# TODOPOP: touched 2026-11-08

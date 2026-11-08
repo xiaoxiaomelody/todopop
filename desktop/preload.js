@@ -18,3 +18,4 @@ contextBridge.exposeInMainWorld('todopop', {
   fetchCalendar: (link) => ipcRenderer.invoke('cal-fetch', link), // the user's private calendar link → its events, as .ics text
   setLang: (l) => ipcRenderer.send('lang', l === 'zh' ? 'zh' : 'en'), // so the tray menu speaks the same language
 });
+// TODOPOP: touched 2026-11-08
