@@ -15,7 +15,6 @@ desktop, then pair your phone as a remote when you are away from your desk.
 
 - **[Watch our demo](https://drive.google.com/file/d/1C4nE4CMMn8qzM0f7Vb4GAJJzpybrxtlJ/view)**
 - **[Visit the official website](https://todopop.app/)**
-- **[Open the live web app](https://todopop.app/app/)**
 - **[See how it works](https://todopop.app/how.html)**
 - **[Use the phone app](https://todopop.app/phone.html)**
 
